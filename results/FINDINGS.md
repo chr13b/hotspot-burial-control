@@ -21,24 +21,28 @@ computed**; no falsifier was moved. Every number below traces to a CSV in this d
 > The `N_hot ≈ 10^10` constellation cost is a generic property of T = 0.1 sampling — statistically
 > indistinguishable at burial-matched control constellations (median Δ = **0.000 log10**, p = 0.90).
 >
-> **Result 2 — positive, robust, and externally validated.** On the same matched pairs
-> (pydssp-corrected), the bound-vs-unbound 2×2:
+> **Result 2 — positive, but the claim is narrower than an earlier draft stated.** The
+> bound-vs-unbound 2×2 on the same matched pairs, with and without BRIEF §5.2's pre-registered
+> amino-acid fixed effect (which an earlier draft applied only to the bound arm):
 >
-> | conditioning | hotspot − control gap |
-> |---|---|
-> | bound complex | −0.038 [−0.210, +0.137] |
-> | **unbound monomer** | **−0.442 [−0.627, −0.266]** |
-> | **interaction (= d_bind_local)** | **+0.404 [+0.273, +0.548]** |
+> | conditioning | raw | **AA-adjusted** | exact-AA-matched (n=51) |
+> |---|---|---|---|
+> | bound complex | −0.038 [−0.210, +0.137] | +0.119 [−0.060, +0.293] | — |
+> | unbound monomer | −0.442 [−0.627, −0.266] | **−0.208 [−0.378, −0.050]** | **−0.012 [−0.453, +0.407]** |
+> | **interaction (= d_bind_local)** | +0.404 [+0.273, +0.548] | **+0.318 [+0.193, +0.456]** | **+0.300** |
 >
-> **Remove the partner backbone and the hotspot deficit appears.** Unlike Result 1, this survives
-> everything thrown at it. And `d_bind_local` is **not model-internal**: against 3408 experimental
-> single-mutation ΔΔG_bind values it reaches Spearman **ρ = +0.271**, *better than the standard
-> inverse-folding log-odds* (−0.251), and it **adds information beyond** it (partial
-> ρ = +0.208, p = 1.4e−34, controlling for log-odds; +0.230 controlling for burial).
+> **Roughly half the monomer deficit is amino-acid composition, and on exactly AA-matched pairs it
+> is zero.** So *"hotspots are harder to recover without the partner"* is **not** supportable. What
+> survives every control is the **interaction**: *"hotspots gain more from the partner's presence
+> than matched controls do"* — **+0.318 nats [+0.193, +0.456]** AA-adjusted.
+>
+> `d_bind_local` is also **not model-internal**: against experimental ΔΔG_bind it reaches Spearman
+> **ρ = +0.28**, beats the inverse-folding log-odds, and **adds beyond it** (partial ρ = +0.187
+> controlling for burial *and* log-odds). Honest baseline the project had not reported: **burial
+> alone (ρ = +0.369) beats every model quantity** — so all model claims must be burial-controlled.
 >
 > **The tax is real and we measured it. It is not a property of hotspot chemistry — it is a property
-> of the conditioning set.** Interface backbone geometry alone, with no target side-chain
-> information, carries ~0.4 nats of hotspot-specific signal.
+> of the conditioning set.**
 >
 > The raw hotspot/non-hotspot difference is a burial artifact, as BRIEF §5.1 warned — but it runs in
 > the direction that *flatters* hotspots, not the direction ProBID-Net reported.
@@ -559,6 +563,98 @@ sequence* rather than among hotspots.
 (log10 N_chain ≤ 2.3, i.e. the bottom ~25%), selected by smallest length first. The discrepancy on
 hard, high-N_hot complexes is **unmeasured**, and nothing here should be read as validating the
 analytic form at log10 N_hot ≈ 10.
+
+### 4.2b N_hot is a STEP FUNCTION of argmax errors — so oversampling at T = 0.1 is not a weak
+lever, it is no lever
+
+This was invisible under the pre-registered frame, which asked only *"is median log10 N_hot < 2?"*.
+Once the answer was 10.17 the quantity was filed as generic and dropped, and nobody asked **what
+function of the model** it is. It is almost entirely a restatement of per-position argmax accuracy:
+
+| predictor of log10 N_hot (147 complexes) | R² |
+|---|---:|
+| number of hotspot positions where the argmax is **not** native | **0.852** (slope **+7.11 log10 / miss**) |
+| constellation size k alone | 0.709 |
+| misses **+** k | 0.852 (**adding k buys +0.0004**) |
+
+| | n | median log10 N_hot |
+|---|---:|---:|
+| complexes with **zero** argmax misses at their hotspots | 24 | **0.000** — recovered in ~one draw |
+| complexes with ≥ 1 miss | 123 | **12.49** |
+
+Per position: argmax correct → cost **0.020 log10**; argmax wrong → **5.61 log10**
+(p_T(native) ≈ 2.5e−6). Cost is monotone in **exposure**, not burial (1.82 log10/position in the
+most-buried decile → 3.60 in the most-exposed). At T = 1 the per-position cost falls to 0.67 log10,
+so a k = 4 constellation costs ~10^2.7 — reachable.
+
+**Reading.** At T = 0.1 there is no tail to sample from. If the argmax is right you get the
+constellation almost immediately; if it is wrong at even one position, 10^7 draws will not fix it.
+**The only levers are temperature and model accuracy — not sample count.** This generalises past
+hotspots to every low-temperature design pipeline, and it means Phase 1 added no information beyond
+Phase 0's recovery rate, which is itself the finding.
+
+### 4.2c Teacher-forced recovery overstates what the sampler actually produces
+
+The direct-vs-analytic discrepancy in §4.2 was filed as a formula correction. It is better read as a
+statement about the field's reporting convention — and the §4.2 version was **confounded by
+selection** (those complexes were chosen on `log10 N_chain ≤ 2.3`, i.e. on the prediction itself, a
+winner's curse). Re-measured on 22 complexes selected **only by length** (K = 32 samples each):
+
+| | value |
+|---|---|
+| sampled recovery | **0.484** |
+| teacher-forced argmax recovery | **0.552** |
+| bias | **−0.068 [−0.077, −0.058]**, 22/22 complexes negative |
+| relative shortfall | **12.3% of reported recovery** |
+
+And the structure is the point: where the teacher-forced argmax **is** native the sampler produces it
+only 0.806 of the time (predicted 0.966, **−0.160**); where the argmax **misses** the sampler does
+**better** than predicted (**+0.046**). Sampling destroys correct confident predictions and slightly
+rescues wrong ones. Exposure bias is textbook in NLP but appears unquantified for inverse folding —
+where teacher-forced recovery and design recovery are routinely compared across papers as if
+interchangeable. *Limitation: 22 complexes, all L ≤ 244.*
+
+### 4.2d Hotspot detection lives in partner-sensitivity, and model confidence actively hurts
+
+Zero-shot detection of strict hotspots (ΔΔG > 2) among 5,372 interface positions / 141 complexes,
+paired complex-level bootstrap against the burial baseline:
+
+| score | AUROC | Δ vs burial |
+|---|---:|---|
+| burial (−rSASA) **baseline** | 0.694 [0.661, 0.725] | — |
+| `d_bind_local` alone | 0.683 [0.645, 0.722] | −0.010 [−0.065, +0.044] |
+| **burial + `d_bind_local`** | **0.744 [0.717, 0.772]** | **+0.051 [+0.018, +0.083]** |
+| log p(native \| complex) | 0.538 [0.501, 0.576] | — |
+| burial + log p(native) | 0.635 [0.605, 0.666] | **−0.058 [−0.092, −0.024]** |
+
+**Adding the model's own confidence to burial makes hotspot detection significantly worse.** Only
+the bound-minus-unbound *difference* carries signal, and it is burial-orthogonal (AUROC 0.63–0.72
+within burial quintiles, where burial itself is ≈ 0.50). Top-decile enrichment: burial 2.24×,
+combined **3.07×**.
+
+*Scope limit:* `d_bind_local` requires a residue identity, so it is a **scoring** statistic
+(in-silico alanine scanning, epitope mapping, ΔΔG ranking) — **not** a design-time geometric
+detector. A residue-agnostic KL version would be, and is not yet computed.
+
+### 4.2e The ProBID-Net sign reversal, narrowed from four candidate causes to two
+
+§2.2 says "any of model, hotspot set, or interface definition could carry the sign difference" and
+stops. Three can now be eliminated:
+
+- **Not global model quality** — non-hotspot recovery *agrees* (0.445 here vs their 0.472). The
+  entire discrepancy is the hotspot number (0.529 vs 0.334).
+- **Not the interface definition** — gap = +0.070 / +0.084 / +0.088 / +0.080 at ΔrSASA >
+  0.01/0.05/0.10/0.25; core-restricted +0.038, rim-restricted +0.001. **Never negative.**
+- **Not the hotspot threshold** — it is dose-responsive in the *wrong* direction: ΔΔG > 1 → +0.036;
+  > 2 → +0.084; > 3 → +0.104; **> 4 → +0.144**. Stronger experimental hotspots are recovered *better*.
+- **Not amino-acid composition** — direct standardisation predicts 0.409, i.e. 0.036 *below* the
+  non-hotspot rate; within-AA hotspot advantage is +0.120. (Trp is 3.6× enriched at hotspots and has
+  the worst non-hotspot recovery, 0.286 — composition runs *against* hotspots.)
+- **Not teacher-forcing vs generation** — generation-mode gap +0.151 [−0.014, +0.281] vs
+  teacher-forced +0.190 [−0.041, +0.390]; difference −0.039 [−0.153, +0.077].
+
+**What remains: the model class, or the MIX hotspot set itself.** Neither is testable on this
+fixture — but that is a real narrowing of a question this document previously left fully open.
 
 ### 4.3 The control that decides what N_hot means
 
