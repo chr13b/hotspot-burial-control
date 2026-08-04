@@ -1,0 +1,19 @@
+section,metric,value,n_pairs,n_complexes,ci_lo,ci_hi,mde,tost_equivalent,tost_lo90,tost_hi90,p_raw,p_holm,n,p,command
+multiplicity,AAMATCHED_any_interface,0.2886565323921569,51.0,38.0,-0.17284908317676942,0.7511692484284089,0.4894863565005719,False,-0.10347557643259948,0.6777502844183134,0.2198,1.0,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+multiplicity,HYDROMATCHED_any_interface,-0.002790887042328042,189.0,85.0,-0.22500107842238137,0.20775161868609265,0.26209635216888616,False,-0.1891266509515529,0.17188526318857075,0.9782,1.0,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+multiplicity,PRIMARY_loose_null,0.4200547855319148,47.0,31.0,-0.050131066535714294,0.8820494798977138,0.4407656677424957,False,0.03128701286388891,0.8096873627840135,0.076,0.532,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+multiplicity,PRIMARY_loose_null_T293_303,0.3401708190476191,42.0,28.0,-0.14703031656010446,0.8300000175943452,0.48235931917943664,False,-0.07373927642633918,0.7547301193807628,0.1832,1.0,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+multiplicity,SECONDARY_A_measured_nonhot,0.33725464542635664,129.0,58.0,0.009431194069979207,0.6518464493736047,0.35209827773311475,False,0.06891633385323513,0.6069921029090959,0.0422,0.3376,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+multiplicity,SECONDARY_B_any_interface,-0.04212257805208328,384.0,129.0,-0.22160156961901456,0.12915995401122576,0.20555920032260339,False,-0.1932873153281921,0.10425850179465931,0.6318,1.0,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+multiplicity,SENS_nbr_tol2_any_interface,-0.021243431774468073,470.0,136.0,-0.18919152346747548,0.14386326862057164,0.21243318390879504,False,-0.1618579825259373,0.11655759309550853,0.797,1.0,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+multiplicity,strict_hot2_null,0.14515841380952377,21.0,16.0,-0.4380537679382412,0.6598529606522556,0.49928616273797094,False,-0.33698322162662336,0.5953196666023808,0.548,1.0,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+memorisation,overall_recovery,0.5376489529156168,,,,,,,,,,,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+memorisation,interface_recovery,0.44691321204891143,,,,,,,,,,,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+memorisation,published_heldout_reference,0.52,,,,,,,,,,,,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+external_validation,spearman_logodds,-0.25135159539874313,,,,,,,,,,,3408.0,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+external_validation,spearman_d_bind_local,0.2714659930347521,,,,,,,,,,,3408.0,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+external_validation,partial_dbind_given_logodds,0.20784230352979677,,,,,,,,,,,3408.0,1.4286949641276392e-34,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+external_validation,partial_dbind_given_burial,0.22966780034614162,,,,,,,,,,,3408.0,4.9405291742750836e-42,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+two_by_two,gap_bound,-0.03794257225065271,,128.0,-0.21025648837483896,0.1368664594142833,,,,,,,383.0,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+two_by_two,gap_unbound,-0.44220318734723657,,128.0,-0.6265755302912436,-0.26572171500178543,,,,,,,383.0,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp
+two_by_two,interaction,0.40426061509658373,,128.0,0.2733491806404528,0.5481457515835755,,,,,,,383.0,,python3 src/hardening.py --out results/hardening --pairs-prefix results/p0_dssp

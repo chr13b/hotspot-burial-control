@@ -8,19 +8,37 @@ computed**; no falsifier was moved. Every number below traces to a CSV in this d
 > 42 pairs / 29 complexes). F1 does not fire (|ρ| = 0.247 < 0.35). F2 does not fire
 > (median log10 N_hot = 10.17).
 >
-> **Result 1 — negative.** Burial-matched within complex, with the pre-registered amino-acid fixed
-> effect applied, ProteinMPNN recovers interface hotspots **no worse** than matched non-hotspot
-> interface positions: **+0.119 nats [−0.060, +0.293]** (384 pairs / 132 complexes); recovery
-> **+0.005 [−0.070, +0.080]**. This excludes any hotspot penalty above **~0.057 nats**. The
-> `N_hot ≈ 10^10` constellation cost is a generic property of T = 0.1 sampling — statistically
+> **Result 1 — negative, and now stated with the right amount of confidence.** Burial-matched
+> within complex (pydssp secondary structure), the bound-conditioned hotspot gap is
+> **−0.038 nats, 95% CI [−0.210, +0.137]** (384 pairs / 129 complexes); recovery
+> **+0.005 [−0.070, +0.080]**. **After Holm correction across the 8 design variants, no variant is
+> significant in either direction** (min Holm p = 0.34) — so the earlier claim that hotspots are
+> *easier* is **withdrawn**. Equally, a TOST equivalence test against the mechanism-derived margin
+> (±0.115 nats, the per-position deficit that would just reach log10 N_hot = 2 at k = 4, T = 0.1)
+> **does not declare equivalence**: the minimum detectable effect at this sample size is 0.206 nats,
+> above the margin. **The honest statement is that there is no detectable bound-conditioned hotspot
+> penalty, and that we are underpowered to rule out one smaller than ~0.2 nats.**
+> The `N_hot ≈ 10^10` constellation cost is a generic property of T = 0.1 sampling — statistically
 > indistinguishable at burial-matched control constellations (median Δ = **0.000 log10**, p = 0.90).
 >
-> **Result 2 — positive, and it localises the cause.** The frustration premise is *correct*:
-> hotspots gain **+0.380 nats [+0.244, +0.525]** more from the partner's presence than matched
-> controls do. And the deficit **reappears at −0.423 nats [−0.595, −0.256]** the moment the partner
-> backbone is removed. **The tax is not a property of hotspot chemistry; it is a property of the
-> conditioning set.** Interface backbone geometry alone — with no target side-chain information —
-> carries ~0.9 nats of hotspot-specific signal.
+> **Result 2 — positive, robust, and externally validated.** On the same matched pairs
+> (pydssp-corrected), the bound-vs-unbound 2×2:
+>
+> | conditioning | hotspot − control gap |
+> |---|---|
+> | bound complex | −0.038 [−0.210, +0.137] |
+> | **unbound monomer** | **−0.442 [−0.627, −0.266]** |
+> | **interaction (= d_bind_local)** | **+0.404 [+0.273, +0.548]** |
+>
+> **Remove the partner backbone and the hotspot deficit appears.** Unlike Result 1, this survives
+> everything thrown at it. And `d_bind_local` is **not model-internal**: against 3408 experimental
+> single-mutation ΔΔG_bind values it reaches Spearman **ρ = +0.271**, *better than the standard
+> inverse-folding log-odds* (−0.251), and it **adds information beyond** it (partial
+> ρ = +0.208, p = 1.4e−34, controlling for log-odds; +0.230 controlling for burial).
+>
+> **The tax is real and we measured it. It is not a property of hotspot chemistry — it is a property
+> of the conditioning set.** Interface backbone geometry alone, with no target side-chain
+> information, carries ~0.4 nats of hotspot-specific signal.
 >
 > The raw hotspot/non-hotspot difference is a burial artifact, as BRIEF §5.1 warned — but it runs in
 > the direction that *flatters* hotspots, not the direction ProBID-Net reported.

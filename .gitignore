@@ -4,3 +4,5 @@ data/*
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+# byte-duplicate of p0_positions.csv produced by --cache re-runs
+results/p0_dssp_positions.csv

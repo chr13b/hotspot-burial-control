@@ -239,6 +239,26 @@ def relative_sasa(abs_sasa, restype):
 
 # ---------------------------------------------------- secondary structure
 
+def secondary_structure(cx, prefer_pydssp=True):
+    """3-class secondary structure (H / E / L), pydssp if available else our own.
+
+    pydssp implements the full DSSP criteria (two consecutive n-turns for helix, a
+    ladder for strand). Our fallback declares helix from a single n-turn and strand
+    from a single bridge, which over-calls both - measured against pydssp on the
+    validation structures: 1MBN H 0.87 vs 0.77, 1TEN H 0.11 (should be 0.00) and
+    E 0.36 vs 0.51. Prefer pydssp.
+    """
+    if prefer_pydssp:
+        try:
+            import pydssp
+            coord = np.stack([cx.N, cx.CA, cx.C, cx.O], axis=1)  # [L,4,3] N,CA,C,O
+            raw = pydssp.assign(coord, out_type="c3")
+            return np.array(["L" if c == "-" else c for c in raw], dtype="<U1")
+        except Exception:
+            pass
+    return kabsch_sander_ss(cx)
+
+
 def kabsch_sander_ss(cx):
     """3-class secondary structure (H / E / L) from backbone geometry.
 
