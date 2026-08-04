@@ -1,0 +1,6 @@
+# Raw inputs are downloaded, not committed (see results/FINDINGS.md for URLs)
+data/*
+!data/.gitkeep
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

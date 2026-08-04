@@ -1,0 +1,10 @@
+metric,value,command
+n_pairs,384.0,python3 src/frustration_monomer.py --out results/frustration_monomer
+n_complexes,132.0,python3 src/frustration_monomer.py --out results/frustration_monomer
+hot_mean_d_bind_local,0.7550068541337852,python3 src/frustration_monomer.py --out results/frustration_monomer
+ctl_mean_d_bind_local,0.374821639036181,python3 src/frustration_monomer.py --out results/frustration_monomer
+paired_diff,0.3801852150976042,python3 src/frustration_monomer.py --out results/frustration_monomer
+ci_lo,0.24413816632439536,python3 src/frustration_monomer.py --out results/frustration_monomer
+ci_hi,0.5247418146009475,python3 src/frustration_monomer.py --out results/frustration_monomer
+spearman_vs_pair_gap_CIRCULAR,0.38141530466922113,python3 src/frustration_monomer.py --out results/frustration_monomer
+spearman_p_CIRCULAR,9.593876058635766e-15,python3 src/frustration_monomer.py --out results/frustration_monomer

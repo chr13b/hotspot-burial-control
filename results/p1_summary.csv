@@ -1,0 +1,21 @@
+metric,value,command
+n_complexes_with_hotspots,147,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+median_n_hot_positions,4.0,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+median_log10_Nhot_brief_formula,8.936,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+median_log10_Nhot_independent_exact,10.42,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+median_log10_Nhot_chain_exact,10.171,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+IQR_log10_Nhot_chain_exact,"[2.30, 17.64]",python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+frac_complexes_log10_Nhot_chain_ge_2,0.762,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+median_positional_correlation_log10,-0.0,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+IQR_positional_correlation_log10,"[-0.76, 0.01]",python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+n_complexes_direct_sampled,18,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+n_complexes_direct_resolved,16,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+n_complexes_direct_zero_recoveries,2,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+n_complexes_marginal_check,18,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+mean_hotspot_marginal_OBSERVED,0.6362,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+mean_hotspot_marginal_PREDICTED,0.8419,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+marginal_obs_minus_pred,-0.2057,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+median_direct_minus_chain_log10,0.126,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+median_abs_direct_minus_chain_log10,0.318,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+median_direct_minus_independent_log10,0.041,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8
+median_direct_minus_BRIEFformula_log10,0.048,python3 src/p1_nhot.py --out results/p1 --direct-budget-s 2400 --direct-K 200 --direct-n-marginal 8

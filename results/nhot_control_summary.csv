@@ -1,0 +1,9 @@
+metric,value,command
+n_complexes,132.0,python3 src/nhot_control.py --out results/nhot_control
+median_k,2.0,python3 src/nhot_control.py --out results/nhot_control
+median_log10_N_hotspot,5.382829596391847,python3 src/nhot_control.py --out results/nhot_control
+median_log10_N_control,5.879933895374879,python3 src/nhot_control.py --out results/nhot_control
+mean_paired_diff_log10,0.12177055765422347,python3 src/nhot_control.py --out results/nhot_control
+ci_lo,-1.756449859117289,python3 src/nhot_control.py --out results/nhot_control
+ci_hi,2.057939342564858,python3 src/nhot_control.py --out results/nhot_control
+frac_hotspot_costs_more,0.4393939393939394,python3 src/nhot_control.py --out results/nhot_control

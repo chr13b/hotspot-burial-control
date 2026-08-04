@@ -1,0 +1,6 @@
+results/p0_positions.csv        filter=lfs diff=lfs merge=lfs -text
+results/p0_n002_positions.csv   filter=lfs diff=lfs merge=lfs -text
+results/p0_interface_resid.csv  filter=lfs diff=lfs merge=lfs -text
+results/p0_n002_interface_resid.csv filter=lfs diff=lfs merge=lfs -text
+results/frustration_monomer_positions.csv filter=lfs diff=lfs merge=lfs -text
+results/frustration_monomer_joined.csv    filter=lfs diff=lfs merge=lfs -text
