@@ -294,6 +294,38 @@ does not fire on this checkpoint**. But it excludes zero on the **positive** sid
 names `v_48_020` as primary and `v_48_002` as the robustness check, so **the pre-registered verdict
 is taken from `v_48_020`, where F0 fires.** Both readings refute; neither supports.
 
+### 2.5b Four-model replication — the single-model objection, answered
+
+Same 141 complexes, **same structurally-determined matched pairs**, four architectures spanning an
+85x parameter range and four different decoding regimes (`src/p0_multimodel.py`,
+`results/panel_summary.csv`):
+
+| tier | mpnn_vanilla 1.7M | mpnn_soluble 1.7M | **pifold 6.6M** | mif 3.4M |
+|---|---|---|---|---|
+| PRIMARY (47) | +0.420 [-0.050,+0.882] | +0.433 [-0.073,+0.919] | +0.360 [-0.234,+0.889] | **+0.556 [+0.109,+0.982]** |
+| SECONDARY-B (~380) | -0.042 [-0.222,+0.129] | -0.037 [-0.222,+0.148] | -0.171 [-0.396,+0.045] | -0.143 [-0.359,+0.076] |
+| SENS nbr+-2 (~465) | -0.021 [-0.189,+0.144] | -0.060 [-0.230,+0.107] | **-0.250 [-0.457,-0.047]** | -0.177 [-0.393,+0.025] |
+
+**PiFold is the decisive addition and not because of its size.** It is **one-shot and bit-exactly
+deterministic** (max |delta| = 0.0 across repeat calls and seeds), so it has no decoding order at
+all. The qualitative result replicating there rules out decoding-order variance **by construction**
+rather than by averaging it down - retiring CLAUDE.md's false-positive #2 outright.
+
+**How to read the disagreement, honestly.** In 3 of 4 models every tier's CI contains zero. The two
+exceptions point in **opposite directions**: MIF's PRIMARY excludes zero on the *positive* side
+(hotspots easier) while PiFold's largest tier excludes zero on the *negative* side (hotspots harder).
+Neither survives Holm correction. There is a weak systematic pattern - the two natively multichain
+models (both ProteinMPNN variants) sit at ~0.0 while the two **single-chain-trained** models
+(PiFold, MIF) sit slightly negative - which is plausibly about how models never trained on complexes
+treat an interface, and is a limitation of using them here rather than a hotspot effect.
+
+**The defensible conclusion is stronger than a single-model null:** across four architectures there
+is no consistent burial-matched hotspot penalty, and the sign of the small residual effect **flips
+depending on model and tier**.
+
+*(ESM-IF1, 142M, is the fifth panel member. It cannot run on this machine - measured 1.9 GB at
+L=400, 3.65 GB at L=1302, OOM at L=2120, against ~2 GB free - and needs ~1 GPU-hour.)*
+
 ### 2.6 The pre-registered amino-acid fixed effect (BRIEF §5.2), which tightens the bound 4x
 
 BRIEF §5.2 requires wild-type identity as a fixed effect; the pair analysis above does not apply it,

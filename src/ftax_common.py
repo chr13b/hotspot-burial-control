@@ -407,7 +407,8 @@ def mpnn_conditional_logprobs(model, cx, seeds=range(8), device="cpu"):
         orders.append(torch.argsort((torch.ones(1, cx.n) + 0.0001) * torch.abs(randn))[0])
     orders = torch.stack(orders).to(device)
 
-    max_batch = int(max(1, min(8, 6000 // max(cx.n, 1))))
+    cap = int(os.environ.get("FTAX_MAX_BATCH", "8"))
+    max_batch = int(max(1, min(cap, 6000 // max(cx.n, 1))))
     out = []
     with torch.no_grad():
         for s in range(0, len(seeds), max_batch):

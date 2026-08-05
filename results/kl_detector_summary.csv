@@ -1,0 +1,14 @@
+score,auroc,lo,hi,n,command
+burial,0.688726090228767,0.6563858172264767,0.7195169134704605,5742,python3 src/kl_detector.py --out results/kl_detector --threads 3
+kl,0.694175317021911,0.6588984726093932,0.7310403419939527,5742,python3 src/kl_detector.py --out results/kl_detector --threads 3
+jsd,0.6925099047159228,0.6572235959693884,0.7295726715850874,5742,python3 src/kl_detector.py --out results/kl_detector --threads 3
+dH,0.6098371224492694,0.5676711328257893,0.6517950001142164,5742,python3 src/kl_detector.py --out results/kl_detector --threads 3
+logp_native,0.5376657531134179,0.5011672098714929,0.5766857644577109,5742,python3 src/kl_detector.py --out results/kl_detector --threads 3
+burial + KL,0.7371426137089788,0.7094720337567183,0.7635565380488333,5742,python3 src/kl_detector.py --out results/kl_detector --threads 3
+burial + JSD,0.73549196972494,0.7081046669152319,0.7613461738132885,5742,python3 src/kl_detector.py --out results/kl_detector --threads 3
+burial + KL + nbr,0.7367415969668138,0.7099073365823141,0.7621079187395133,5742,python3 src/kl_detector.py --out results/kl_detector --threads 3
+kl_burial_quintile1,0.5961600690324669,0.5380920635139609,0.6604541548398716,1149,python3 src/kl_detector.py --out results/kl_detector --threads 3
+kl_burial_quintile2,0.6871316250919169,0.6303173051464946,0.7477406973142364,1148,python3 src/kl_detector.py --out results/kl_detector --threads 3
+kl_burial_quintile3,0.6137291280148423,0.5460512803527076,0.6722995964112964,1148,python3 src/kl_detector.py --out results/kl_detector --threads 3
+kl_burial_quintile4,0.76110884631064,0.6869192867945444,0.8388146497110164,1148,python3 src/kl_detector.py --out results/kl_detector --threads 3
+kl_burial_quintile5,0.7354148343594253,0.6265516166030406,0.8581636332040018,1149,python3 src/kl_detector.py --out results/kl_detector --threads 3

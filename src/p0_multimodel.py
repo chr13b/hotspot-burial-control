@@ -173,11 +173,18 @@ def main():
     ap.add_argument("--complexes", default="results/pair_complexes.txt")
     ap.add_argument("--pairs-prefix", default="results/p0_dssp")
     ap.add_argument("--analyse-only", action="store_true")
+    ap.add_argument("--threads", type=int, default=4,
+                    help="torch threads; lower = smaller peak RSS on a contended box")
+    ap.add_argument("--max-batch", type=int, default=2,
+                    help="cap decoding-order batch; 7.5GB box shared with other jobs")
+    ap.add_argument("--max-len", type=int, default=100000)
     a = ap.parse_args()
     cmd = "python3 " + " ".join(sys.argv)
 
     import torch
-    torch.set_num_threads(max(1, os.cpu_count() // 2))
+    torch.set_num_threads(a.threads)
+    os.environ["FTAX_MAX_BATCH"] = str(a.max_batch)
+    os.environ["FTAX_MAX_LEN"] = str(a.max_len)
     cx_ids = [l.strip() for l in open(a.complexes) if l.strip()]
     allres = []
     for name in a.models.split(","):
