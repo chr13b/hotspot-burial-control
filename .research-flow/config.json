@@ -1,0 +1,8 @@
+{
+  "code_roots": [
+    "src"
+  ],
+  "docs": [
+    "results/FINDINGS.md"
+  ]
+}

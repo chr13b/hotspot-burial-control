@@ -668,6 +668,49 @@ combined **3.07×**.
 (in-silico alanine scanning, epitope mapping, ΔΔG ranking) — **not** a design-time geometric
 detector. A residue-agnostic KL version would be, and is not yet computed.
 
+### 4.2d-bis A residue-agnostic, DESIGN-TIME detector - what it does and does not support
+
+`d_bind_local` needs the native residue, so it can only score a solved complex. The residue-agnostic
+version uses ProteinMPNN's UNCONDITIONAL (sequence-free) distributions and asks only how much the
+partner's presence moves them - pure geometry, no residue identity anywhere:
+
+    KL_i = KL( p(. | bound complex backbone)  ||  p(. | own chain-group backbone) )
+
+Full run, 5,742 interface positions / 141 complexes / 325 strict hotspots
+(`src/kl_detector.py`, `results/kl_detector_summary.csv`):
+
+| score | AUROC |
+|---|---|
+| burial (-rSASA) **baseline** | 0.689 [0.656, 0.720] |
+| KL(complex \|\| monomer) alone | 0.694 [0.659, 0.731] |
+| JSD | 0.693 [0.657, 0.730] |
+| entropy drop | 0.610 [0.568, 0.652] |
+| log p(native \| complex) | **0.538 [0.501, 0.577]** |
+| **burial + KL** | **0.737 [0.710, 0.764]** |
+
+> **A pilot on 8 complexes suggested KL *beat* burial (0.670 vs 0.621). At n = 141 it does not -
+> 0.694 vs 0.689 is a tie.** The pilot claim is withdrawn.
+
+**What survives is that KL ADDS to burial, and that is solid:** paired complex-level bootstrap of
+the difference, **ΔAUROC = +0.048 [+0.022, +0.075], P(>0) = 1.000**. It is burial-orthogonal
+(AUROC 0.60-0.76 within burial quintiles, where burial itself is ~0.50). And it again reproduces the
+project's most consistent finding: **the model's own confidence is near-useless (0.538) while its
+partner-sensitivity carries signal.**
+
+**What it does NOT yet support.** On the metric a designer actually uses - per-complex top-k
+precision, k = that complex's hotspot count - the gain is **+0.015 [-0.054, +0.083], not
+significant**, on a low base (0.205 -> 0.220 over 105 complexes). So:
+
+- ✅ *"Partner-sensitivity computed from backbone geometry alone adds burial-orthogonal information
+  about which interface positions are hotspots"* - supported.
+- ❌ *"We can detect hotspot positions from backbone geometry before any sequence exists"* - **not
+  supported at useful precision.** AUROC gain is real; per-complex ranking gain is not yet
+  demonstrated, and absolute precision (~0.22) is far from usable.
+
+The honest framing is a **diagnostic finding about what backbone conditioning encodes**, not a
+shipped detector. Making it a method needs a real baseline comparison (FoldX/Rosetta alanine
+scanning, or a published hotspot predictor) and a held-out split - neither is done.
+
 ### 4.2e The ProBID-Net sign reversal, narrowed from four candidate causes to two
 
 §2.2 says "any of model, hotspot set, or interface definition could carry the sign difference" and
