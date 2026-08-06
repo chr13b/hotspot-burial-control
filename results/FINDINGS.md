@@ -311,10 +311,21 @@ deterministic** (max |delta| = 0.0 across repeat calls and seeds), so it has no 
 all. The qualitative result replicating there rules out decoding-order variance **by construction**
 rather than by averaging it down - retiring CLAUDE.md's false-positive #2 outright.
 
-**How to read the disagreement, honestly.** In 3 of 4 models every tier's CI contains zero. The two
-exceptions point in **opposite directions**: MIF's PRIMARY excludes zero on the *positive* side
-(hotspots easier) while PiFold's largest tier excludes zero on the *negative* side (hotspots harder).
-Neither survives Holm correction. There is a weak systematic pattern - the two natively multichain
+**How to read the disagreement, honestly.** An earlier draft said "3 of 4 models have every tier's
+CI containing zero" - **that is false and is corrected here.** Tallying all 32 log-probability CIs
+(8 tiers x 4 models), **4 exclude zero, and every one of the four models contributes exactly one**:
+
+| model | tier | gap | side |
+|---|---|---|---|
+| mpnn_vanilla | SECONDARY-A | +0.337 [+0.009, +0.652] | hotspots **easier** |
+| mpnn_soluble | SECONDARY-A | +0.411 [+0.027, +0.766] | hotspots **easier** |
+| mif | PRIMARY | +0.556 [+0.109, +0.982] | hotspots **easier** |
+| pifold | SENS nbr+-2 | -0.250 [-0.457, -0.047] | hotspots **harder** |
+
+**3 of the 4 are on the side opposite the hypothesis**, and none survives Holm. That is a stronger
+statement than "inconsistent": the small residual signal, where present, mostly runs *against* a
+hotspot penalty. (Panel tiers are not Holm-corrected in the table above - applying it leaves nothing
+significant, as for the single-model analysis.) There is a weak systematic pattern - the two natively multichain
 models (both ProteinMPNN variants) sit at ~0.0 while the two **single-chain-trained** models
 (PiFold, MIF) sit slightly negative - which is plausibly about how models never trained on complexes
 treat an interface, and is a limitation of using them here rather than a hotspot effect.
@@ -344,6 +355,27 @@ This matters for §4's dismissal of N_hot: at 0.23 nats over 3 hotspots the impl
 which is *above* F2's own bar for "costly" (log10 N_hot >= 2). At the AA-adjusted 0.057 nats it is
 ~5.5, i.e. log10 ~ 0.7 — comfortably below. **The AA-adjusted bound is the one that supports the
 argument, and it is the pre-registered analysis.**
+
+### 2.5c A higher-powered estimator of the same quantity
+
+The matched design discards every hotspot with no acceptable within-complex control - 384 pairs from
+701 interface hotspots, 129 of 343 complexes. Absorbing the matching variables as covariates instead
+of enforcing them as constraints recovers all of them
+(`src/regression_estimator.py`): `logp_native ~ hotspot + complex FE + burial spline + nbr + SS +
+AA`, complex-level cluster bootstrap.
+
+| estimator | hotspots used | complexes | effect | SE | MDE @ 80% |
+|---|---:|---:|---|---:|---:|
+| matched pairs (SECONDARY-B) | 384 | 129 | -0.042 [-0.222, +0.129] | 0.090 | 0.294 |
+| **regression, loose+strict** | **701** | **147** | **+0.059 [-0.051, +0.167]** | **0.056** | **0.156** |
+| regression, strict only | 327 | 108 | +0.093 [-0.061, +0.250] | 0.078 | 0.220 |
+
+**Same conclusion, 1.6x tighter, and it answers "your matching discarded 45% of your hotspots".** It
+also nearly closes the power gap: MDE falls from 0.294 to **0.156 nats** against the
+mechanism-derived margin of 0.115 - still short of formal equivalence, but far closer.
+
+*(Note: an earlier draft quoted MDE = 0.206 nats. That was 1.96*SE, i.e. the effect detectable at
+**50%** power, mislabelled as 80%. The 80%-power figures are 2.802*SE and are used above.)*
 
 **Power, stated honestly.** The pre-registered primary is small: 42 pairs over 29 complexes, because
 it requires *both* members of a pair to carry an experimental measurement (hotspot ΔΔG > 1 and
@@ -596,34 +628,32 @@ sequence* rather than among hotspots.
 hard, high-N_hot complexes is **unmeasured**, and nothing here should be read as validating the
 analytic form at log10 N_hot ≈ 10.
 
-### 4.2b N_hot is a STEP FUNCTION of argmax errors — so oversampling at T = 0.1 is not a weak
-lever, it is no lever
+### 4.2b At T = 0.1 the sampler is a hard argmax, and the barrier is manufactured by the
+temperature exponent
 
-This was invisible under the pre-registered frame, which asked only *"is median log10 N_hot < 2?"*.
-Once the answer was 10.17 the quantity was filed as generic and dropped, and nobody asked **what
-function of the model** it is. It is almost entirely a restatement of per-position argmax accuracy:
+> **An earlier draft led with "log10 N_hot is predicted by argmax-miss count, R^2 = 0.852".
+> That R^2 is ARITHMETIC, not empirical, and the claim is withdrawn.** Since
+> `delta_i = log p_mode - log p_native`, a position whose mode IS the native residue contributes
+> **exactly** zero - verified: over 701 interface hotspots the cost when the argmax is correct has
+> mean 0.000000 and **max 0.000000**, with zero overlap against the argmax-wrong distribution. So
+> "cost is a step function of misses" is a restatement of the definition, and a referee would say so.
 
-| predictor of log10 N_hot (147 complexes) | R² |
-|---|---:|
-| number of hotspot positions where the argmax is **not** native | **0.852** (slope **+7.11 log10 / miss**) |
-| constellation size k alone | 0.709 |
-| misses **+** k | 0.852 (**adding k buys +0.0004**) |
+What is genuinely measured, and makes a better point:
 
-| | n | median log10 N_hot |
-|---|---:|---:|
-| complexes with **zero** argmax misses at their hotspots | 24 | **0.000** — recovered in ~one draw |
-| complexes with ≥ 1 miss | 123 | **12.49** |
+| quantity | value |
+|---|---|
+| hotspot argmax **miss rate** | **0.519** (364 / 701) |
+| median deficit **when** the model misses | **1.096 nats** - a factor of **3.0** in probability |
+| median log10 N_hot at **T = 0.1** | **10.17** |
+| median log10 N_hot at **T = 1** (same conditionals) | **0.894** - about 8 draws |
+| complexes with every hotspot argmax correct | **24 / 147 (16%)**, recovered in ~1 draw |
 
-Per position: argmax correct → cost **0.020 log10**; argmax wrong → **5.61 log10**
-(p_T(native) ≈ 2.5e−6). Cost is monotone in **exposure**, not burial (1.82 log10/position in the
-most-buried decile → 3.60 in the most-exposed). At T = 1 the per-position cost falls to 0.67 log10,
-so a k = 4 constellation costs ~10^2.7 — reachable.
-
-**Reading.** At T = 0.1 there is no tail to sample from. If the argmax is right you get the
-constellation almost immediately; if it is wrong at even one position, 10^7 draws will not fix it.
-**The only levers are temperature and model accuracy — not sample count.** This generalises past
-hotspots to every low-temperature design pipeline, and it means Phase 1 added no information beyond
-Phase 0's recovery rate, which is itself the finding.
+**The model's ranking error at a missed hotspot is modest — threefold. The 10x temperature
+exponent converts that into a 10^5 sampling barrier.** The consequence is a dichotomy rather than a
+gradient: 16% of complexes recover the full constellation in one draw and the remaining 84% would
+not recover it in 10^7. **Oversampling is not a weak lever, it is no lever; the levers are
+temperature and per-position ranking accuracy, and the exchange rate between them is
+`delta / (T ln 10)` log-units per position.**
 
 ### 4.2c Teacher-forced recovery overstates what the sampler actually produces
 
