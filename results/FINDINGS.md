@@ -36,10 +36,11 @@ computed**; no falsifier was moved. Every number below traces to a CSV in this d
 > survives every control is the **interaction**: *"hotspots gain more from the partner's presence
 > than matched controls do"* — **+0.318 nats [+0.193, +0.456]** AA-adjusted.
 >
-> `d_bind_local` is also **not model-internal**: against experimental ΔΔG_bind it reaches Spearman
-> **ρ = +0.28**, beats the inverse-folding log-odds, and **adds beyond it** (partial ρ = +0.187
+> `d_bind_local` is also **not model-internal**: against 3187 experimental ΔΔG_bind values
+> (`results/hardening_external.csv`) it reaches Spearman **ρ = +0.279**, beats the inverse-folding
+> log-odds (partial −0.223 given burial), and **adds beyond it** (partial **ρ = +0.176**, p ≈ 1e−22,
 > controlling for burial *and* log-odds). Honest baseline the project had not reported: **burial
-> alone (ρ = +0.369) beats every model quantity** — so all model claims must be burial-controlled.
+> alone (ρ = +0.308) beats every model quantity** — so all model claims must be burial-controlled.
 >
 > **The tax is real and we measured it. It is not a property of hotspot chemistry — it is a property
 > of the conditioning set.**
@@ -333,15 +334,32 @@ CI containing zero" - **that is false and is corrected here.** Tallying all 32 l
 
 **3 of the 4 are on the side opposite the hypothesis**, and none survives Holm. That is a stronger
 statement than "inconsistent": the small residual signal, where present, mostly runs *against* a
-hotspot penalty. (Panel tiers are not Holm-corrected in the table above - applying it leaves nothing
-significant, as for the single-model analysis.) There is a weak systematic pattern - the two natively multichain
-models (both ProteinMPNN variants) sit at ~0.0 while the two **single-chain-trained** models
-(PiFold, MIF) sit slightly negative - which is plausibly about how models never trained on complexes
-treat an interface, and is a limitation of using them here rather than a hotspot effect.
+hotspot penalty.
+
+**The single "hotspots harder" CI is junction contamination, and we show it directly.** PiFold and
+MIF have no chain representation — a complex is fed to them as one concatenated pseudo-chain, and the
+±2 mask that removes fabricated-junction residues does not remove the message-passing that propagates
+several residues further (MIF's own docstring measures a 0.13-nat residual). Excluding pairs within a
+growing radius of any chain junction (`src/junction_sensitivity.py`, `results/junction_sensitivity.csv`):
+
+| tier · model | ±2 | ±6 | ±11 |
+|---|---|---|---|
+| SENS · **pifold** | **−0.245 [−0.451, −0.042]** | **−0.223 [−0.443, −0.004]** | −0.189 [−0.408, +0.027] |
+| SENS · mif | −0.173 [−0.384, +0.037] | −0.145 [−0.380, +0.076] | −0.139 [−0.381, +0.093] |
+| SECONDARY-B · pifold | −0.168 [−0.392, +0.052] | −0.170 [−0.415, +0.070] | −0.088 [−0.335, +0.148] |
+| SENS · mpnn_vanilla | +0.011 [−0.157, +0.178] | +0.044 [−0.134, +0.226] | +0.068 [−0.116, +0.250] |
+
+**PiFold's only significant negative CI attenuates monotonically and loses significance by ±11**; the
+ProteinMPNN variants are junction-insensitive throughout. So the apparent single-chain-model
+negativity is a concatenation artifact, not a hotspot effect, and **we do not interpret it.** After
+junction exclusion the only surviving significant tiers are *positive* (MIF PRIMARY +0.509 [+0.063,
++0.960] at ±11, 43 pairs) — i.e. on the side where hotspots are easier, consistent with the
+ProteinMPNN models.
 
 **The defensible conclusion is stronger than a single-model null:** across four architectures there
-is no consistent burial-matched hotspot penalty, and the sign of the small residual effect **flips
-depending on model and tier**.
+is no consistent burial-matched hotspot penalty; where a residual survives junction exclusion it runs
+*against* the hypothesis; and the negativity that superficially favoured the hypothesis is a
+measured artifact of feeding complexes to single-chain-trained models.
 
 *(ESM-IF1, 142M, is the fifth panel member. It cannot run on this machine - measured 1.9 GB at
 L=400, 3.65 GB at L=1302, OOM at L=2120, against ~2 GB free - and needs ~1 GPU-hour.)*
@@ -510,12 +528,15 @@ set**.
 **Two controls this needs, both run:**
 
 *Burial in the unbound state.* Pairs are matched on `rSASA_complex`, not on `rSASA_free`, and
-hotspots are more exposed than their controls once the partner leaves (ΔrSASA +0.066). Restricting
-to pairs balanced in the monomer state:
+hotspots are more exposed than their controls once the partner leaves (ΔrSASA +0.066, pydssp +0.072;
+Spearman(interaction, ΔΔrSASA) = +0.319, R² = 0.10 — a real but partial confound). The **linear
+ΔΔrSASA adjustment on all pairs** (preferred over the post-hoc subsets below, which are here only as
+robustness) leaves the interaction at **+0.274 [+0.146, +0.411]**, comfortably away from zero:
 
 | subset | n pairs | monomer gap | d_bind_local |
 |---|---:|---|---|
 | all | 384 | −0.423 [−0.595, −0.256] | +0.380 [+0.244, +0.525] |
+| **linear ΔΔrSASA adjustment (all pairs)** | 384 | — | **+0.274 [+0.146, +0.411]** |
 | \|Δ rSASA_free\| ≤ 0.10 | 146 | −0.296 [−0.553, −0.048] | — |
 | \|Δ rSASA_free\| ≤ 0.05 | 78 | −0.396 [−0.733, −0.059] | — |
 | \|Δ ΔrSASA\| ≤ 0.05 | 77 | — | +0.405 [+0.177, +0.631] |
@@ -734,25 +755,38 @@ Full run, 5,742 interface positions / 141 complexes / 325 strict hotspots
 > **A pilot on 8 complexes suggested KL *beat* burial (0.670 vs 0.621). At n = 141 it does not -
 > 0.694 vs 0.689 is a tie.** The pilot claim is withdrawn.
 
-**What survives is that KL ADDS to burial, and that is solid:** paired complex-level bootstrap of
-the difference, **ΔAUROC = +0.048 [+0.022, +0.075], P(>0) = 1.000**. It is burial-orthogonal
-(AUROC 0.60-0.76 within burial quintiles, where burial itself is ~0.50). And it again reproduces the
-project's most consistent finding: **the model's own confidence is near-useless (0.538) while its
-partner-sensitivity carries signal.**
+Four paired complex-level bootstraps (`src/kl_analysis.py`, `results/kl_analysis_summary.csv`;
+same resamples for both scores, so each Δ CI is honest):
 
-**What it does NOT yet support.** On the metric a designer actually uses - per-complex top-k
-precision, k = that complex's hotspot count - the gain is **+0.015 [-0.054, +0.083], not
-significant**, on a low base (0.205 -> 0.220 over 105 complexes). So:
+| question | comparison | result |
+|---|---|---|
+| **Q1** does KL add to burial? | burial+KL vs burial | ΔAUROC **+0.048 [+0.022, +0.075]**, P(>0)=1.00 |
+| **Q2** is KL just a contact count? | KL vs inter-chain contacts | **+0.051 [+0.016, +0.085]**; and KL still adds over burial+contacts, +0.020 [+0.006, +0.033] |
+| **Q3** does removing the sequence cost anything? | burial+KL vs burial+**d_bind_local** | **+0.001 [−0.020, +0.023]** |
+| **Q4** within-complex ranking (designer metric) | burial+KL vs burial | AUROC **+0.062 [+0.036, +0.087]**; precision@k +0.017 [−0.050, +0.080] |
 
-- ✅ *"Partner-sensitivity computed from backbone geometry alone adds burial-orthogonal information
-  about which interface positions are hotspots"* - supported.
-- ❌ *"We can detect hotspot positions from backbone geometry before any sequence exists"* - **not
-  supported at useful precision.** AUROC gain is real; per-complex ranking gain is not yet
-  demonstrated, and absolute precision (~0.22) is far from usable.
+**The striking result is Q3.** `d_bind_local` is our residue-*aware* statistic — it needs the native
+sequence. KL never sees a residue. On identical positions they are statistically identical
+(burial+KL 0.737 vs burial+d_bind_local 0.736). **Removing the sequence entirely costs nothing**: the
+partner-induced shift in the *backbone-conditioned distribution* carries the same hotspot information
+as the partner-induced shift in the *native residue's* likelihood. Q2 kills the obvious "it's just a
+contact count" attack twice over. And once more, the model's own confidence is near-useless
+(log p(native|complex) AUROC 0.538) while its partner-sensitivity carries the signal.
 
-The honest framing is a **diagnostic finding about what backbone conditioning encodes**, not a
-shipped detector. Making it a method needs a real baseline comparison (FoldX/Rosetta alanine
-scanning, or a published hotspot predictor) and a held-out split - neither is done.
+**What it does NOT support, stated plainly.** The harshest designer metric — per-complex top-k
+precision — gains only **+0.017 [−0.050, +0.080], not significant** (base ~0.20). So:
+
+- ✅ *"Partner-sensitivity from backbone geometry alone adds burial-orthogonal hotspot information,
+  is not a contact-count proxy, and matches a sequence-aware statistic"* — supported.
+- ✅ *"Within-complex hotspot ranking (AUROC) improves significantly when KL is added to burial"* —
+  supported (+0.062).
+- ❌ *"A usable design-time hotspot detector"* — **not at useful precision.** Absolute precision@k
+  ~0.22 is far from deployable, and the top-k gain is not significant.
+
+The honest framing is a **diagnostic about what sequence-free backbone conditioning encodes** — and
+it is a strong one — not a shipped detector. A deployable version needs a real external baseline
+(FoldX/Rosetta alanine scan or a published hotspot predictor) and the predicted-backbone transfer
+test (§6 follow-up), neither of which is done here.
 
 ### 4.2e The ProBID-Net sign reversal, narrowed from four candidate causes to two
 
