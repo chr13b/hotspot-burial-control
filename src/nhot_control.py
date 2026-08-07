@@ -31,7 +31,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="results/nhot_control")
     ap.add_argument("--positions", default="results/p0_positions.csv")
-    ap.add_argument("--pairs", default="results/p0_pairs_SECONDARY_B_any_interface.csv")
+    ap.add_argument("--pairs", default="results/p0_dssp_pairs_SECONDARY_B_any_interface.csv")
     a = ap.parse_args()
     cmd = "python3 " + " ".join(sys.argv)
 

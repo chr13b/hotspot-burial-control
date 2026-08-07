@@ -57,7 +57,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="results/frustration_monomer")
     ap.add_argument("--positions", default="results/p0_positions.csv")
-    ap.add_argument("--pairs", default="results/p0_pairs_SECONDARY_B_any_interface.csv")
+    ap.add_argument("--pairs", default="results/p0_dssp_pairs_SECONDARY_B_any_interface.csv")
     ap.add_argument("--data-dir", default=os.path.expanduser("~/ftax/data"))
     ap.add_argument("--mpnn-weights",
                     default=os.path.expanduser("~/ftax/ProteinMPNN/vanilla_model_weights/v_48_020.pt"))

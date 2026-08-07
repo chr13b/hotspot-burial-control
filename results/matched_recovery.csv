@@ -1,9 +1,9 @@
 analysis,n_pairs,n_complexes,recovery_hotspot,recovery_control,paired_diff,lo,hi,command
-AAMATCHED_any_interface,47,37,0.574468085106383,0.3617021276595745,0.2127659574468085,0.04996951219512198,0.37777777777777777,python3 src/matched_recovery.py --out results/matched_recovery
-HYDROMATCHED_any_interface,180,94,0.4444444444444444,0.45555555555555555,-0.011111111111111112,-0.11250440140845071,0.08426966292134831,python3 src/matched_recovery.py --out results/matched_recovery
-PRIMARY_loose_null,42,29,0.40476190476190477,0.2619047619047619,0.14285714285714285,-0.05263157894736842,0.32501453488372073,python3 src/matched_recovery.py --out results/matched_recovery
-PRIMARY_loose_null_T293_303,40,28,0.375,0.25,0.125,-0.08108108108108109,0.3170731707317073,python3 src/matched_recovery.py --out results/matched_recovery
-SECONDARY_A_measured_nonhot,121,57,0.4297520661157025,0.33884297520661155,0.09090909090909091,-0.05172413793103448,0.2295112325440194,python3 src/matched_recovery.py --out results/matched_recovery
-SECONDARY_B_any_interface,384,132,0.46875,0.4635416666666667,0.005208333333333333,-0.07008322693526269,0.08018897479547926,python3 src/matched_recovery.py --out results/matched_recovery
-SENS_nbr_tol2_any_interface,479,141,0.47390396659707723,0.453027139874739,0.020876826722338204,-0.045346431119750015,0.08588957055214724,python3 src/matched_recovery.py --out results/matched_recovery
-strict_hot2_null,21,14,0.47619047619047616,0.23809523809523808,0.23809523809523808,0.0,0.4444444444444444,python3 src/matched_recovery.py --out results/matched_recovery
+AAMATCHED_any_interface,51,38,0.5490196078431373,0.43137254901960786,0.11764705882352941,-0.07547169811320754,0.3018867924528302,python3 src/matched_recovery.py --out results/matched_recovery --pairs-prefix results/p0_dssp
+HYDROMATCHED_any_interface,189,85,0.3968253968253968,0.4444444444444444,-0.047619047619047616,-0.13846153846153847,0.04081632653061224,python3 src/matched_recovery.py --out results/matched_recovery --pairs-prefix results/p0_dssp
+PRIMARY_loose_null,47,31,0.40425531914893614,0.2553191489361702,0.14893617021276595,-0.02,0.3090909090909091,python3 src/matched_recovery.py --out results/matched_recovery --pairs-prefix results/p0_dssp
+PRIMARY_loose_null_T293_303,42,28,0.35714285714285715,0.23809523809523808,0.11904761904761904,-0.046511627906976744,0.2826086956521739,python3 src/matched_recovery.py --out results/matched_recovery --pairs-prefix results/p0_dssp
+SECONDARY_A_measured_nonhot,129,58,0.4186046511627907,0.3488372093023256,0.06976744186046512,-0.05798007246376811,0.19048402255639085,python3 src/matched_recovery.py --out results/matched_recovery --pairs-prefix results/p0_dssp
+SECONDARY_B_any_interface,384,129,0.4427083333333333,0.4635416666666667,-0.020833333333333332,-0.09425369458128079,0.05215528519099946,python3 src/matched_recovery.py --out results/matched_recovery --pairs-prefix results/p0_dssp
+SENS_nbr_tol2_any_interface,470,136,0.4553191489361702,0.4531914893617021,0.002127659574468085,-0.06481636838180461,0.06794203821656049,python3 src/matched_recovery.py --out results/matched_recovery --pairs-prefix results/p0_dssp
+strict_hot2_null,21,16,0.42857142857142855,0.2857142857142857,0.14285714285714285,-0.047619047619047616,0.36363636363636365,python3 src/matched_recovery.py --out results/matched_recovery --pairs-prefix results/p0_dssp

@@ -4,9 +4,9 @@ Run 2026-08-03. Analysis choices were fixed in [`PREREG.md`](PREREG.md) **before
 computed**; no falsifier was moved. Every number below traces to a CSV in this directory.
 
 > **VERDICT: REFUTED as stated — but the mechanism is located, not merely absent.**
-> Pre-registered falsifier **F0 fires** (primary: +0.334 nats, 95% CI **[−0.132, +0.792]**,
-> 42 pairs / 29 complexes). F1 does not fire (|ρ| = 0.247 < 0.35). F2 does not fire
-> (median log10 N_hot = 10.17).
+> Pre-registered falsifier **F0 fires** (primary, pydssp SS: +0.420 nats, 95% CI **[−0.050, +0.882]**,
+> 47 pairs / 31 complexes; the higher-powered regression estimator gives +0.059 [−0.051, +0.167]).
+> F1 does not fire (|ρ| = 0.247 < 0.35). F2 does not fire (median log10 N_hot = 10.17).
 >
 > **Result 1 — negative, and now stated with the right amount of confidence.** Burial-matched
 > within complex (pydssp secondary structure), the bound-conditioned hotspot gap is
@@ -204,40 +204,45 @@ uncontrolled hotspot recovery deficit does not exist to be explained.**
 
 ### 2.3 F0 — the matched-pair result
 
-Pairs are matched within complex on rSASA_complex (±0.05), secondary-structure class, and neighbour
-count (±1), by optimal 1:1 assignment. Bootstrap resamples **complexes**, 10,000 replicates,
-seed 20260803. Matching quality on the primary: mean \|ΔrSASA\| = 0.019 (max 0.049), max \|Δnbr\| = 1,
-mean signed ΔrSASA = −0.003 (balanced). Hotspot ΔΔG median 1.81, control ΔΔG median 0.04.
+Pairs are matched within complex on rSASA_complex (±0.05), **pydssp** secondary-structure class, and
+neighbour count (±1), by optimal 1:1 assignment. Bootstrap resamples **complexes**, 10,000 replicates,
+seed 20260803. Hotspot ΔΔG median 1.81, control ΔΔG median 0.04.
 
 `d = log p(native)_hotspot − log p(native)_control`. **The hypothesis predicts d < 0.**
+**All numbers below are on the pydssp-SS pairs** (`results/p0_dssp_*`), the design named in the
+verdict; log-prob gaps from `p0_dssp_summary.csv`, recovery gaps from `matched_recovery.csv`.
 
-| Analysis | pairs | complexes | mean d | 95% CI (complex bootstrap) | order-SD | frac d<0 |
-|---|---:|---:|---:|---|---:|---:|
-| **PRIMARY** loose vs measured nulls | 42 | 29 | **+0.334** | **[−0.132, +0.792]** | 0.119 | 33.3% |
-| PRIMARY, 293–303 K | 40 | 28 | +0.316 | [−0.170, +0.815] | 0.120 | — |
-| strict (ΔΔG>2) vs nulls | 21 | 14 | +0.236 | [−0.465, +0.744] | 0.166 | — |
-| SECONDARY-A vs measured non-hotspot | 121 | 57 | +0.384 | [+0.041, +0.719] | 0.034 | 38.8% |
-| **SECONDARY-B vs any interface** (highest power) | **384** | **132** | **−0.043** | **[−0.231, +0.137]** | 0.025 | 48.7% |
-| AA-identity-matched (BRIEF §5.2) | 47 | 37 | +0.555 | [+0.151, +0.953] | 0.102 | 40.4% |
-| hydrophobicity-matched (BRIEF §5.2) | 180 | 94 | +0.050 | [−0.181, +0.275] | 0.058 | — |
-| sensitivity: neighbour tol ±2 | 479 | 141 | −0.016 | [−0.178, +0.145] | 0.023 | — |
+| Analysis | pairs | complexes | mean d (nats) | 95% CI | order-SD | recovery gap |
+|---|---:|---:|---:|---|---:|---|
+| **PRIMARY** loose vs measured nulls | 47 | 31 | **+0.420** | **[−0.050, +0.882]** | 0.079 | +0.149 [−0.020, +0.309] |
+| PRIMARY, 293–303 K | 42 | 28 | +0.340 | [−0.147, +0.830] | 0.098 | +0.119 [−0.047, +0.283] |
+| strict (ΔΔG>2) vs nulls | 21 | 16 | +0.145 | [−0.438, +0.660] | 0.174 | +0.143 [−0.048, +0.364] |
+| SECONDARY-A vs measured non-hotspot | 129 | 58 | +0.337 | [+0.009, +0.652] | 0.054 | +0.070 [−0.058, +0.190] |
+| **SECONDARY-B vs any interface** (highest power) | **384** | **129** | **−0.042** | **[−0.222, +0.129]** | 0.021 | −0.021 [−0.094, +0.052] |
+| AA-identity-matched (BRIEF §5.2) | 51 | 38 | +0.289 | [−0.173, +0.751] | 0.113 | +0.118 [−0.075, +0.302] |
+| hydrophobicity-matched (BRIEF §5.2) | 189 | 85 | −0.003 | [−0.225, +0.208] | 0.048 | −0.048 [−0.138, +0.041] |
+| sensitivity: neighbour tol ±2 | 470 | 136 | −0.021 | [−0.189, +0.144] | 0.018 | +0.002 [−0.065, +0.068] |
 
 > ### 🔴 F0 FIRES
-> The primary 95% complex-level bootstrap CI **[−0.132, +0.792] contains zero.** Per the
+> The primary 95% complex-level bootstrap CI **[−0.050, +0.882] contains zero.** Per the
 > pre-registered kill in BRIEF.md §4, the burial-matched gap is absent and the mechanism is refuted.
+> (The lower limit misses zero by 0.05 nats — state that plainly; the higher-powered regression
+> estimator in §2.5c gives a tighter, unambiguous CI.)
 
-**Not a decoding-order artifact** (BRIEF §5.6). Re-running the entire paired analysis inside each of
-8 decoding orders gives a primary estimate spanning [+0.129, +0.475], SD 0.119 — the estimate is
-~2.8× its own order-spread, and every order agrees on the sign. The order-*free* unconditional
-(backbone-only) score gives +0.382 against the conditional +0.334, and −0.090 against −0.043 for
-SECONDARY-B. The result does not depend on the autoregressive ordering.
+**Not a decoding-order artifact** (BRIEF §5.6). Re-running the whole paired analysis inside each of
+8 decoding orders gives a primary order-SD of 0.079, so the estimate is several times its own
+order-spread; the order-*free* unconditional score agrees in sign on every tier. Not a
+secondary-structure-implementation artifact either: **switching from the self-implemented
+Kabsch–Sander SS to pydssp** (agreement only 74.4%) moved PRIMARY +0.334→+0.420 and left SECONDARY-B
+−0.043→−0.042 — and **collapsed AA-matched from +0.555 [+0.151, +0.953] to +0.289 [−0.173, +0.751]**,
+which is why the "hotspots are easier" reading is withdrawn (next paragraph).
 
-**The sign matters and F0 does not cover it.** F0 as pre-registered fires only on "CI contains zero";
-it is silent on a CI that excludes zero on the *positive* side. Three variants do exactly that
-(SECONDARY-A +0.384, AA-matched +0.555, both excluding zero). Those are the *opposite* of the
-hypothesis — hotspots being **easier**, not harder. Non-parametric sign tests agree: only 33.3%
-(primary, binomial p = 0.044) and 38.8% (SECONDARY-A, p = 0.018) of pairs run in the hypothesised
-direction, i.e. significantly *more* pairs run against the hypothesis than with it. I am reporting
+**The sign, and why "hotspots are easier" is now withdrawn.** After Holm correction across the 8
+variants (§2.5d) nothing is significant in either direction. Under Kabsch SS, three variants had
+excluded zero on the positive side; under pydssp only SECONDARY-A survives, and it does not survive
+Holm. The honest statement is **no detectable difference in either direction** — see the header
+verdict. What follows below reports the sign structure for completeness, not as a claim.
+I note that
 this as refutation rather than as F0 firing on its literal wording; **the falsifier has not been
 moved**, only its unhandled sign case named.
 
@@ -269,7 +274,11 @@ CIs exclude zero both show a hotspot *advantage*.
 ### 2.5 Robustness replicate on the σ = 0.02 checkpoint (pre-registered in PREREG §5)
 
 `v_48_002.pt` re-run over the 141 complexes that contribute matched pairs
-(`results/p0_n002_*`; RedNet's SKEMPI table used ProteinMPNN at σ = 0.02, hence this check):
+(`results/p0_n002_*`; RedNet's SKEMPI table used ProteinMPNN at σ = 0.02, hence this check).
+**Both columns are on the original Kabsch-SS pairs** — this is a checkpoint comparison, so what
+matters is that both share the same pairs; the pydssp re-run (§2.3) was not repeated for the
+σ = 0.02 checkpoint. The v_48_020 column here therefore shows the Kabsch numbers, not the pydssp
+headline numbers:
 
 | Analysis | pairs | v_48_020 (primary) | v_48_002 (robustness) |
 |---|---:|---|---|
@@ -344,17 +353,21 @@ and the matched pools are badly unbalanced in composition (only 6.5% of SECONDAR
 residue type; hotspots skew Y/R/K/E/L/F, controls S/G/A/V). Residualising `logp_native` on native
 amino-acid dummies across all 13,412 interface positions and re-forming the same pairs:
 
+Pydssp pairs:
+
 | Design | raw gap | **AA-identity-adjusted** |
 |---|---|---|
-| **SECONDARY-B** (384) | −0.043 [−0.231, +0.137] | **+0.119 [−0.060, +0.293]** |
-| neighbour tol ±2 (479) | −0.016 [−0.178, +0.145] | +0.153 [−0.004, +0.310] |
-| PRIMARY (42) | +0.334 [−0.132, +0.792] | +0.370 [−0.065, +0.782] |
+| **SECONDARY-B** (384) | −0.042 [−0.222, +0.129] | **+0.109 [−0.068, +0.276]** |
+| neighbour tol ±2 (470) | −0.021 [−0.189, +0.144] | +0.133 [−0.032, +0.293] |
+| PRIMARY (47) | +0.420 [−0.050, +0.882] | +0.454 [+0.007, +0.894] |
 
-**The headline equivalence bound tightens from "no hotspot penalty > 0.23 nats" to "> 0.057 nats".**
-This matters for §4's dismissal of N_hot: at 0.23 nats over 3 hotspots the implied cost is ~10^3,
-which is *above* F2's own bar for "costly" (log10 N_hot >= 2). At the AA-adjusted 0.057 nats it is
-~5.5, i.e. log10 ~ 0.7 — comfortably below. **The AA-adjusted bound is the one that supports the
-argument, and it is the pre-registered analysis.**
+At fixed residue type the point estimate moves ~0.15 nats toward "hotspots easier", though every CI
+still spans zero. **Caveat, correcting an earlier draft:** I previously wrote that this "tightens the
+equivalence bound to 0.057 nats". That was wrong — a CI half-width is not an equivalence bound, and a
+formal TOST does **not** establish equivalence at this sample size (§2.5c/§2.5d). The correct
+statement is that AA adjustment does not change the sign conclusion and mildly favours the
+"no penalty / if anything easier" reading. The power question is handled properly by the regression
+estimator in §2.5c (MDE 0.156 nats), not here.
 
 ### 2.5c A higher-powered estimator of the same quantity
 
@@ -815,7 +828,7 @@ named here rather than run, because no post-cutoff SKEMPI-scale ΔΔG fixture ex
 
 | Falsifier | Pre-registered condition | Measured | Fires? |
 |---|---|---|:--:|
-| **F0** | burial-matched gap 95% complex-bootstrap CI contains zero | +0.334, CI **[−0.132, +0.792]** | 🔴 **YES** |
+| **F0** | burial-matched gap 95% complex-bootstrap CI contains zero | +0.420, CI **[−0.050, +0.882]** (pydssp); regression +0.059 [−0.051, +0.167] | 🔴 **YES** |
 | **F1** | burial-controlled partial Spearman \|ρ\| ≥ 0.35 | \|ρ\| = **0.247** | 🟢 no |
 | **F2** | median log10 N_hot < 2 **and** F0 CI contains zero | median log10 N_hot = **10.17** (clause 1 false) | 🟢 no |
 

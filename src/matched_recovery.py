@@ -39,6 +39,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="results/matched_recovery")
     ap.add_argument("--positions", default="results/p0_positions.csv")
+    ap.add_argument("--pairs-prefix", default="results/p0_dssp")
     a = ap.parse_args()
     cmd = "python3 " + " ".join(sys.argv)
 
@@ -48,8 +49,8 @@ def main():
     key = pos.set_index(["complex_id", "chain", "resnum"])["hit"]
 
     rows = []
-    for f in sorted(glob.glob("results/p0_pairs_*.csv")):
-        tag = os.path.basename(f)[len("p0_pairs_"):-4]
+    for f in sorted(glob.glob(f"{a.pairs_prefix}_pairs_*.csv")):
+        tag = os.path.basename(f).split("_pairs_")[1][:-4]
         pr = pd.read_csv(f)
         recs = []
         for _, r in pr.iterrows():
