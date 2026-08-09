@@ -1,78 +1,76 @@
-# factorization-tax
+# hotspot-burial-control
 
-Can the staged **backbone → sequence** pipeline reach an interface hotspot at all?
+**Are inverse-folding models "blind" at protein–protein interface hotspots? We pre-registered the
+test, ran it across five architectures, and the answer is: not where the field looked.**
 
-Inverse-folding models maximise `p(sequence | backbone)` with **no binding-energy term**. Hotspots
-are frequently *frustrated* — buried polars, strained rotamers, entropically expensive aromatics
-that buy affinity rather than stability. So at exactly the positions that make a binder a binder,
-the model's mode is the wrong residue and the right one is in the tail:
+This began as *the factorization tax* — the hypothesis that staged backbone→sequence design cannot
+reach interface hotspots because the model's mode is the wrong residue there, so the constellation
+cost `N_hot = exp(Σδ_i/T)` explodes. We pre-registered falsifiers (BRIEF.md §4), then measured. The
+central hypothesis was **refuted on the bound backbone** — and the measurement located where the
+effect actually lives.
 
-```
-N_hot = exp( Σ_i δ_i / T )
-```
+## What we found
 
-If `N_hot` is 10⁴–10⁸, no amount of oversampling recovers native-grade interfaces, and **every
-downstream filter is sorting among designs that never contained the chemistry.**
+**Read [`results/FINDINGS.md`](results/FINDINGS.md) for the full account with every number traced to
+a CSV.** The short version:
 
-**Phase 0 is inference-only and runs on CPU.** No GPU, no training.
+**Negative core — three proposed mechanisms, each measured, none survives on a fixed backbone:**
+- **No burial-matched hotspot recovery penalty.** Matched within complex on rSASA/SS(pydssp)/packing,
+  across **five architectures** (ProteinMPNN vanilla+soluble, ESM-IF1 142M, PiFold one-shot, MIF) —
+  every PRIMARY CI contains zero. The raw ProBID-Net-style gap is a **burial artifact**, and it runs
+  in the direction that *flatters* hotspots. (`F0` fires.)
+- **`N_hot ≈ 10^10` is a generic property of T = 0.1 sampling**, statistically indistinguishable at
+  burial-matched *control* constellations (median Δ = 0.000 log10, p = 0.90) — not a hotspot tax.
+- **Commitment ordering is inert.** Deciding true hotspots first changes hotspot recovery by −0.003
+  (p = 0.89) — a pre-registered null that refines the schedule mechanism to coupled models only.
 
-## Start here
+**Positive core — the tax is real, but it lives in the conditioning set, not in hotspot chemistry:**
+- **The interaction.** Hotspots gain **+0.27 nats [+0.15, +0.41]** more from the partner's presence
+  than matched controls do (ΔΔrSASA-adjusted) — the frustration signature, measured and externally
+  validated against experimental ΔΔG_bind (ρ = +0.28, adds beyond burial + log-odds).
+- **A sequence-free signal.** `KL(p(·|complex backbone) ‖ p(·|monomer backbone))`, computed with **no
+  residue identity**, carries the same hotspot information as the sequence-aware statistic
+  (removing the sequence costs nothing: ΔAUROC +0.001 [−0.020, +0.023]) and is not a contact-count
+  proxy. A diagnostic about what backbone conditioning encodes — not yet a deployable detector.
+
+## Layout
 
 | File | What it is |
 |---|---|
-| **[BRIEF.md](BRIEF.md)** | Full brief — mechanism, the published result this builds on, the published choice it contradicts, three phases, five falsifiers, six pitfalls. Self-contained. |
-| **[HANDOFF.md](HANDOFF.md)** | Paste-ready prompt for a fresh session. |
-| **[CLAUDE.md](CLAUDE.md)** | Project rules and machine constraints. |
-| `notes/lineage-provenance.md` | Where this came from, across three ideation passes. |
+| **[results/FINDINGS.md](results/FINDINGS.md)** | The paper-in-progress. Every claim, every number, every correction, traced to a CSV. |
+| **[results/PREREG.md](results/PREREG.md)** | Analysis choices fixed before any number was computed. |
+| **[BRIEF.md](BRIEF.md)** | Original self-contained brief (the hypothesis, since refined). |
+| **[notes/SHERLOCK_HANDOFF.md](notes/SHERLOCK_HANDOFF.md)** | Paste-ready prompt for the two GPU experiments (predicted-backbone transfer + coupled-model ordering). |
+| `src/` | One script per analysis; each takes `--out`, writes a CSV with its exact command, prints a one-line summary. |
+| `src/models/`, `src/decoding/` | Five-model panel wrappers; the tested ProteinMPNN steering layer. |
+| `results/*.csv` | All raw outputs. Large position tables via git-lfs. |
 
-## Quickstart
+## Reproduce
 
 ```bash
-cd /mnt/c/Users/chris/Desktop/python_projects/personal_projects/factorization-tax
-claude          # then paste the block from HANDOFF.md
+git lfs install && git lfs pull
+python3 src/validate.py                        # positive-control gate — every path
+python3 src/p0_burial_matched.py --out results/p0
+python3 src/patch_ss.py --positions results/p0_positions.csv    # pydssp SS
+python3 src/p0_burial_matched.py --out results/p0_dssp --cache results/p0_positions.csv
+python3 src/regression_estimator.py --out results/regression   # higher-powered F0
+python3 src/p1_nhot.py --out results/p1
+python3 src/nhot_control.py --out results/nhot_control          # the control that decides what N_hot means
+python3 src/frustration_monomer.py --out results/frustration_monomer
+python3 src/hardening.py --out results/hardening                # TOST, Holm, external validation
+python3 src/kl_detector.py --out results/kl_detector            # sequence-free detector
+python3 src/kl_analysis.py --out results/kl_analysis            # paired AUROC, contact baseline, head-to-head
+python3 src/p0_multimodel.py --models pifold,mpnn_soluble,mif,esmif --out results/panel
+python3 src/junction_sensitivity.py --out results/junction_sensitivity
+python3 src/decoding/p2_ordering.py --stage 1 --Lmax 400 --K 100 --out results/p2_ordering
 ```
-
-## Phases
-
-| Phase | Needs | Cost |
-|---|---|---|
-| **0 — the burial-matched control** *decisive* | Laptop, SKEMPI + ProteinMPNN | **hours** |
-| **1 — `N_hot`, the constellation cost** | Laptop, CPU | hours |
-| **2 — commitment ordering** | **CUDA GPU → Sherlock** | only if Phase 0 passes |
-
-## The one number this project exists to correct
-
-**ProBID-Net** (*Chem. Sci.* 2024) published sequence recovery of **0.334 at hotspots vs 0.472 at
-non-hotspots** — and **did not control for burial.** They attributed the gap to conformational
-dynamics.
-
-Buried positions are where inverse folding is **most confident**, so an uncontrolled comparison
-*hides* the effect rather than inventing it. The burial-matched control is both this project's
-strongest contribution and its cheapest experiment.
-
-## Pre-registered falsifiers
-
-Fixed before any data was touched. They do not move.
-
-- **F0** — burial-matched hotspot-minus-control gap CI contains zero. *ProBID-Net's headline is a
-  burial artifact.* **Publishable either way — the main reason to run this first.**
-- **F1** — burial-controlled partial Spearman between log-odds and ΔΔG_bind ≥ 0.35. *The model is
-  not blind to binding energy.*
-- **F2** — median log₁₀ `N_hot` < 2 and the matched gap CI contains zero. *The factorisation is not
-  costly where claimed.*
-- **F3** — `t*_seq ≤ t*_str + 0.05`. *Joint models already decide sequence first; diagnosis wrong.*
-- **F4** — the discrete-rate sweep moves hotspot-restricted recovery by less than seed-to-seed SD.
-  *The knob is inert.*
-
-## It contradicts a published choice
-
-MultiFlow uses confidence-ordered ("purity") unmasking and **reports it as beneficial.** This work
-predicts it is harmful at hotspots, because it unmasks easy stability-determined positions first and
-leaves the frustrated ones to be decided last against a backbone that can no longer move. ML venues
-reward overturning a specific choice with a measurement — and the burden of proof is ours.
 
 ## Status
 
-Not started. **Step 0 is to fetch bioRxiv `10.64898/2026.05.09.722041`** ("Redesign selective protein
-binders using contrastive decoding") — a prior sweep read metadata only, and it may contain this
-analysis.
+Phases 0 and 1 complete on CPU across five architectures; all falsifiers evaluated; write-up in
+`results/FINDINGS.md`. **Next: two GPU experiments on Sherlock** (`notes/SHERLOCK_HANDOFF.md`) —
+predicted-backbone transfer (validity of the KL signal) and commitment ordering on a coupled
+co-design model with a binding readout (the path from a TMLR-grade to an ICLR-grade contribution).
+
+Data: SKEMPI 2.0 + its PDB bundle (downloaded, not committed — see FINDINGS for URLs). Models:
+public ProteinMPNN / ESM-IF1 / PiFold / MIF checkpoints.

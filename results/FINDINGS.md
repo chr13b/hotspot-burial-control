@@ -321,6 +321,26 @@ deterministic** (max |delta| = 0.0 across repeat calls and seeds), so it has no 
 all. The qualitative result replicating there rules out decoding-order variance **by construction**
 rather than by averaging it down - retiring CLAUDE.md's false-positive #2 outright.
 
+**Fifth model — ESM-IF1 (142M GVP-transformer), which makes the trustworthy arm n = 2 architectures.**
+The four models above have a hidden weakness: the only *natively multichain* ones are the two
+ProteinMPNN weight sets — i.e. one architecture. ESM-IF1 is a genuinely different architecture
+(causal GVP-transformer, 85× the parameters) *and* handles complexes natively via its multichain
+protocol. It was run on the 94 pair complexes under 600 residues (a hard local RAM ceiling; the other
+models restricted to the **same 94-complex subset** for a matched comparison,
+`results/panel_esmif_positions.csv`):
+
+| tier (94-complex subset) | mpnn_vanilla | mpnn_soluble | esmif | pifold | mif |
+|---|---|---|---|---|---|
+| PRIMARY (28) | +0.27 [−0.34,+0.85] | +0.39 [−0.32,+1.03] | +0.51 [−0.01,+0.92] | +0.28 [−0.47,+0.84] | +0.45 [−0.07,+0.98] |
+| SECONDARY-B (239) | −0.04 [−0.28,+0.20] | −0.02 [−0.27,+0.22] | −0.13 [−0.37,+0.11] | −0.25 [−0.54,+0.03] | −0.25 [−0.52,+0.04] |
+| SENS ±2 (298) | +0.00 [−0.21,+0.22] | −0.00 [−0.22,+0.22] | −0.13 [−0.35,+0.10] | −0.29 [−0.56,−0.01]* | −0.22 [−0.49,+0.04] |
+
+**All five architectures agree: every PRIMARY CI contains zero, every SECONDARY-B CI contains zero.**
+The two natively-multichain architectures (ProteinMPNN −0.04, ESM-IF −0.13) both sit near zero; the
+two single-chain-trained models sit more negative for the junction reason above (the only surviving
+CI, PiFold SENS, is the one that dies under junction exclusion). The single-model objection is
+answered across five architectures spanning 1.7M–142M parameters and four decoding regimes.
+
 **How to read the disagreement, honestly.** An earlier draft said "3 of 4 models have every tier's
 CI containing zero" - **that is false and is corrected here.** Tallying all 32 log-probability CIs
 (8 tiers x 4 models), **4 exclude zero, and every one of the four models contributes exactly one**:
@@ -830,6 +850,46 @@ autoregressive sampler to reproduce *any* specific multi-position constellation.
 the positions that make a binder a binder.** BRIEF.md §2.2's rhetorical punch — "no amount of
 oversampling recovers native-grade interfaces" — survives as a statement about T = 0.1 sampling in
 general, and dissolves as a statement about hotspots.
+
+### 4.4 Commitment ordering is inert in fixed-backbone inverse folding (a pre-registered null)
+
+BRIEF §2.3 proposes that the staged pipeline inherits the tax through its *schedule*: if the discrete
+sequence commits after the structure, hotspots are decided against a backbone that can no longer move.
+For a coupled discrete–continuous flow that is testable via commitment times (Phase 2, GPU). For
+ProteinMPNN — a **fixed-backbone** autoregressive model — the analogous knob is the **decoding order**,
+and the released sampler accepts an injected order with no source change (the randn-encoding trick,
+verified bit-exact against `model.sample()`; `src/decoding/`). So we can ask the ceiling question on
+this laptop: **does deciding the true SKEMPI hotspots first change anything?**
+
+Pre-registered metric (Fable design, `src/decoding/p2_ordering.py`): burial-matched hotspot-restricted
+recovery, difference-in-differences vs the released random-order sampler, tier-randomised orders
+(fresh permutation within each tier per sample), K = 100, 54 complexes at L ≤ 400, 131 hotspots,
+complex-level bootstrap. Kill **K1**: if the *oracle* order (true hotspots first) does not beat
+default, stop — no detector-driven order can.
+
+> **K1 FIRES.** Deciding true hotspots first moves hotspot recovery by **−0.003 (paired, p = 0.89)**,
+> DiD **−0.002, 95% CI [−0.039, +0.036]**, with overall recovery unchanged (+0.0001). A well-powered
+> null: at K = 100 over 54 complexes the ceiling intervention does *nothing*.
+
+(An n = 6, K = 32 pilot had suggested +0.042; that was small-sample noise, and the powered run
+retires it — exactly the reason the ceiling was pre-registered as the first gate.)
+
+**This is a real finding, not a failed experiment.** In a fixed-backbone autoregressive inverse-folding
+model, **commitment order is inert** for hotspot recovery — the backbone fully determines which residue
+each position wants, and the order of filling does not change it. Three consequences:
+
+1. It **refines BRIEF §2.3**: the schedule mechanism cannot operate through autoregressive decoding
+   order alone. Any ordering effect must live in a model with a **coupled continuous channel** — which
+   is precisely what the Sherlock experiment (`notes/SHERLOCK_HANDOFF.md`, Experiment B) tests, and
+   this null makes that experiment the *sole* remaining home for the mechanism rather than a
+   nice-to-have.
+2. It **retroactively strengthens Phase 0**: decoding order is not just averaged over (§2.3) but shown
+   inert for the outcome, so it cannot be a hidden confound anywhere in the matched-pair analysis.
+3. Combined with §2 (no bound-backbone chemistry deficit) and §4.3 (N_hot is a generic
+   low-temperature cost, not a hotspot tax), **three distinct mechanisms proposed for a hotspot design
+   gap — frustration-blindness, constellation cost, and commitment ordering — are each measured, and
+   none survives on a fixed backbone.** That is the coherent negative core of the paper; the positive
+   core is the conditioning-set interaction (§3.2) and the sequence-free KL diagnostic (§4.2d-bis).
 
 ---
 
