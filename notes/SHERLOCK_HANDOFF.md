@@ -1,4 +1,9 @@
-# Sherlock handoff — the two GPU experiments that decide TMLR vs ICLR
+# Sherlock handoff — the GPU experiments that decide TMLR vs ICLR
+
+> **Experiments A and B are DONE** (`results/FINDINGS_expA.md`, `results/FINDINGS_expB.md`).
+> **Experiment C — the decisive de-novo backbone test — is in
+> [`SHERLOCK_HANDOFF_C.md`](SHERLOCK_HANDOFF_C.md); run that next (~20 GPU-h).**
+
 
 Paste the block below into a fresh Claude Code session on Sherlock, in a clone of
 `github.com/chr13b/hotspot-burial-control`. Everything the CPU could do is done and pushed;
