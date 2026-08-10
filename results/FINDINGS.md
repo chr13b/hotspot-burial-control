@@ -45,6 +45,19 @@ computed**; no falsifier was moved. Every number below traces to a CSV in this d
 > **The tax is real and we measured it. It is not a property of hotspot chemistry — it is a property
 > of the conditioning set.**
 >
+> **CONFIRMED on predicted backbones (Sherlock, [`FINDINGS_expA.md`](FINDINGS_expA.md)).** The
+> monomer/interaction result above predicts the tax should appear whenever the backbone is not native.
+> It does. Scoring the **same crystal-matched hot/control pairs** on OpenFold3-predicted backbones
+> (templates OFF, no coordinate leakage; crystal control reproduces to 4e-16): the burial-matched
+> SECONDARY-B gap goes from **−0.042 (crystal, no deficit)** to **−0.191 [−0.373, −0.004]
+> (predicted)** — a paired shift of **−0.154 [−0.279, −0.028]** that excludes zero — and it is **as
+> large at high prediction confidence as at low**, ruling out a backbone-error artifact. The
+> sequence-free KL detector not only survives but **strengthens** on predicted backbones
+> (ΔAUROC +0.062 [+0.034, +0.092] vs +0.048 on crystals), and is *more* robust to backbone noise than
+> burial. **The field benchmarks hotspot recovery on native crystal backbones, which hide the effect;
+> on the predicted backbones designers actually use, the tax appears — and a sequence-free signal
+> predicts where.** This is the project's central positive result.
+>
 > The raw hotspot/non-hotspot difference is a burial artifact, as BRIEF §5.1 warned — but it runs in
 > the direction that *flatters* hotspots, not the direction ProBID-Net reported.
 
