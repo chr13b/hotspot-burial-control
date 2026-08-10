@@ -1,0 +1,56 @@
+complex_id,input_pdb,contig,binder_out_chains,Lb,Lt
+1A22_A_B,/scratch/users/cbertsch/expC/inputs/1A22_A_B_input.pdb,192-192/0 B1-180,A,192,180
+1AK4_A_D,/scratch/users/cbertsch/expC/inputs/1AK4_A_D_input.pdb,145-145/0 B1-165,A,145,165
+1BP3_A_B,/scratch/users/cbertsch/expC/inputs/1BP3_A_B_input.pdb,186-186/0 B1-197,A,186,197
+1BRS_A_D,/scratch/users/cbertsch/expC/inputs/1BRS_A_D_input.pdb,87-87/0 B1-108,A,87,108
+1C1Y_A_B,/scratch/users/cbertsch/expC/inputs/1C1Y_A_B_input.pdb,77-77/0 B1-167,A,77,167
+1CBW_FGH_I,/scratch/users/cbertsch/expC/inputs/1CBW_FGH_I_input.pdb,11-11/0 131-131/0 97-97/0 D1-58,ABC,239,58
+1CHO_EFG_I,/scratch/users/cbertsch/expC/inputs/1CHO_EFG_I_input.pdb,10-10/0 131-131/0 97-97/0 D1-53,ABC,238,53
+1E50_A_B,/scratch/users/cbertsch/expC/inputs/1E50_A_B_input.pdb,115-115/0 B1-130,A,115,130
+1EMV_A_B,/scratch/users/cbertsch/expC/inputs/1EMV_A_B_input.pdb,83-83/0 B1-131,A,83,131
+1FC2_C_D,/scratch/users/cbertsch/expC/inputs/1FC2_C_D_input.pdb,43-43/0 B1-206,A,43,206
+1FCC_A_C,/scratch/users/cbertsch/expC/inputs/1FCC_A_C_input.pdb,56-56/0 B1-206,A,56,206
+1FFW_A_B,/scratch/users/cbertsch/expC/inputs/1FFW_A_B_input.pdb,68-68/0 B1-128,A,68,128
+1GCQ_AB_C,/scratch/users/cbertsch/expC/inputs/1GCQ_AB_C_input.pdb,56-56/0 57-57/0 C1-69,AB,113,69
+1GUA_A_B,/scratch/users/cbertsch/expC/inputs/1GUA_A_B_input.pdb,167-167/0 B1-76,A,167,76
+1H9D_A_B,/scratch/users/cbertsch/expC/inputs/1H9D_A_B_input.pdb,125-125/0 B1-125,A,125,125
+1IAR_A_B,/scratch/users/cbertsch/expC/inputs/1IAR_A_B_input.pdb,129-129/0 B1-188,A,129,188
+1K8R_A_B,/scratch/users/cbertsch/expC/inputs/1K8R_A_B_input.pdb,166-166/0 B1-82,A,166,82
+1KTZ_A_B,/scratch/users/cbertsch/expC/inputs/1KTZ_A_B_input.pdb,82-82/0 B1-106,A,82,106
+1LFD_A_B,/scratch/users/cbertsch/expC/inputs/1LFD_A_B_input.pdb,87-87/0 B1-167,A,87,167
+1PPF_E_I,/scratch/users/cbertsch/expC/inputs/1PPF_E_I_input.pdb,218-218/0 B1-56,A,218,56
+1R0R_E_I,/scratch/users/cbertsch/expC/inputs/1R0R_E_I_input.pdb,274-274/0 B1-51,A,274,51
+1REW_AB_C,/scratch/users/cbertsch/expC/inputs/1REW_AB_C_input.pdb,103-103/0 103-103/0 C1-86,AB,206,86
+1S1Q_A_B,/scratch/users/cbertsch/expC/inputs/1S1Q_A_B_input.pdb,141-141/0 B1-72,A,141,72
+1SMF_E_I,/scratch/users/cbertsch/expC/inputs/1SMF_E_I_input.pdb,223-223/0 B1-9,A,223,9
+1TM1_E_I,/scratch/users/cbertsch/expC/inputs/1TM1_E_I_input.pdb,281-281/0 B1-64,A,281,64
+1UUZ_A_D,/scratch/users/cbertsch/expC/inputs/1UUZ_A_D_input.pdb,129-129/0 B1-129,A,129,129
+1VFB_AB_C,/scratch/users/cbertsch/expC/inputs/1VFB_AB_C_input.pdb,129-129/0 B1-107/0 C1-116,A,129,223
+2A9K_A_B,/scratch/users/cbertsch/expC/inputs/2A9K_A_B_input.pdb,207-207/0 B1-170,A,207,170
+2AW2_A_B,/scratch/users/cbertsch/expC/inputs/2AW2_A_B_input.pdb,110-110/0 B1-100,A,110,100
+2FTL_E_I,/scratch/users/cbertsch/expC/inputs/2FTL_E_I_input.pdb,222-222/0 B1-57,A,222,57
+2GOX_A_B,/scratch/users/cbertsch/expC/inputs/2GOX_A_B_input.pdb,65-65/0 B1-297,A,65,297
+2J0T_A_D,/scratch/users/cbertsch/expC/inputs/2J0T_A_D_input.pdb,124-124/0 B1-161,A,124,161
+2WPT_A_B,/scratch/users/cbertsch/expC/inputs/2WPT_A_B_input.pdb,82-82/0 B1-113,A,82,113
+3BK3_A_C,/scratch/users/cbertsch/expC/inputs/3BK3_A_C_input.pdb,67-67/0 B1-104,A,67,104
+3BT1_A_U,/scratch/users/cbertsch/expC/inputs/3BT1_A_U_input.pdb,273-273/0 B1-125,A,273,125
+3EQS_A_B,/scratch/users/cbertsch/expC/inputs/3EQS_A_B_input.pdb,84-84/0 B1-11,A,84,11
+3EQY_A_C,/scratch/users/cbertsch/expC/inputs/3EQY_A_C_input.pdb,84-84/0 B1-12,A,84,12
+3KUD_A_B,/scratch/users/cbertsch/expC/inputs/3KUD_A_B_input.pdb,76-76/0 B1-165,A,76,165
+3LB6_A_C,/scratch/users/cbertsch/expC/inputs/3LB6_A_C_input.pdb,109-109/0 B1-252,A,109,252
+3MZG_A_B,/scratch/users/cbertsch/expC/inputs/3MZG_A_B_input.pdb,206-206/0 B1-186,A,206,186
+3Q8D_A_E,/scratch/users/cbertsch/expC/inputs/3Q8D_A_E_input.pdb,231-231/0 B1-3,A,231,3
+3S9D_A_B,/scratch/users/cbertsch/expC/inputs/3S9D_A_B_input.pdb,127-127/0 B1-180,A,127,180
+3SE4_B_C,/scratch/users/cbertsch/expC/inputs/3SE4_B_C_input.pdb,143-143/0 B1-190,A,143,190
+3SF4_A_D,/scratch/users/cbertsch/expC/inputs/3SF4_A_D_input.pdb,355-355/0 B1-45,A,355,45
+3SGB_E_I,/scratch/users/cbertsch/expC/inputs/3SGB_E_I_input.pdb,185-185/0 B1-50,A,185,50
+4BFI_A_B,/scratch/users/cbertsch/expC/inputs/4BFI_A_B_input.pdb,202-202/0 B1-192,A,202,192
+4CPA_A_I,/scratch/users/cbertsch/expC/inputs/4CPA_A_I_input.pdb,308-308/0 B1-37,A,308,37
+4G0N_A_B,/scratch/users/cbertsch/expC/inputs/4G0N_A_B_input.pdb,164-164/0 B1-78,A,164,78
+4HFK_A_BD,/scratch/users/cbertsch/expC/inputs/4HFK_A_BD_input.pdb,98-98/0 97-97/0 C1-160,AB,195,160
+4HRN_A_D,/scratch/users/cbertsch/expC/inputs/4HRN_A_D_input.pdb,70-70/0 B1-121,A,70,121
+4J2L_A_CD,/scratch/users/cbertsch/expC/inputs/4J2L_A_CD_input.pdb,121-121/0 B1-25/0 C1-25,A,121,50
+4RS1_A_B,/scratch/users/cbertsch/expC/inputs/4RS1_A_B_input.pdb,267-267/0 B1-105,A,267,105
+5K39_A_B,/scratch/users/cbertsch/expC/inputs/5K39_A_B_input.pdb,167-167/0 B1-153,A,167,153
+5M2O_A_B,/scratch/users/cbertsch/expC/inputs/5M2O_A_B_input.pdb,74-74/0 B1-137,A,74,137
+5TAR_A_B,/scratch/users/cbertsch/expC/inputs/5TAR_A_B_input.pdb,148-148/0 B1-184,A,148,184
