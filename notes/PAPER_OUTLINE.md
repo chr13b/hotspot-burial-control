@@ -21,10 +21,12 @@ elsewhere. We show, pre-registered across five inverse-folding architectures on 
 solvent exposure, secondary structure and packing, hotspots are recovered no worse than non-hotspot
 interface positions. But native crystal backbones are carved by the very side chains being predicted.
 On **OpenFold3-predicted** backbones of the same complexes the burial-matched deficit **appears**
-(−0.19 nats, paired Δ −0.15), as large where the prediction is accurate as where it is not; on
-partial-diffusion **generative** backbones it grows monotonically with distance from native
-[Exp C]; and a **sequence-free** signal — the partner-induced shift in the model's backbone-only
-distribution — predicts where, and strengthens on exactly these non-native backbones. The tax is
+(−0.19 nats, paired Δ −0.15), as large where the prediction is accurate as where it is not. A
+**sequence-free** signal — the partner-induced shift in the model's backbone-only distribution —
+predicts where, strengthens on the predicted backbones, and **transfers to RFdiffusion generative
+backbones** wherever a physical interface forms [Exp C]; on those same generative backbones the raw
+log-prob deficit is present only at large backbone drift and the binding-energy ranking collapses off
+the native manifold — a mixed result we report as such. The tax is
 real but it is a property of the **conditioning set**, not of hotspot chemistry: the field benchmarks
 on crystal backbones, which hide it, while designers work on non-native backbones, where it bites.
 Two proposed alternative mechanisms — a low-temperature constellation cost and a commitment-ordering
@@ -81,13 +83,25 @@ co-design model).
   burial-matched deficit appears, SECONDARY-B −0.19 [−0.37, −0.004], paired Δ −0.15 [−0.28, −0.03],
   as large at high pTM as low (backbone-error artifact ruled out); KL strengthens (+0.062 vs +0.048)
   and is more robust to backbone noise than burial. → FINDINGS_expA.md.
-- Exp C: on partial-diffusion generative backbones, the deficit grows monotonically with interface
-  RMSD-from-native, starting at ~0 on the crystal — the conditioning-set mechanism drawn as a
-  dose-response. → FINDINGS_expC.md [PENDING].
-- Binding-relevant readout: the model's ability to rank experimental ΔΔG_bind degrades as the
-  backbone becomes non-native. → Exp C secondary [PENDING].
-- **Figure 3 (the money figure):** deficit vs backbone-distance-from-native — crystal (~0) →
-  OpenFold3 (−0.15) → partial-diffusion ladder (dose-response) — with the KL ΔAUROC overlaid.
+- Exp C: on partial-diffusion GENERATIVE backbones the result is MIXED and reported as such. The
+  sequence-free KL detector TRANSFERS (ΔAUROC-over-burial +0.083/+0.094/+0.086 at partial_T 5/10/20,
+  interface-formed, nanpercentile CI excludes zero) — now holds across crystal→predicted→generative, the
+  one signal robust to all three backbone classes. The burial-matched log-prob gap is SUGGESTIVE, not
+  decisive: significant only at extreme drift (iRMSD≈18 Å, −0.88 [−1.11,−0.60]; re-match −0.61),
+  NON-monotone, and it does NOT survive the pre-registered iRMSD<3 Å confound (signal lives in the >10 Å
+  bin, interface marginal). KILL C1 passed; KILL C2 did not fire. Cause of the underpower, itself
+  reported: hotspot-free partial diffusion of a binder against a held target diverges on 62–75 % of
+  designs. A hotspot-conditioned re-run to resolve the physical-drift regime is a declared next step
+  (notes/SHERLOCK_HANDOFF_C2.md). → FINDINGS_expC.md.
+- Binding-relevant readout (the second ICLR gap, now CLOSED): ProteinMPNN's rank-correlation with
+  experimental SKEMPI ΔΔG_bind collapses −0.236 (crystal) → ≈−0.05 the moment the backbone leaves the
+  native manifold — the binding-relevant face of the tax. → FINDINGS_expC.md §6, expC_secondary.csv.
+- **Figure 3 (the money figure), reframed to what the data support — "what survives as the backbone
+  leaves the native manifold":** KL ΔAUROC stays UP (+0.05→+0.10) across crystal→predicted→generative-
+  interface-formed, while the sequence-COUPLED readouts DECAY (ΔΔG rank-corr −0.24→−0.05; the log-prob
+  gap appears only at non-physical drift). The transferable signal is the sequence-free detector; the
+  sequence-coupled quantities degrade with the backbone. (If the C2 re-run lands a clean physical-regime
+  dose-response, Fig 3 upgrades to the monotone-deficit curve; either way the figure is honest.)
 
 **6. It is the conditioning geometry, not the schedule or the sample budget.** *(ruling out competitors)*
 - N_hot: the T=0.1 constellation cost is ~10^10 but statistically identical at burial-matched
@@ -129,14 +143,24 @@ co-design model).
 Appendix: junction sensitivity, TOST/Holm, external ΔΔG validation, per-model panel, decoding-order spread.
 
 ## What must land before submission
-- **Exp C** (the dose-response) — turns the central result from one point into a curve. Highest value.
-- **Binding readout** (ΔΔG-vs-backbone correlation) — the binding-relevant anchor. Cheap.
+- ~~Exp C dose-response~~ — DONE, landed **mixed**: KL transfers; the log-prob gap is suggestive-not-
+  decisive and the clean dose-response did NOT materialize. See Exp C2 below.
+- ~~Binding readout~~ — DONE: ΔΔG rank-corr collapses −0.24 → −0.05 off-manifold. The binding gap is closed.
+- **Exp C2 (hotspot-conditioned re-run)** — the remaining ICLR lever: resolve the log-prob gap in the
+  physical-drift regime the unstable generator left unsampled. Pre-registers BOTH a clean dose-response
+  and a TOST null, so either outcome is publishable (notes/SHERLOCK_HANDOFF_C2.md). ~15–20 GPU-h.
+- **Archive raw artifacts to Zenodo** before ~2026-10-09 (SCRATCH purge). See DATA.md. Required for the
+  Data Availability statement and reproducibility, not novelty.
 - Optional: AF2-multimer readout; a second predictor for Exp A. Hardening, not novelty.
 
 ## Honest self-assessment of the ICLR case
 FOR: a methodological correction with teeth (the benchmark hides the effect); a positive mechanistic
-result located in the conditioning set; an actionable sequence-free signal that works on the noisy
-backbones designers use; three competing mechanisms measured and adjudicated; unusually disciplined
-pre-registration and self-correction. AGAINST: single fixture (SKEMPI), recovery-based primary readout,
-mechanistic-bracket backbones rather than a full design loop. Exp C + the binding readout move this
-from "strong TMLR" to "credible ICLR."
+result located in the conditioning set; an actionable sequence-free signal (KL) now validated across
+crystal, predicted AND generative backbones; a binding-relevant readout that degrades off-manifold as
+predicted; three competing mechanisms measured and adjudicated; unusually disciplined pre-registration
+and self-correction (incl. reporting Exp C's log-prob gap as suggestive-not-decisive rather than
+upgrading it). AGAINST: single fixture (SKEMPI); recovery/log-prob primary readout; the clean
+design-regime *dose-response* did not land — the log-prob gap is confounded with interface dissolution
+and the generator was unstable. NET after Exp C: TMLR strong (~0.85, complete and honest); ICLR ~0.33,
+gated on the C2 hotspot-conditioned re-run landing a clean physical-regime result (or on the
+KL-transfer + benchmark-correction story carrying it without the dose-response).

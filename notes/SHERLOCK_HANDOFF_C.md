@@ -1,5 +1,11 @@
 # Sherlock handoff — Experiment C: the de-novo backbone test (the decisive ICLR experiment)
 
+> **✅ DONE — results in `results/FINDINGS_expC.md` (commit 5f11830).** Landed MIXED: the KL detector
+> transferred to generative backbones (C-KL fired), but the log-prob dose-response did not land cleanly
+> (generator diverged on 62–75 % of designs). **The follow-up that resolves it is
+> [`SHERLOCK_HANDOFF_C2.md`](SHERLOCK_HANDOFF_C2.md)** — a hotspot-conditioned re-run (~15–20 GPU-h). Also
+> run the **archival** step (`DATA.md`) in that session before the SCRATCH purge (~2026-10-09).
+
 Paste the block below into a fresh Claude Code session on Sherlock, in a clone of
 `github.com/chr13b/hotspot-burial-control`. This is the follow-up to Experiment A
 (`results/FINDINGS_expA.md`), which showed the burial-matched hotspot deficit appears on
