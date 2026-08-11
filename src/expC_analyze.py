@@ -62,9 +62,16 @@ def paired_dauroc(df, seed=SEED, nboot=2000):
     for _ in range(nboot):
         s = pd.concat([by[cids[i]] for i in rng.choice(len(cids), len(cids), True)], ignore_index=True)
         dd.append(auc(s["bk"].values, s["is_hot"].values) - auc(s["burial"].values, s["is_hot"].values))
+    # [C2 hardening] nan-aware: degenerate resamples (a bootstrap complex draw with no hotspot, or a
+    # constant score) give AUROC nan; count them and compute p_gt0 over finite reps only. Strictly more
+    # correct than treating nan as "not >0"; leaves non-degenerate Exp C numbers unchanged.
+    dd = np.array(dd, float)
+    fin = np.isfinite(dd)
+    frac_degen = float(1.0 - fin.mean()) if len(dd) else np.nan
     lo, hi = np.nanpercentile(dd, [2.5, 97.5])
+    p_gt0 = float(np.mean(dd[fin] > 0)) if fin.any() else np.nan
     return dict(auc_burial=a0, auc_bk=a1, dauroc=a1 - a0, lo=float(lo), hi=float(hi),
-                p_gt0=float(np.mean(np.array(dd) > 0)), n=len(df), n_cx=len(cids))
+                p_gt0=p_gt0, frac_degen=frac_degen, n=len(df), n_cx=len(cids))
 
 
 def main():

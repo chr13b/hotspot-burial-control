@@ -29,7 +29,8 @@ pre-declared fallback**, triggered by an objective rule fixed here before any nu
 
 - **(A) PRIMARY — `ppi.hotspot_res` conditioning.** Pass RFdiffusion the **TARGET-chain residues that the
   labelled binder hotspots contact in the crystal**: a target residue is a hotspot-contact if its virtual
-  Cβ is within **5.0 Å** of the Cβ of any *conditioned-arm* labelled binder hotspot (arm defined in §3).
+  Cβ is within **10.0 Å** of the Cβ of any *conditioned-arm* labelled binder hotspot (arm defined in §3).
+  *[Executed at 10.0 Å; originally pre-registered at 5.0 Å — see the §8 pre-data correction.]*
   These are supplied via `ppi.hotspot_res=[<chain><resnum>,...]` in RFdiffusion **input-PDB chain space**
   (the held target's output letter + its 1..Lt renumbering, mapped from crystal via
   `results/expC_outmap.json`), telling the `Complex_base` checkpoint to keep the binder docked to that
@@ -152,6 +153,18 @@ C2 backbone, fold, compare interface ipTM/pAE at hotspots. Not run unless C2-PRI
 
 ## 8. Deviations / operational items, declared up front
 
+- **[Pre-data correction, 2026-08-10, PI-approved]** The `ppi.hotspot_res` target-contact cutoff was
+  pre-registered at **5.0 Å Cβ** but is executed at **10.0 Å Cβ**. A positive-control geometry diagnostic
+  (`src/expC2_contact_diag.py` → `results/expC2_contact_diag.csv`) confirmed the geometry is correct
+  (median hotspot→target Cβ contact **5.44 Å**, IQR 4.57–6.28, i.e. interface-scale — not a chain/coord
+  bug) and that 5.0 Å is simply too strict: it left `hotspot_res` empty for **35/55** complexes (only
+  **20/36** hotspot-bearing complexes pinnable, median 1 token), so Option A could not be tested at all.
+  **10.0 Å is the project's own interface-formed contact definition** (`src/expC_score.py`, inter-chain
+  Cβ<10 Å) — an internally-consistent value, not one tuned to an outcome — and it pins **35/36**
+  hotspot-bearing complexes (median 11 tokens). The cutoff is a **generation-time pinning** parameter that
+  does **not** enter the gap/slope/KL/leakage measurements, and **no C2 outcome had been computed** when it
+  was changed. Both cutoffs' `hotspot_res` counts are recorded; the 50/50 arm split is cutoff-independent
+  and unchanged. `src/expC2_hotspot_res.py` takes `--cutoff` (run with `--cutoff 10.0`).
 - `src/expC_slope_check.py` and `results/expC_slope_check.csv` **did not exist in Exp C**; the slope
   statistic is *defined and implemented here* and validated by reproducing Exp C's committed
   `expC_gap_perbackbone.csv` split as the §4 positive control. Whatever the reproduced Exp C slope values
