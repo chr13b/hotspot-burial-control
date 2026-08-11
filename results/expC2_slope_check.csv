@@ -1,0 +1,3 @@
+label,kind,irmsd_max,slope,lo95,hi95,lo90,hi90,p_boot,p_ols,n_bb,n_cx,command
+expC2,physical,8.0,-1.2479785062641566,-2.1430221036194683,-0.1841843701848959,-1.998666702245361,-0.3258702542589315,0.0196,9.977193841538505e-05,268,11,python3 src/expC_slope_check.py --gap-perbackbone results/expC2_gap_perbackbone.csv --label expC2 --out results/expC2_slope_check.csv
+expC2,naive,,-0.025924691600259238,-0.08928912005005306,0.03937023419095102,-0.08001231475320562,0.029211298093475894,0.4546,0.0201139267598867,961,31,python3 src/expC_slope_check.py --gap-perbackbone results/expC2_gap_perbackbone.csv --label expC2 --out results/expC2_slope_check.csv

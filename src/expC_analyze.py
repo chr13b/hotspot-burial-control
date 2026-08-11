@@ -158,7 +158,13 @@ def main():
         iface = {(r.complex_id, str(r.chain), int(r.resnum)) for r in idf.itertuples()}
     if iface:
         pos = pos[[(r.complex_id, r.chain, int(r.resnum)) in iface for r in pos.itertuples()]].copy()
-    # is_hot from strict pairs' hot positions
+    # is_hot from strict pairs' hot positions.
+    # NOTE (Exp C2): this keys the KL AUROC off the MATCHED-PAIRS strict set (which needs a burial-matched
+    # null control per complex), NOT the canonical label=="hot_strict" set used by src/kl_detector.py. That
+    # subset is small and draw-dependent: on generative backbones where few matched-pairs hotspots dock, the
+    # ifaceok KL underflows the >=5-hotspot threshold and returns nothing (C2 T5-30). The canonical,
+    # robustly-powered C2-KL is computed in src/expC2_kl_loose.py (label-based, matching kl_detector.py) and
+    # DOES fire; see results/FINDINGS_expC2.md §5. Left unchanged here to preserve Exp C reproducibility.
     strict = pd.read_csv("results/p0_dssp_pairs_strict_hot2_null.csv")
     hotpos = {(r.complex_id, str(r.hot_chain), int(r.hot_resnum)) for r in strict.itertuples()}
     pos["is_hot"] = [int((r.complex_id, r.chain, int(r.resnum)) in hotpos) for r in pos.itertuples()]
