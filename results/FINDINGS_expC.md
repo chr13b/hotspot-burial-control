@@ -114,6 +114,20 @@ reviewer-critical validity condition for finding C5 of the main study, now met o
   but is also what the confound was written to distrust. **C-PRIMARY is therefore recorded as
   suggestive, not decisive.**
 
+**§4b — post-hoc continuous-slope check (EXPLORATORY, added 2026-08-11; `src/expC_slope_check.py`,
+`results/expC_slope_check.csv`).** A reviewer will reasonably ask whether a *continuous* slope of the gap
+vs log10(interface-RMSD) has more power than the bins above. It does — and it is instructive. Over ALL
+interface-formed backbones the slope is significantly negative (−0.179 [−0.32,−0.04], P(slope>0)=0.007;
+Spearman −0.238, P=0.005). **But that significance is a crystal-vs-dissolved artifact, not a physical
+gradient:** it is carried by the `partial_T=0` crystal anchor (iRMSD≈0, gap positive) at one end and the
+dissolved iRMSD>10 Å tail (gap −0.88) at the other. Restricted to the physically-meaningful generated
+backbones — interface-formed AND iRMSD≤8 Å AND excluding the crystal — the slope is **−0.009 [P=0.52],
+flat** (Spearman −0.025 [P=0.44]). This is the same confound PREREG_expC §5 was written to distrust, now
+shown on the continuous variable; it does not rescue C-PRIMARY. The generated-physical regime is not
+merely non-significant — its point estimate is ≈0 at n_cx=13 — so it is genuinely unresolved for want of
+power, which is precisely what Exp C2 is pre-registered to settle (a powered physical dose-response, or a
+TOST-equivalent null).
+
 ## 5. Pre-registered falsifier readings (PREREG_expC §5), stated plainly
 
 - **KILL C1 (mandatory control) — PASSED.** `partial_T=0` (crystal, identical scoring path) reproduces

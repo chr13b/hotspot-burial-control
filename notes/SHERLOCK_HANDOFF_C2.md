@@ -56,17 +56,27 @@ Re-key each backbone to crystal via the committed residue maps; ProteinMPNN v_48
 teacher-forced native log-prob + unconditional KL pass; burial = Cbeta neighbour count; SECONDARY_B
 within-binder pairs + the EXPC_within_binder re-match robustness variant. Complex-level bootstrap, 10,000
 gap / 2,000 KL reps, seed 20260803. [C2 fix on KL bootstrap: compute p_gt0 nan-aware (np.mean over
-non-nan reps) and REPORT the fraction of degenerate resamples dropped, per level.]
+non-nan reps) and REPORT the fraction of degenerate resamples dropped, per level.] ALSO run
+src/expC_slope_check.py on the C2 per-backbone gaps: the PRIMARY C2 dose-response statistic is the
+CONTINUOUS slope of d vs log10(interface-RMSD) restricted to interface-FORMED, iRMSD<=8A, EXCLUDING the
+partial_T=0 crystal -- more powerful than binning and the honest test. In Exp C that physical-generated
+slope was FLAT (-0.009 [P=0.52], results/expC_slope_check.csv) once the crystal anchor + dissolved >10A
+tail were removed, while the naive all-backbone slope LOOKED significant (-0.179, P=0.007) -- a
+crystal-vs-dissolved artifact. Do NOT report the anchored/all-backbone slope as evidence for C2.
 
 PRE-REGISTERED READINGS (fix before running; both primaries are publishable):
-  - C2-PRIMARY (positive): on interface-FORMED, iRMSD<8A backbones the burial-matched SECONDARY_B gap
-    becomes more negative with iRMSD AND its 95% CI excludes zero in the physical band (iRMSD 3-8A,
-    interface formed) -> the tax reaches the design regime on physical generative backbones; the
-    conditioning-set claim is complete. This is the clean result C could not power.
-  - C2-NULL (equally reportable): if the gap in the physical band (iRMSD<8A, formed) is TOST-equivalent
-    to zero (CI inside +-0.15, the Exp A predicted-backbone effect size), the log-prob tax is
-    PREDICTION-scale only and does not appear in the physical generative-drift regime -> honest bound;
-    KL remains the transferable signal. NOT a failure -- a pre-registered negative that sharpens scope.
+  - C2-PRIMARY (positive): the CONTINUOUS slope of the burial-matched gap d vs log10(interface-RMSD),
+    restricted to interface-FORMED, iRMSD<=8A backbones EXCLUDING the partial_T=0 crystal, is negative
+    with 95% CI excluding zero -> the tax scales with backbone drift WITHIN the physical generative
+    design regime; the conditioning-set claim is complete. Report the binned gap and the iRMSD 3-8A
+    band CI too, but the pre-registered verdict statistic is this physical-generated slope (Exp C could
+    not power it: its value there was -0.009 [P=0.52]).
+  - C2-NULL (equally reportable, and a-priori the MORE LIKELY outcome given Exp C): if that
+    physical-generated slope is TOST-equivalent to zero (90% CI inside +-0.10 gap-per-log10A, i.e.
+    bounded below the Exp A predicted-backbone effect), the log-prob tax is PREDICTION-scale only and
+    does not appear in the physical generative-drift regime -> honest bound; KL remains the transferable
+    signal. This is NOT a failed experiment -- it is a pre-registered negative that sharpens the paper's
+    scope; do not treat it as one, and do not chase power past the pre-declared N to try to move it.
   - C2-KL: KL dAUROC-over-burial CI excludes zero at each physical level (replicating C).
   - KILL C2a (mandatory control): partial_T=0 reproduces the ~zero crystal within-binder deficit
     (Exp C T0 was +0.303 [-0.19,+0.80], CI contains zero). If not, pipeline broken -- stop.
