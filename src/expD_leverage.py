@@ -141,14 +141,20 @@ def main():
     ap.add_argument("--expA-pairs", default="results/p0_dssp_pairs_SECONDARY_B_any_interface.csv")
     ap.add_argument("--of3-positions",
                     default=os.path.expandvars("$SCRATCH/ftax/predicted/expA_p0_positions.csv"))
+    ap.add_argument("--af2-positions", default=None,
+                    help="optional AF2 (Exp D) positions CSV -> add a symmetric leverage block")
     ap.add_argument("--c2-perbackbone", default="results/expC2_gap_perbackbone.csv")
     ap.add_argument("--out", default="results/expD_leverage.csv")
     a = ap.parse_args()
     cmd = "python3 " + " ".join(sys.argv)
 
+    blocks = [("expA_of3_SECONDARY_B_dpred", expA_records(a.expA_pairs, a.of3_positions))]
+    if a.af2_positions:
+        blocks.append(("expD_af2_SECONDARY_B_dpred", expA_records(a.expA_pairs, a.af2_positions)))
+    blocks.append(("expC2_within_binder_iface_formed", c2_records(a.c2_perbackbone)))
+
     all_rows, infl_rows = [], []
-    for name, recs in [("expA_of3_SECONDARY_B_dpred", expA_records(a.expA_pairs, a.of3_positions)),
-                       ("expC2_within_binder_iface_formed", c2_records(a.c2_perbackbone))]:
+    for name, recs in blocks:
         rows, infl = analyze(name, recs)
         all_rows += rows
         infl_rows += [dict(block=name, complex_id=c, influence=v) for c, v in
