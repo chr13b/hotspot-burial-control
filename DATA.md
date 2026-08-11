@@ -15,12 +15,19 @@ This file documents the larger raw artifacts that back them, and where they live
   commit + checkpoint identity, and the sbatch job specs). **TODO (Sherlock session):** drop the frozen
   env spec (`conda list --explicit` / `pip freeze` of SE3nv) and the 3 sbatch files in `environment/`.
 
-## What is NOT in git (large raw artifacts — Zenodo deposit)
+## What is NOT in git as plain files (large raw artifacts — two-phase plan)
 
-These are too large for git and are the wrong fit for GitHub LFS as an archival home (the free tier is
-1 GB storage / 1 GB bandwidth per month, so a ~200 MB LFS repo breaks `git clone` for readers after a
-handful of pulls). They are being deposited to **Zenodo** with a DOI, referenced here and in the paper's
-Data Availability statement.
+**Phase 1 (now — purge-rescue): git-LFS in this working repo.** The artifacts must leave Sherlock before
+the SCRATCH purge (below); pushing them to LFS now gets them into a durable store and keeps them one
+`git pull` away during drafting. Fine at this stage — private iteration means few clones, so the LFS
+free-tier bandwidth cap (1 GB/month) is not yet in play.
+
+**Phase 2 (at submission — archival): Zenodo DOI + clean public repo.** GitHub LFS is the wrong *archival*
+home — its 1 GB/month bandwidth cap breaks `git clone` for readers once a public repo is cloned a handful
+of times. At submission the two big files move to a **Zenodo** record (DOI, 50 GB/record, what journals'
+Data Availability statements expect), referenced from a clean public repo. Zenodo is **independent of
+GitHub** (direct web/API upload — no chunking, no routing through git); the optional GitHub-release→Zenodo
+integration is only for minting a DOI for the *code* snapshot.
 
 | Artifact | Size | Provenance | Regenerable? |
 |---|---|---|---|
@@ -33,10 +40,11 @@ Data Availability statement.
 in `results/FINDINGS_expC.md §7.4`. All 715 backbones are kept — the instability is a reported result,
 not noise to be cleaned away.
 
-> **⏳ TIME-SENSITIVE.** The raw artifacts currently live only on Sherlock `$SCRATCH/expC/`, which is
-> purged **60–90 days** after last use. The run was **2026-08-10**; deposit to Zenodo **before
-> ~2026-10-09** (conservative 60-day bound) or the raw output is lost. The derived CSVs in this repo
-> survive regardless.
+> **⏳ TIME-SENSITIVE.** The raw artifacts currently live only on Sherlock `$SCRATCH/expC/`, purged
+> **60–90 days** after last use. The run was **2026-08-10** → get them off SCRATCH **before ~2026-10-09**
+> (conservative 60-day bound). The Phase-1 LFS push satisfies this deadline; Zenodo (Phase 2) can follow
+> at submission. Guardrail: watch the **1 GB free LFS storage** cap as C2 adds backbones — prune to the
+> scored tables (regenerable from backbones) or add a data pack if needed. The derived CSVs survive regardless.
 
 ## Do not redistribute
 

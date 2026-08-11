@@ -1,0 +1,21 @@
+metric,ranker,estimate,lo,hi,p_gt0,n_cx,seed,nboot,command
+capture@k3,burial_score,0.13923000479604253,0.09098493618540789,0.1937094666339949,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+capture@k3,kl,0.2186168653149785,0.15764346895243123,0.28430697054517806,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+capture@k3,klbur,0.23714786261956075,0.1754900419287212,0.3038746997237563,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+capture@k3,random_expected,0.08441931633883537,0.07749245455141882,0.09334610214106641,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+DELTA_capture@k3,kl_minus_burial_score,0.079386860518936,-0.004619850799096081,0.16290889011407877,0.9685,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+DELTA_capture@k3,klbur_minus_burial_score,0.0979178578235182,0.02071535775545209,0.1754044828337281,0.9933,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+capture@k25pct,burial_score,0.44378347019856457,0.3748647683553344,0.5140169696655545,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+capture@k25pct,kl,0.5428141041348589,0.47225618720901746,0.6144093105531785,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+capture@k25pct,klbur,0.5325375881979655,0.46291171354850597,0.6024914721023212,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+capture@k25pct,random_expected,0.2607325976312528,0.2590750694603523,0.2624345663908644,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+DELTA_capture@k25pct,kl_minus_burial_score,0.09903063393629433,-0.003535888901454937,0.19857862656211708,0.9701,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+DELTA_capture@k25pct,klbur_minus_burial_score,0.08875411799940104,0.008788185085354894,0.16937088200059894,0.9851,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+AUROC_is_hot,burial_score,0.6777923961416547,0.6431853075861517,0.7125790955473684,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+AUROC_is_hot,kl,0.719140264090138,0.6808974402259597,0.7556133241635193,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+AUROC_is_hot,klbur,0.7417000029992105,0.7082676751566408,0.7742754534108895,,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+DELTA_AUROC_is_hot,kl_minus_burial_score,0.04134786794848338,-0.008585292229932677,0.08860495672014046,0.9484,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+DELTA_AUROC_is_hot,klbur_minus_burial_score,0.0639076068575558,0.03684572623796295,0.09123304870499928,1.0,106,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+AUROC_is_hot_MODEL_UNCERTAIN,burial_score,0.6826127295742503,0.6367586148680408,0.7271846472977647,,71,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+AUROC_is_hot_MODEL_UNCERTAIN,kl,0.6806517542426025,0.6229586752539706,0.7343754565577878,,71,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv
+DELTA_AUROC_MODEL_UNCERTAIN,kl_minus_burial,-0.0019609753316481154,-0.07393991709017056,0.06844553062893942,0.4863,71,20260803,10000,python3 src/kl_triage.py --joined results/kl_detector_joined.csv --out results/kl_triage.csv

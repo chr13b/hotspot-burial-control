@@ -42,10 +42,14 @@ co-design model).
   term, misses them. → BRIEF §2.1.
 - ProBID-Net's 0.334/0.472 gap and its dynamics attribution; the confound nobody controlled: hotspots
   are buried, and burial is where inverse folding is *most* confident.
-- Contributions: (i) the gap is a burial artifact on crystal backbones (5 models, pre-registered);
-  (ii) the tax is nonetheless real and lives in the conditioning set — it appears on predicted and
-  generative backbones and a sequence-free signal predicts it; (iii) two competing mechanisms
-  (constellation cost, commitment ordering) measured and refuted.
+- Contributions: (i) the gap is a burial artifact on crystal backbones (5 models, pre-registered) —
+  and the burial-matched matched-pair design is offered as a reusable **protocol/benchmark** for
+  evaluating inverse folding at interface hotspots without the confound; (ii) the tax is nonetheless
+  real and lives in the conditioning set — it appears on predicted and generative backbones and a
+  sequence-free signal predicts it; (iii) that signal is **actionable** — as a fixed-budget triage
+  ranker KL+burial captures significantly more experimental hotspots than the burial heuristic
+  (capture@3 +0.098 [+0.021,+0.175], n=106); (iv) two competing mechanisms (constellation cost,
+  commitment ordering) measured and refuted.
 
 **2. Setup and pre-registration.**
 - SKEMPI 2.0; hotspot = Ala-scan ΔΔG>1 (and strict >2, ProBID-Net's threshold); null |ΔΔG|<0.25.
@@ -73,6 +77,15 @@ co-design model).
   = the sequence-aware statistic (Δ +0.001), beats a contact-count baseline, adds to burial
   (ΔAUROC +0.048). The model's own *confidence* is useless (AUROC 0.54); its *partner-sensitivity*
   carries the signal. → §4.2d-bis, kl_analysis.
+- **The detector is actionable (candidate method contribution).** Framed as design-time triage — a
+  fixed budget of k interface positions per complex to receive expensive binding-aware optimization —
+  ranking by KL+burial captures significantly more experimental hotspots than the burial heuristic:
+  capture@3 0.237 vs 0.139 (Δ +0.098 [+0.021,+0.175], P=0.99, n=106); capture@25% Δ +0.089
+  [+0.009,+0.169]. The gain is a general additive property of KL, **not** specific to positions the
+  model is uncertain about (niche AUROC Δ −0.002, null) — reported as such. Crystal proof-of-concept;
+  the design-time claim is validated on the predicted/generative KL tables (where KL strengthens)
+  before it enters as a method. → src/kl_triage.py, results/kl_triage.csv. [crystal done; non-native
+  validation PENDING]
 - Why crystal backbones hide it: they are carved by the side chains being predicted, so the model
   already has the partner information that makes the frustrated residue favourable and never pays for
   it. → §3.2.
@@ -149,9 +162,13 @@ Appendix: junction sensitivity, TOST/Holm, external ΔΔG validation, per-model 
 - **Exp C2 (hotspot-conditioned re-run)** — the remaining ICLR lever: resolve the log-prob gap in the
   physical-drift regime the unstable generator left unsampled. Pre-registers BOTH a clean dose-response
   and a TOST null, so either outcome is publishable (notes/SHERLOCK_HANDOFF_C2.md). ~15–20 GPU-h.
-- **Archive raw artifacts to Zenodo** before ~2026-10-09 (SCRATCH purge). See DATA.md. Required for the
-  Data Availability statement and reproducibility, not novelty.
-- Optional: AF2-multimer readout; a second predictor for Exp A. Hardening, not novelty.
+- **Validate the KL-triage method on predicted/generative backbones** (reuse the Exp A/C per-position
+  KL tables; CPU, cheap). Crystal proof-of-concept is significant (capture@3 Δ +0.098); the design-time
+  method claim needs the non-native backbones where KL strengthens. Turns the detector into a method.
+- **Archive raw artifacts** before ~2026-10-09 (SCRATCH purge): git-LFS in the working repo now
+  (purge-rescue), Zenodo DOI + clean repo at submission (archival + avoids the LFS bandwidth cap). See DATA.md.
+- Optional/lower-priority: replicate the correction on ProBID-Net's own fixture (CPU-mostly, strongest
+  rebuttal to "single fixture"); AF2-multimer ipTM design-loop readout (~15–40 GPU-h, C2-gated).
 
 ## Honest self-assessment of the ICLR case
 FOR: a methodological correction with teeth (the benchmark hides the effect); a positive mechanistic
