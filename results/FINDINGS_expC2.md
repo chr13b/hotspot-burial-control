@@ -42,10 +42,12 @@ committed CSV.
 
 ```bash
 # Pre-registration (before any backbone) + setup; 10A pre-data cutoff correction; validation; pivot.
-#   PREREG_expC2.md (d6e1a3e) ; setup+10A (6e7c860) ; validation pivot (7922dcd)
+#   PREREG_expC2.md (da00c16) ; setup+10A (2e4125e) ; validation pivot (ea4ac7a)
 python3 src/expC2_hotspot_res.py --cutoff 10.0        # 50/50 split + ppi.hotspot_res (later dropped)
-python3 src/expC_slope_check.py  --gap-perbackbone results/expC_gap_perbackbone.csv --label expC ...
-                                                      # positive control: reproduces Exp C flat physical slope
+#   (C2-PRIMARY slope computed in finalize by src/expC2_slope_check.py -> results/expC2_slope_check.csv;
+#    the committed Exp C continuous-slope decomposition src/expC_slope_check.py -> results/expC_slope_check.csv
+#    — merged from the Exp C write-up — already gives the flat generated-physical slope -0.009 [P=0.52],
+#    which this run's leverage analysis (§4) independently confirms.)
 
 # VALIDATION (Option A) -> REFUTED: hotspot_res breaks docking (results/expC2_pinning_validation.csv)
 OUTDIR=$SCRATCH/expC2/validate ONLY_CIDS="1A22_A_B 1H9D_A_B 5M2O_A_B" TLEVELS="5 20" NDES=2 \
@@ -184,7 +186,7 @@ the native manifold (−0.236 → ≈ −0.08), as in Exp C and as pre-registere
 ### Files
 - `results/expC2_kl_hotpoor.csv` — C2-KL: canonical-strict + loose interface-formed ΔAUROC by level (the reading).
 - `results/expC2_dose.csv` / `results/expC2_rematch_dose.csv` — burial-matched gap (all / interface-formed / by-iRMSD).
-- `results/expC2_slope_check.csv` — C2-PRIMARY physical + naive slope; `results/expC_slope_check.csv` — Exp C positive control.
+- `results/expC2_slope_check.csv` (`src/expC2_slope_check.py`) — C2-PRIMARY physical + naive slope; `results/expC_slope_check.csv` (`src/expC_slope_check.py`, merged Exp C decomposition) — the flat generated-physical slope (−0.009) this run independently confirms.
 - `results/expC2_secondary.csv` — ΔΔG_bind partial-ρ by level; `results/expC2_interface_qc.csv` — interface-formed per level.
 - `results/expC2_leakage.csv` — KILL C2b (moot); `results/expC2_pinning_validation.csv` — hotspot_res-breaks-docking evidence.
 - `results/expC2_gap_perbackbone.csv` — per-backbone audit trail (the slope input). Backbones + scored tables on `$SCRATCH/expC2/` (gitignored).
