@@ -177,3 +177,29 @@ C2 backbone, fold, compare interface ipTM/pAE at hotspots. Not run unless C2-PRI
   Bootstrap replicate counts reported beside every CI; every excluded/failed backbone listed with reason.
 - Raw outputs → `results/expC2_*.csv` with the exact command in a `command` column; verdict written to
   `results/FINDINGS_expC2.md` strictly from the readings above.
+
+## 9. VALIDATION-STAGE DEVIATION (2026-08-10, PI-approved) — Option A refuted; pivot to a no-pinning denser ladder
+
+Before the full ladder, Option A was validated on 3 complexes (1A22_A_B, 1H9D_A_B, 5M2O_A_B; partial_T
+{5,20}, N=2, `hotspot_res` ON at 10 Å). **Result: `hotspot_res` BREAKS docking.** All 12 backbones diverged
+(interface Cα-RMSD ~1.3e3 Å at T5, ~1.5e6 Å at T20; interface_ok **0/12**), whereas the identical complexes
+in Exp C (same inputs/contig/checkpoint, no `hotspot_res`) were fully docked (iRMSD **1.0–6.2 Å**, 10–12 of
+12 interface-formed). The only difference is `ppi.hotspot_res`, so passing it to the `Complex_base`
+checkpoint under partial diffusion **causes** the divergence. Evidence:
+`$SCRATCH/expC2/validate_scored_backbones.csv`, `logs/expC2_vscore.out`, `logs/expC2_rfdiff_38549540_0.out`.
+
+Consequences: (i) **Exp C's stated cause of divergence was backwards** — FINDINGS_expC attributed the
+62–75 % divergence to the *absence* of hotspot residues, but **21/55** complexes stay docked with none
+specified, and specifying them is what destroys docking; (ii) **Exp C's real deficiency was undersampling**
+the docked iRMSD 1–8 Å regime (N=3, 13 complexes), not float-off.
+
+**Pivot (PI decision).** C2 drops Option-A/B pinning entirely and runs the **denser ladder {0,5,10,15,20,30}
+× N≥6 with NO `hotspot_res`** (Complex_base — the config proven to dock 21/55), relying on the naturally
+docked subset to densely populate iRMSD 1–8 Å and **power the physical-generated slope Exp C could not
+resolve**. This SUPERSEDES §1 (the fix) and the Option-B fallback. **KILL C2b is moot** (no conditioning →
+no interface information can leak) and is reported as such; the 50/50 split (`results/expC2_hotspot_split.csv`)
+is retained on disk but drives nothing. **Every verdict statistic is UNCHANGED** — C2-PRIMARY (physical
+slope), C2-NULL (TOST), C2-KL, KILL C2a, CONFOUND, SECONDARY — and all were fixed before any C2
+gap/slope/KL OUTCOME was observed; only the pre-registered interface-QC go/no-go (§1's interface-formed
+fraction, the Option-A/B decision input) was read. The `hotspot_res`-breaks-docking result is additionally
+reported as a methodological correction to Exp C.
