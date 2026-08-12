@@ -1,0 +1,9 @@
+quantity,kind,estimate,lo,hi,n_cx,p_gt0,seed,nboot,command
+burial,AUROC,0.6777923961416547,0.6431853075861517,0.7125790955473684,106,,20260803,10000,python3 src/confidence_antipredicts.py --joined results/kl_detector_joined.csv --out results/confidence_antipredicts.csv
+confidence_logp,AUROC,0.5273315790167656,0.48085766358554466,0.5735467341134167,106,,20260803,10000,python3 src/confidence_antipredicts.py --joined results/kl_detector_joined.csv --out results/confidence_antipredicts.csv
+KL,AUROC,0.719140264090138,0.6808974402259597,0.7556133241635193,106,,20260803,10000,python3 src/confidence_antipredicts.py --joined results/kl_detector_joined.csv --out results/confidence_antipredicts.csv
+burial+confidence,AUROC,0.6296181259646486,0.5858949502100054,0.6711712621020172,106,,20260803,10000,python3 src/confidence_antipredicts.py --joined results/kl_detector_joined.csv --out results/confidence_antipredicts.csv
+burial+KL,AUROC,0.7417000029992105,0.7082676751566408,0.7742754534108895,106,,20260803,10000,python3 src/confidence_antipredicts.py --joined results/kl_detector_joined.csv --out results/confidence_antipredicts.csv
+burial+confidence - burial,dAUROC,-0.04817427017700605,-0.08325365346295192,-0.014071171092223536,106,0.0024,20260803,10000,python3 src/confidence_antipredicts.py --joined results/kl_detector_joined.csv --out results/confidence_antipredicts.csv
+burial+KL - burial,dAUROC,0.0639076068575558,0.03744529586962274,0.09136529607464594,106,1.0,20260803,10000,python3 src/confidence_antipredicts.py --joined results/kl_detector_joined.csv --out results/confidence_antipredicts.csv
+confidence_logp - burial,dAUROC,-0.15046081712488904,-0.20166977108718023,-0.09993050872576802,106,0.0,20260803,10000,python3 src/confidence_antipredicts.py --joined results/kl_detector_joined.csv --out results/confidence_antipredicts.csv
