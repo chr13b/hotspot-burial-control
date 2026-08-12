@@ -1,3 +1,4 @@
 results/*_positions.csv       filter=lfs diff=lfs merge=lfs -text
 results/*_interface_resid.csv filter=lfs diff=lfs merge=lfs -text
 results/*_joined.csv          filter=lfs diff=lfs merge=lfs -text
+results/*.tar.gz filter=lfs diff=lfs merge=lfs -text

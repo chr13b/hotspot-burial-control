@@ -1,25 +1,31 @@
 # GPU environments — methods as code
 
-The CPU study runs under the project's `torch-2.0.1` env (see repo root). The GPU experiments (A: OpenFold3
-prediction; C: RFdiffusion partial diffusion) each need their own env. This file records what the runs
-used so they are reconstructable from upstream. **The non-obvious build fixes below cost the most time to
-discover and are the most valuable thing to preserve.**
+The CPU study runs under the project's `torch-2.0.1` env (see repo root). The GPU experiments each need
+their own env: **A** (OpenFold3 prediction), **C/C2** (RFdiffusion partial diffusion), **D** (AF2-multimer).
+This file records what the runs used so they are reconstructable from upstream. **The non-obvious build
+fixes below cost the most time to discover and are the most valuable thing to preserve.**
 
-> **TODO (fill from the Sherlock session — these files live on `$SCRATCH`, not yet in git):**
-> - `environment/se3nv.explicit.txt` — `conda list --explicit` of the SE3nv env used for RFdiffusion.
-> - `environment/se3nv.pip-freeze.txt` — `pip freeze` of the same env.
-> - `environment/expC_run.sbatch`, `expC_score_array.sbatch` (+ Exp A jobs) — the actual job specs.
-> - Confirm the RFdiffusion commit hash and checkpoint md5 below against the install on `$SCRATCH`.
+> **Frozen from the Sherlock session (2026-08-11):** `environment/se3nv.explicit.txt` (`conda list
+> --explicit`, 93 pkgs) and `environment/se3nv.pip-freeze.txt` (`pip freeze`, 63 pkgs) capture the SE3nv
+> (RFdiffusion) env. The actual job specs are the committed `environment/*.sbatch` files (Exp A `of3_*`,
+> Exp C `expC_*`, Exp C2 `expC2_*`, Exp D `expD_*`). RFdiffusion checkpoint md5s are pinned below. Raw
+> artifacts (backbones, scored tables) are archived via git-LFS — see `DATA.md`.
 
-## RFdiffusion (Experiment C) — SE3nv env
+## RFdiffusion (Experiments C and C2) — SE3nv env
 
-- **Upstream:** RosettaCommons/RFdiffusion. **Commit:** `TODO: <pin the exact commit used>`.
-- **Checkpoint:** `Complex_base_ckpt.pt` (trained on complexes + hotspot residues). **md5:** `TODO`.
-  Note the run used it *without* specifying hotspot residues, which is the cause of the binder
-  divergence documented in `results/FINDINGS_expC.md §2` — see `notes/SHERLOCK_HANDOFF_C2.md` for the fix.
+- **Upstream:** RosettaCommons/RFdiffusion. **Commit:** installed from a release download, **not** a git
+  checkout (`$SCRATCH/expC/RFdiffusion` has no `.git`), so the exact commit is not recoverable; the version
+  is pinned instead by the checkpoint md5s below plus the upstream repo.
+- **Checkpoints** (`$SCRATCH/expC/RFdiffusion/models/`, dated 2023-03-29):
+  - `Complex_base_ckpt.pt` (used; trained on complexes + hotspot residues) — **md5 `7a5d99f3c8bede52d9240f79a99bc30b`**.
+  - `Base_ckpt.pt` (Option-B fallback) — **md5 `4aa4a27ba280d23541e01860c106c7cc`**.
+- **Note, corrected by Exp C2:** the runs used the checkpoint *without* `ppi.hotspot_res`. Exp C originally
+  blamed the binder divergence on that absence, but **Exp C2 showed the opposite** — passing `hotspot_res`
+  under partial diffusion *causes* catastrophic divergence (`results/FINDINGS_expC2.md §2`), and 21/55
+  complexes dock with no pinning at all. Exp C2 reuses the same SE3nv env; its specs are `environment/expC2_*.sbatch`.
 - **Partial-diffusion command shape** (contig holds the target, diffuses the binder):
-  `diffuser.partial_T=<T>`, `contigmap.contigs="[<Lb>/0 B1-<Lt>]"`, `inference.num_designs=3`,
-  binder-first input PDB. Exact per-complex commands are in the `command` column of `results/expC_*.csv`.
+  `diffuser.partial_T=<T>`, `contigmap.contigs="[<Lb>/0 B1-<Lt>]"`, `inference.num_designs=3/6`,
+  binder-first input PDB. Exact per-complex commands are in the `command` column of `results/expC*_*.csv`.
 
 ### Build fixes that were required (reported by the run — verify against the frozen spec above)
 
@@ -46,5 +52,24 @@ exactly the diverged backbones would have biased the dose-response. Keep the man
 ## OpenFold3 (Experiment A)
 
 - Predicted backbones for the 141 pair complexes; templates **OFF** (no leakage; the crystal control
-  reproduces to 4e-16). See `results/PREREG_expA.md` and `results/FINDINGS_expA.md`.
-- **TODO (Sherlock session):** pin the OpenFold3 commit + weights identity and the prediction command here.
+  reproduces to 4e-16). See `results/PREREG_expA.md` and `results/FINDINGS_expA.md`. Job specs:
+  `environment/of3_*.sbatch`. of3c conda env (openfold3 0.4.3, rdkit 2025.9.6); weights `of3-p2-155k`.
+- **TODO (low priority):** pin the exact OpenFold3 commit + weights hash if a leakage-free re-run is needed.
+
+## AF2-multimer (Experiment D) — Apptainer container
+
+Second, architecturally-independent predictor (Evoformer + regression IPA) for the deficit-generality test
+(`results/FINDINGS_expD.md`). **Sherlock is CentOS 7 (glibc 2.17; system OpenSSL ≤ TLS 1.2), which broke
+every pip/installer route** — the renamed installer 404s, `pixi.sh` needs TLS 1.3, and Miniforge+pip hits
+`manylinux_2_28` wheels that need glibc 2.28. **Fix: the official ColabFold Apptainer container** (`apptainer`
+1.5.2 at `/usr/bin`, no module) — its bundled TLS + the container's modern glibc sidestep both walls:
+
+```bash
+apptainer pull docker://ghcr.io/sokrypton/colabfold:1.5.5-cuda12.2.2   # -> $SCRATCH/ftax/colabfold.sif
+apptainer exec --nv -B $SCRATCH:$SCRATCH $SIF colabfold_batch <fa> <out> --data <params> \
+    --model-type alphafold2_multimer_v3 --msa-mode mmseqs2_uniref_env --num-models 5 --num-recycle 3
+```
+
+Templates OFF (no `--templates` flag; verified `"use_templates": false` in `config.json`). Job specs:
+`environment/expD_*.sbatch`. This container pattern is the reusable fix for any modern-wheel GPU tool on this
+cluster's el7 nodes.
