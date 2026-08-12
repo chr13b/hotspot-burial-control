@@ -44,12 +44,14 @@ co-design model).
   are buried, and burial is where inverse folding is *most* confident.
 - Contributions: (i) the gap is a burial artifact on crystal backbones (5 models, pre-registered) —
   and the burial-matched matched-pair design is offered as a reusable **protocol/benchmark** for
-  evaluating inverse folding at interface hotspots without the confound; (ii) the tax is nonetheless
-  real and lives in the conditioning set — it appears on predicted and generative backbones and a
-  sequence-free signal predicts it; (iii) that signal is **actionable** — as a fixed-budget triage
-  ranker KL+burial captures significantly more experimental hotspots than the burial heuristic
-  (capture@3 +0.098 [+0.021,+0.175], n=106); (iv) two competing mechanisms (constellation cost,
-  commitment ordering) measured and refuted.
+  evaluating inverse folding at interface hotspots without the confound; (ii) the tax is real and lives
+  in the conditioning set — a burial-matched deficit appears on the backbones of TWO independent structure
+  predictors (cross-predictor per-complex ρ=+0.57), is absent on noised-crystal generative backbones
+  (so it is *independent-reconstruction*, not distance-from-native), and a sequence-free **partner-
+  sensitivity** signal detects it across four backbone classes — while the model's own **confidence** does
+  NOT (near-chance; naively hurts); (iii) that signal is actionable as a fixed-budget triage readout
+  (KL+burial capture@3 +0.098 [+0.021,+0.175], n=106; crystal proof-of-concept, non-native validation
+  pending #12); (iv) two competing mechanisms (constellation cost, commitment ordering) measured and refuted.
 
 **2. Setup and pre-registration.**
 - SKEMPI 2.0; hotspot = Ala-scan ΔΔG>1 (and strict >2, ProBID-Net's threshold); null |ΔΔG|<0.25.
@@ -75,8 +77,11 @@ co-design model).
   experimental ΔΔG_bind (ρ +0.28, adds beyond burial + log-odds). → §3.2, hardening.
 - A sequence-free detector: KL(p(·|complex backbone) ‖ p(·|monomer backbone)), no residue identity,
   = the sequence-aware statistic (Δ +0.001), beats a contact-count baseline, adds to burial
-  (ΔAUROC +0.048). The model's own *confidence* is useless (AUROC 0.54); its *partner-sensitivity*
-  carries the signal. → §4.2d-bis, kl_analysis.
+  (ΔAUROC +0.048). **The nugget:** the model's own **confidence** is near-chance for hotspots (AUROC 0.527)
+  and naively adding it to burial even HURTS (ΔAUROC −0.048 [−0.083,−0.014], P=0.002 — it is near-noise);
+  only **partner-sensitivity** adds (burial+KL +0.064 [+0.037,+0.091]). *The quantity a designer would
+  naively trust is useless; the free, sequence-free partner-sensitivity signal is what carries it.*
+  → confidence_antipredicts.csv, kl_analysis.
 - **The detector is actionable (candidate method contribution).** Framed as design-time triage — a
   fixed budget of k interface positions per complex to receive expensive binding-aware optimization —
   ranking by KL+burial captures significantly more experimental hotspots than the burial heuristic:
@@ -91,30 +96,35 @@ co-design model).
   it. → §3.2.
 - **Figure 2:** the bound-vs-unbound 2×2 interaction + the KL detector AUROC panel.
 
-**5. The tax appears on non-native backbones.** *(the central positive result)*
-- Exp A: on OpenFold3-predicted backbones (templates off; crystal control reproduces to 4e-16) the
-  burial-matched deficit appears, SECONDARY-B −0.19 [−0.37, −0.004], paired Δ −0.15 [−0.28, −0.03],
-  as large at high pTM as low (backbone-error artifact ruled out); KL strengthens (+0.062 vs +0.048)
-  and is more robust to backbone noise than burial. → FINDINGS_expA.md.
-- Exp C: on partial-diffusion GENERATIVE backbones the result is MIXED and reported as such. The
-  sequence-free KL detector TRANSFERS (ΔAUROC-over-burial +0.083/+0.094/+0.086 at partial_T 5/10/20,
-  interface-formed, nanpercentile CI excludes zero) — now holds across crystal→predicted→generative, the
-  one signal robust to all three backbone classes. The burial-matched log-prob gap is SUGGESTIVE, not
-  decisive: significant only at extreme drift (iRMSD≈18 Å, −0.88 [−1.11,−0.60]; re-match −0.61),
-  NON-monotone, and it does NOT survive the pre-registered iRMSD<3 Å confound (signal lives in the >10 Å
-  bin, interface marginal). KILL C1 passed; KILL C2 did not fire. Cause of the underpower, itself
-  reported: hotspot-free partial diffusion of a binder against a held target diverges on 62–75 % of
-  designs. A hotspot-conditioned re-run to resolve the physical-drift regime is a declared next step
-  (notes/SHERLOCK_HANDOFF_C2.md). → FINDINGS_expC.md.
-- Binding-relevant readout (the second ICLR gap, now CLOSED): ProteinMPNN's rank-correlation with
-  experimental SKEMPI ΔΔG_bind collapses −0.236 (crystal) → ≈−0.05 the moment the backbone leaves the
-  native manifold — the binding-relevant face of the tax. → FINDINGS_expC.md §6, expC_secondary.csv.
-- **Figure 3 (the money figure), reframed to what the data support — "what survives as the backbone
-  leaves the native manifold":** KL ΔAUROC stays UP (+0.05→+0.10) across crystal→predicted→generative-
-  interface-formed, while the sequence-COUPLED readouts DECAY (ΔΔG rank-corr −0.24→−0.05; the log-prob
-  gap appears only at non-physical drift). The transferable signal is the sequence-free detector; the
-  sequence-coupled quantities degrade with the backbone. (If the C2 re-run lands a clean physical-regime
-  dose-response, Fig 3 upgrades to the monotone-deficit curve; either way the figure is honest.)
+**5. The tax appears on *independently-reconstructed* backbones — and it is predictor-general.** *(the central positive)*
+- **The headline is cross-predictor reproducibility, not any single deficit.** On backbones from TWO
+  architecturally-independent folders — OpenFold3 (Exp A) and AF2-multimer (Exp D) — the burial-matched
+  hotspot deficit appears (SECONDARY-B −0.191 [−0.37,−0.004] and −0.233 [−0.44,−0.035]; crystal ≈ 0,
+  reproduces to 4e-16), and — the decisive readout — **the two predictors' per-complex deficits correlate
+  ρ = +0.565 [+0.40,+0.71] (Pearson +0.62, n=127): the SAME complexes are hard under both.** A per-predictor
+  memorization/architecture artifact would give *disjoint* deficits; instead two independent reconstructions
+  agree, in magnitude and per complex — a **quasi-ensemble** result that is the robust anchor of the claim.
+  → FINDINGS_expA.md, FINDINGS_expD.md §4.
+- **Honest framing, up front (answers the adversarial review).** Each single predictor's deficit is
+  MARGINAL — neither survives dropping its top-3 supporting complexes (the SAME 3 under both) — so the claim
+  rests on cross-predictor agreement, not a lone −0.19/−0.23. The symmetric leverage jackknife was applied
+  identically to OF3, AF2 AND C2: no pre-registration asymmetry. → FINDINGS_expD.md §5.
+- **It is independent-reconstruction, not distance-from-native.** On partial-diffusion GENERATIVE backbones
+  (Exp C2 — *noised crystals* at the same iRMSD) the deficit is ABSENT (binned gap flat/positive); the
+  pre-registered slope "fired" but was a near-crystal leverage artifact (all three views — slope, leverage
+  sensitivity, flat-positive bins — reported). So the deficit tracks the *type* of non-nativeness (independent
+  reconstruction), not how far the backbone drifted. → FINDINGS_expC2.md.
+- **The sequence-free KL detector generalises across FOUR backbone classes** — crystal +0.048, OpenFold3
+  +0.062, generative/C2 +0.06–0.07, AF2-multimer +0.054 (every CI excludes zero) — and is STRONGER where the
+  backbone is well-predicted (+0.092 at high pTM): it works best exactly where designers have good backbones.
+  → FINDINGS_expD.md §3, kl_analysis.
+- Binding-relevant readout: ProteinMPNN's rank-correlation with experimental ΔΔG_bind collapses −0.236
+  (crystal) → ≈−0.05 off the native manifold — the binding-relevant face. → FINDINGS_expC2.md §6.
+- **Figure 3 (the money figure): "what survives as the backbone leaves the native manifold."** LEFT: the
+  AF2-vs-OF3 per-complex deficit scatter (ρ=+0.57) — two independent predictors agree on which complexes are
+  hard. RIGHT: KL ΔAUROC holds across the four backbone classes while the sequence-COUPLED readouts (ΔΔG
+  rank-corr; the log-prob deficit off the prediction manifold) decay. The robust, transferable signal is the
+  sequence-free detector; the sequence-coupled quantities degrade with the backbone.
 
 **6. It is the conditioning geometry, not the schedule or the sample budget.** *(ruling out competitors)*
 - N_hot: the T=0.1 constellation cost is ~10^10 but statistically identical at burial-matched
