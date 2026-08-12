@@ -1,0 +1,3 @@
+analysis,recov_hot,recov_nonhot,gap,lo,hi,p_gt0,n_cx,pairs_kept,pairs_dropped,coverage_interface,seed,command
+uncontrolled_hot_minus_nonhot,0.5329863071710897,0.42127628634035774,0.11171002083073207,0.03625640593637143,0.18879311869933973,0.9983,92,,,0.8202716823406478,20260803,python3 src/probid_gap.py --pairs results/p0_dssp_pairs_SECONDARY_B_any_interface.csv --out results/probid_gap.csv
+burial_matched::p0_dssp_pairs_SECONDARY_B_any_interface.csv,,,-0.042045454545454546,-0.14727651515151516,0.0670719696969697,0.2168,110,285.0,99.0,0.8202716823406478,20260803,python3 src/probid_gap.py --pairs results/p0_dssp_pairs_SECONDARY_B_any_interface.csv --out results/probid_gap.csv
