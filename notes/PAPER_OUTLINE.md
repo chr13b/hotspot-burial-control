@@ -49,9 +49,11 @@ co-design model).
   predictors (cross-predictor per-complex ρ=+0.57), is absent on noised-crystal generative backbones
   (so it is *independent-reconstruction*, not distance-from-native), and a sequence-free **partner-
   sensitivity** signal detects it across four backbone classes — while the model's own **confidence** does
-  NOT (near-chance; naively hurts); (iii) that signal is actionable as a fixed-budget triage readout
-  (KL+burial capture@3 +0.098 [+0.021,+0.175], n=106; crystal proof-of-concept, non-native validation
-  pending #12); (iv) two competing mechanisms (constellation cost, commitment ordering) measured and refuted.
+  NOT (near-chance; naively hurts); (iii) that signal is a **validated design-time method** — as a
+  fixed-budget triage ranker KL+burial captures more experimental hotspots than the burial heuristic,
+  holding on crystal AND on the OpenFold3 + AF2-multimer predicted backbones designers use (capture@3
+  +0.08–0.10, CIs exclude zero); (iv) two competing mechanisms (constellation cost, commitment ordering)
+  measured and refuted.
 
 **2. Setup and pre-registration.**
 - SKEMPI 2.0; hotspot = Ala-scan ΔΔG>1 (and strict >2, ProBID-Net's threshold); null |ΔΔG|<0.25.
@@ -82,15 +84,17 @@ co-design model).
   only **partner-sensitivity** adds (burial+KL +0.064 [+0.037,+0.091]). *The quantity a designer would
   naively trust is useless; the free, sequence-free partner-sensitivity signal is what carries it.*
   → confidence_antipredicts.csv, kl_analysis.
-- **The detector is actionable (candidate method contribution).** Framed as design-time triage — a
+- **The detector is actionable — a validated design-time method (#12).** Framed as design-time triage — a
   fixed budget of k interface positions per complex to receive expensive binding-aware optimization —
   ranking by KL+burial captures significantly more experimental hotspots than the burial heuristic:
   capture@3 0.237 vs 0.139 (Δ +0.098 [+0.021,+0.175], P=0.99, n=106); capture@25% Δ +0.089
   [+0.009,+0.169]. The gain is a general additive property of KL, **not** specific to positions the
-  model is uncertain about (niche AUROC Δ −0.002, null) — reported as such. Crystal proof-of-concept;
-  the design-time claim is validated on the predicted/generative KL tables (where KL strengthens)
-  before it enters as a method. → src/kl_triage.py, results/kl_triage.csv. [crystal done; non-native
-  validation PENDING]
+  model is uncertain about (niche AUROC Δ −0.002, null) — reported as such. **VALIDATED as a design-time
+  method (#12 discharged):** the capture@k advantage holds on the non-native backbones designers use —
+  OpenFold3 +0.083 [+0.013,+0.155] and the independent AF2-multimer +0.087 [+0.018,+0.158] (both budgets,
+  CIs exclude zero, at crystal magnitude; generative arm positive but underpowered, n=9). It enters the
+  paper as a validated design-time method, not crystal-only. → src/kl_triage.py, results/kl_triage_exp{A,D}.csv,
+  FINDINGS_kl_triage.md §4.
 - Why crystal backbones hide it: they are carved by the side chains being predicted, so the model
   already has the partner information that makes the frustrated residue favourable and never pays for
   it. → §3.2.
@@ -103,8 +107,10 @@ co-design model).
   reproduces to 4e-16), and — the decisive readout — **the two predictors' per-complex deficits correlate
   ρ = +0.565 [+0.40,+0.71] (Pearson +0.62, n=127): the SAME complexes are hard under both.** A per-predictor
   memorization/architecture artifact would give *disjoint* deficits; instead two independent reconstructions
-  agree, in magnitude and per complex — a **quasi-ensemble** result that is the robust anchor of the claim.
-  → FINDINGS_expA.md, FINDINGS_expD.md §4.
+  agree, in magnitude and per complex. We call this **cross-predictor reproducibility** — independent
+  replication across two architectures, the robust anchor of the claim. (Precise term deliberately: it is
+  *not* an ensemble in the modelling sense — we do not combine predictors into one, we show two
+  independently-trained ones agree; "ensemble" would misdescribe it.) → FINDINGS_expA.md, FINDINGS_expD.md §4.
 - **Honest framing, up front (answers the adversarial review).** Each single predictor's deficit is
   MARGINAL — neither survives dropping its top-3 supporting complexes (the SAME 3 under both) — so the claim
   rests on cross-predictor agreement, not a lone −0.19/−0.23. The symmetric leverage jackknife was applied
