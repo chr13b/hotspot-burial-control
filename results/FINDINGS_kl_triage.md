@@ -108,8 +108,26 @@ predicted backbones (CIs exclude zero, at crystal magnitude), so the method clai
 and enters the paper — no longer gated. The RFdiffusion generative arm is underpowered (9 complexes) but
 shares the positive sign.
 
+## Lever 2 — binding-energy-weighted readout (kcal/mol)  [added 2026-08-13]
+
+Reviewers ask "your readout isn't binding." This re-expresses the same triage in EXPERIMENTAL binding
+free energy. Among interface residues with an Ala-scan measurement (111 complexes, 1325 positions, mean
+Σ max(ΔΔG,0) = 16 kcal/mol per complex), energy-capture@k = fraction of the complex's total binding energy
+in the top-k positions by each ranker. Complex bootstrap, seed 20260803. → `src/kl_triage_energy.py`,
+`results/kl_triage_energy.csv`.
+
+- **Top-3 budget:** KL+burial captures **51.3%** of total interface binding energy vs **49.5%** for burial
+  — Δ = +0.018 [−0.002,+0.039] (P=0.96), **+0.32 kcal/mol [+0.01,+0.65]** (absolute-kcal CI excludes 0).
+  Robust to the ΔΔG column (ddG_max: +0.31 kcal, same story). KL alone ≈ burial (+0.002, null).
+- **25% budget:** no gain (Δ −0.006, null; KL alone −0.025, P=0.05).
+- Reading: the count-based capture@3 advantage translates to a **modest but real kcal/mol gain**,
+  concentrated at small budgets — the payoff is now in experimental binding units, not a model score. It is
+  modest because the highest-ΔΔG positions are often the most buried (which burial already ranks), leaving
+  little for KL to add on energy; honest, and still the binding-relevant readout the method needs.
+
 ## Files
 - `src/kl_triage.py` — the triage prototype (capture@k, AUROC, niche; complex bootstrap).
+- `src/kl_triage_energy.py`, `results/kl_triage_energy.csv` — Lever 2 binding-energy-weighted capture (kcal/mol).
 - `src/expD_build_triage_c2.py` — builds the Exp C2 interface-formed per-position joined table.
 - `results/kl_triage.csv` — crystal estimates, CIs, P-values (the trace for every crystal number above).
 - `results/kl_triage_expA.csv`, `results/kl_triage_expD.csv`, `results/kl_triage_expC2.csv` — the three

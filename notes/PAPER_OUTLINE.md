@@ -83,19 +83,20 @@ co-design model).
 - **Five architectures agree** (every PRIMARY CI contains zero); junction control on the single-chain
   models. → §2.5b. ProBID-Net's gap reproduced uncontrolled (+0.08 here) then dissolved under
   matching; four of five candidate causes for their sign eliminated. → §2.2, §4.2e.
-- **ProBID-Net's own released voxel-CNN, run on our fixture (#4-full) — a nuanced supporting result,
-  honestly downgraded after an adversarial audit (2026-08-12).** The port is faithful (overall interface
+- **ProBID-Net's own released voxel-CNN, run on our fixture (#4-full) — a reproduce-and-dissolve correction to
+  ProBID-Net on its own model (audited + independently re-verified 2026-08-13).** The port is faithful (overall interface
   recovery 0.472 = their reported non-hotspot number). Their hotspot deficit **does reproduce** on our
   fixture under the like-for-like per-residue estimator, concentrated in comprehensively-Ala-scanned
-  complexes (≥5 measured hotspots: −0.113 [−0.208,−0.022], p=0.007); the whole-fixture hotspot-weighted
-  gap is null (+0.014 [−0.052,+0.087]). It is largely a **residue-composition** effect — ProBID recall
+  complexes (≥5 measured hotspots: −0.113 [−0.208,−0.022], p=0.007); the reproduction is robust to leave-one-out (LOO means stay in [-0.13,-0.08]) and deepens with scan
+  depth (Spearman -0.20, p=0.06). The whole-fixture average is diluted toward zero by sparsely-scanned
+  complexes where a "hotspot" is 1-2 noisy residues (hotspot-weighted +0.014 [−0.052,+0.087]). It is largely a **residue-composition** effect — ProBID recall
   spans 0.17 (R) to 0.98 (P) and hotspots are enriched in its worst types (WYFRMH 47% vs 22%, GP 3% vs
-  12%) — plus burial: no matched control shows a significant negative deficit (AA-matched +0.120
+  12%) — plus burial. It **dissolves under confound-matching**: matching residue type flips it positive (AA-matched +0.120
   [−0.060,+0.300], n=25; burial-matched −0.038 [−0.139,+0.071]; hydrophobicity-matched −0.051), every CI
   spanning zero. **Correction:** an earlier draft called this an "opposite-sign, fixture-specific" sixth
   architecture null (+0.098); that was a complex-averaging + AA-composition artifact and is **withdrawn**.
   The honest reading: their deficit reproduces and is a composition/burial confound — consistent with the
-  thesis via a *different* confound than burial alone, not a clean sixth null. → probid_gap_estimators.csv, §4.2e.
+  thesis via a *different* confound than burial alone, not a clean sixth null (the comprehensively-scanned stratum is post-hoc but robust and principled). → probid_gap_estimators.csv, §4.2e.
 - **Figure 1:** the confound (recovery vs burial by hotspot class) + the matched-pair forest plot
   across 5 models.
 
@@ -119,7 +120,11 @@ co-design model).
   method (#12 discharged):** the capture@k advantage holds on the non-native backbones designers use —
   OpenFold3 +0.083 [+0.013,+0.155] and the independent AF2-multimer +0.087 [+0.018,+0.158] (both budgets,
   CIs exclude zero, at crystal magnitude; generative arm positive but underpowered, n=9). It enters the
-  paper as a validated design-time method, not crystal-only. → src/kl_triage.py, results/kl_triage_exp{A,D}.csv,
+  paper as a validated design-time method, not crystal-only. **In binding units (Lever 2):**
+  among interface residues with Ala-scan data, the top-3 KL+burial positions capture more of the complex's
+  total *experimental* binding free energy than burial alone — 51.3% vs 49.5%, +0.32 kcal/mol [+0.01,+0.65]
+  (fractional +1.8pp, P=0.96; modest, small-budget-only, null at 25%) — the payoff in experimental kcal/mol,
+  not a model score. → src/kl_triage_energy.py, results/kl_triage_energy.csv. → src/kl_triage.py, results/kl_triage_exp{A,D}.csv,
   FINDINGS_kl_triage.md §4.
 - Why crystal backbones hide it: they are carved by the side chains being predicted, so the model
   already has the partner information that makes the frustrated residue favourable and never pays for
@@ -242,7 +247,7 @@ and the generator was unstable. NET (post-C2 / post-Exp D / post-#12): TMLR stro
 honest, self-correcting). ICLR ~0.45. The C2 lever resolved as a *split*: the clean log-prob dose-response
 is a prediction-specific null (reported as such, not upgraded), but the load-bearing spine strengthened —
 (a) the burial correction spans **five architectures** (ProBID-Net's own model, run separately, shows its
-deficit is a residue-composition + burial confound, not a clean sixth null — see §3, corrected after audit);
+deficit is reproduces its published deficit and shows it is a residue-composition + burial confound — see §3, corrected after audit);
 (b) the sequence-free **KL detector generalises across all four backbone classes**; (c) KL-triage is
 **validated as a design-time method** on the non-native backbones designers use (#12, capture@3 +0.08–0.09
 on OpenFold3 and AF2-multimer); (d) **cross-predictor reproducibility** (Exp D: OpenFold3 and AF2-multimer
