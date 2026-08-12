@@ -20,13 +20,26 @@ elsewhere. We show, pre-registered across five inverse-folding architectures on 
 **native crystal backbones this gap is entirely a burial confound**: matched within complex for
 solvent exposure, secondary structure and packing, hotspots are recovered no worse than non-hotspot
 interface positions. But native crystal backbones are carved by the very side chains being predicted.
+Even on that crystal backbone, asking *what does* flag a hotspot exposes the core asymmetry: **the one
+quantity a designer would naively trust — the model's own confidence — is near-chance at hotspots (AUROC
+0.53), and adding it to a burial heuristic even hurts; the signal that works is free and sequence-free —
+the partner-induced shift in the model's backbone-only distribution (KL), needing no residue identity and
+no binding-energy term.**
 On **OpenFold3-predicted** backbones of the same complexes the burial-matched deficit **appears**
 (−0.19 nats, paired Δ −0.15), as large where the prediction is accurate as where it is not. A
 **sequence-free** signal — the partner-induced shift in the model's backbone-only distribution —
 predicts where, strengthens on the predicted backbones, and **transfers to RFdiffusion generative
 backbones** wherever a physical interface forms [Exp C]; on those same generative backbones the raw
 log-prob deficit is present only at large backbone drift and the binding-energy ranking collapses off
-the native manifold — a mixed result we report as such. The tax is
+the native manifold — a mixed result we report as such.
+Crucially the deficit is **predictor-general, not a per-model artifact**: on backbones from a second,
+architecturally-independent folder (AF2-multimer) the same burial-matched deficit emerges (−0.23 nats),
+and the two predictors' per-complex deficits correlate (ρ = +0.57, n=127) — the *same complexes* are hard
+under both. It is absent on noised-crystal generative backbones at equal distance, so it tracks
+*independent reconstruction*, not distance-from-native. And the sequence-free KL signal is not merely
+diagnostic: as a fixed-budget design-time triage ranker it captures significantly more experimental
+hotspots than the burial heuristic on the predicted backbones designers actually use (capture@3
++0.08–0.09, CIs exclude zero) — a validated method. The tax is
 real but it is a property of the **conditioning set**, not of hotspot chemistry: the field benchmarks
 on crystal backbones, which hide it, while designers work on non-native backbones, where it bites.
 Two proposed alternative mechanisms — a low-temperature constellation cost and a commitment-ordering
@@ -42,7 +55,7 @@ co-design model).
   term, misses them. → BRIEF §2.1.
 - ProBID-Net's 0.334/0.472 gap and its dynamics attribution; the confound nobody controlled: hotspots
   are buried, and burial is where inverse folding is *most* confident.
-- Contributions: (i) the gap is a burial artifact on crystal backbones (5 models, pre-registered) —
+- Contributions: (i) the gap is a burial artifact on crystal backbones (five architectures, pre-registered) —
   and the burial-matched matched-pair design is offered as a reusable **protocol/benchmark** for
   evaluating inverse folding at interface hotspots without the confound; (ii) the tax is real and lives
   in the conditioning set — a burial-matched deficit appears on the backbones of TWO independent structure
@@ -70,6 +83,19 @@ co-design model).
 - **Five architectures agree** (every PRIMARY CI contains zero); junction control on the single-chain
   models. → §2.5b. ProBID-Net's gap reproduced uncontrolled (+0.08 here) then dissolved under
   matching; four of five candidate causes for their sign eliminated. → §2.2, §4.2e.
+- **ProBID-Net's own released voxel-CNN, run on our fixture (#4-full) — a nuanced supporting result,
+  honestly downgraded after an adversarial audit (2026-08-12).** The port is faithful (overall interface
+  recovery 0.472 = their reported non-hotspot number). Their hotspot deficit **does reproduce** on our
+  fixture under the like-for-like per-residue estimator, concentrated in comprehensively-Ala-scanned
+  complexes (≥5 measured hotspots: −0.113 [−0.208,−0.022], p=0.007); the whole-fixture hotspot-weighted
+  gap is null (+0.014 [−0.052,+0.087]). It is largely a **residue-composition** effect — ProBID recall
+  spans 0.17 (R) to 0.98 (P) and hotspots are enriched in its worst types (WYFRMH 47% vs 22%, GP 3% vs
+  12%) — plus burial: no matched control shows a significant negative deficit (AA-matched +0.120
+  [−0.060,+0.300], n=25; burial-matched −0.038 [−0.139,+0.071]; hydrophobicity-matched −0.051), every CI
+  spanning zero. **Correction:** an earlier draft called this an "opposite-sign, fixture-specific" sixth
+  architecture null (+0.098); that was a complex-averaging + AA-composition artifact and is **withdrawn**.
+  The honest reading: their deficit reproduces and is a composition/burial confound — consistent with the
+  thesis via a *different* confound than burial alone, not a clean sixth null. → probid_gap_estimators.csv, §4.2e.
 - **Figure 1:** the confound (recovery vs burial by hotspot class) + the matched-pair forest plot
   across 5 models.
 
@@ -115,6 +141,13 @@ co-design model).
   MARGINAL — neither survives dropping its top-3 supporting complexes (the SAME 3 under both) — so the claim
   rests on cross-predictor agreement, not a lone −0.19/−0.23. The symmetric leverage jackknife was applied
   identically to OF3, AF2 AND C2: no pre-registration asymmetry. → FINDINGS_expD.md §5.
+- **Exploratory mechanistic hint — the deficit is a burial phenomenon (post-hoc, labelled).** The
+  cross-predictor per-complex deficit is itself predictable from structure: more-buried interfaces carry
+  LARGER deficits (mean neighbour count ρ = −0.21 [−0.38,−0.04]; mean rSASA ρ = +0.34 [+0.19,+0.49];
+  n=127), even though the deficit is already burial-*matched within* each complex. The predicted-backbone
+  deficit thus concentrates in deeply-buried interfaces — exactly where inverse folding is most confident
+  and a predicted backbone's small errors bite hardest. KL and hotspot-count do NOT predict it; flagged
+  exploratory (post-hoc, not pre-registered). → deficit_predictors.csv.
 - **It is independent-reconstruction, not distance-from-native.** On partial-diffusion GENERATIVE backbones
   (Exp C2 — *noised crystals* at the same iRMSD) the deficit is ABSENT (binned gap flat/positive); the
   pre-registered slope "fired" but was a near-crystal leverage artifact (all three views — slope, leverage
@@ -167,11 +200,22 @@ co-design model).
 ## Figure inventory (4 main + appendix)
 1. The burial confound + 5-model matched forest plot. *(have)*
 2. The bound-vs-unbound interaction 2×2 + KL detector AUROC. *(have)*
-3. **Deficit vs backbone-distance-from-native (crystal→OpenFold3→partial-diffusion).** *(Exp C pending — the money figure)*
+3. **Deficit vs backbone-distance-from-native (crystal→OpenFold3→partial-diffusion).** *(landed: Exp C/C2/D — the money figure)*
 4. The two competing-mechanism nulls (N_hot control; commitment ordering on 2 model families). *(have)*
 Appendix: junction sensitivity, TOST/Holm, external ΔΔG validation, per-model panel, decoding-order spread.
 
 ## What must land before submission
+
+**Status update (2026-08-12).** Several "pending" items below have since landed — the list beneath is the
+original plan; current reality: Exp C2 ✅ (KL generalises; log-prob deficit is a prediction-specific null;
+the "pinning fix" was refuted — all reported honestly). KL-triage validation ✅ (#12: capture@k holds on
+OpenFold3 + AF2-multimer). Exp D / AF2-multimer 2nd predictor ✅ (D-PERSIST; cross-predictor ρ=+0.57).
+#4-full ✅ but DOWNGRADED after 2026-08-12 audit (ProBID-Net's deficit reproduces on our fixture and is a
+residue-composition + burial confound; the earlier "opposite-sign / fixture-specific" claim was withdrawn —
+see probid_gap_estimators.csv).
+Archive ✅ LFS purge-rescue done. **Still open:** Zenodo DOI at submission; optional AF2 ipTM design-loop
+readout; optional 2nd hotspot-label source (ASEdb/BID); and the lightweight **Bennett de-novo KL-detector
+check** (design-regime detector validation, in progress this session).
 - ~~Exp C dose-response~~ — DONE, landed **mixed**: KL transfers; the log-prob gap is suggestive-not-
   decisive and the clean dose-response did NOT materialize. See Exp C2 below.
 - ~~Binding readout~~ — DONE: ΔΔG rank-corr collapses −0.24 → −0.05 off-manifold. The binding gap is closed.
@@ -194,6 +238,14 @@ predicted; three competing mechanisms measured and adjudicated; unusually discip
 and self-correction (incl. reporting Exp C's log-prob gap as suggestive-not-decisive rather than
 upgrading it). AGAINST: single fixture (SKEMPI); recovery/log-prob primary readout; the clean
 design-regime *dose-response* did not land — the log-prob gap is confounded with interface dissolution
-and the generator was unstable. NET after Exp C: TMLR strong (~0.85, complete and honest); ICLR ~0.33,
-gated on the C2 hotspot-conditioned re-run landing a clean physical-regime result (or on the
-KL-transfer + benchmark-correction story carrying it without the dose-response).
+and the generator was unstable. NET (post-C2 / post-Exp D / post-#12): TMLR strong (~0.85 — complete,
+honest, self-correcting). ICLR ~0.45. The C2 lever resolved as a *split*: the clean log-prob dose-response
+is a prediction-specific null (reported as such, not upgraded), but the load-bearing spine strengthened —
+(a) the burial correction spans **five architectures** (ProBID-Net's own model, run separately, shows its
+deficit is a residue-composition + burial confound, not a clean sixth null — see §3, corrected after audit);
+(b) the sequence-free **KL detector generalises across all four backbone classes**; (c) KL-triage is
+**validated as a design-time method** on the non-native backbones designers use (#12, capture@3 +0.08–0.09
+on OpenFold3 and AF2-multimer); (d) **cross-predictor reproducibility** (Exp D: OpenFold3 and AF2-multimer
+agree per complex, ρ=+0.57) defuses the memorization/architecture confound that previously gated Result 3.
+The case is no longer hostage to a single unlanded experiment. Residual ceiling: single fixture (SKEMPI),
+recovery/log-prob primary readout, and no full generate→design→wet-lab loop.

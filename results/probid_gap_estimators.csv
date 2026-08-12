@@ -1,0 +1,36 @@
+analysis,gap,lo,hi,p_gt0,n_cx,note,seed,command
+uncontrolled_complex_avg_CONFOUNDED,0.098,0.0188,0.1759,0.994,96,artifact: 1-2-hotspot complexes dominate,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+uncontrolled_residue_pooled,0.0426,,,,,hot 0.4592/non 0.4165,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+uncontrolled_hotspot_weighted_LIKE4LIKE,0.0144,-0.0517,0.0872,0.671,96,matches their per-residue reporting -> NULL,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+uncontrolled_strat_nhot_ge2,0.0639,-0.0183,0.1456,0.933,61,comprehensively-scanned; hotspots=259,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+uncontrolled_strat_nhot_ge3,-0.0007,-0.0877,0.0867,0.492,44,comprehensively-scanned; hotspots=225,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+uncontrolled_strat_nhot_ge5,-0.1129,-0.2078,-0.0215,0.007,18,comprehensively-scanned; hotspots=136,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+matched::p0_dssp_pairs_AAMATCHED_any_interface.csv,0.12,-0.06,0.3,0.876,25,same_native_aa=1.00,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+matched::p0_dssp_pairs_EXPC_within_binder.csv,0.2293,0.0388,0.4268,0.99,27,same_native_aa=0.05,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+matched::p0_dssp_pairs_HYDROMATCHED_any_interface.csv,-0.0508,-0.1788,0.0818,0.223,69,same_native_aa=0.19,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+matched::p0_dssp_pairs_PRIMARY_loose_null.csv,0.0833,-0.1296,0.2963,0.763,27,same_native_aa=0.11,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+matched::p0_dssp_pairs_PRIMARY_loose_null_T293_303.csv,0.0938,-0.1146,0.3021,0.799,24,same_native_aa=0.10,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+matched::p0_dssp_pairs_SECONDARY_A_measured_nonhot.csv,0.0429,-0.1046,0.1918,0.721,47,same_native_aa=0.10,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+matched::p0_dssp_pairs_SECONDARY_B_any_interface.csv,-0.0377,-0.1393,0.0707,0.233,112,same_native_aa=0.07,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+matched::p0_dssp_pairs_SENS_nbr_tol2_any_interface.csv,-0.0798,-0.1776,0.019,0.061,117,same_native_aa=0.08,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+matched::p0_dssp_pairs_strict_hot2_null.csv,0.1923,-0.1538,0.5385,0.821,13,same_native_aa=0.10,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_A,0.5389,,,,579,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_C,0.4167,,,,252,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_D,0.5178,,,,674,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_E,0.3771,,,,541,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_F,0.56,,,,500,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_G,0.8805,,,,929,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_H,0.245,,,,302,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_I,0.465,,,,443,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_K,0.3707,,,,526,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_L,0.5929,,,,759,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_M,0.1982,,,,222,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_N,0.2208,,,,557,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_P,0.9814,,,,537,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_Q,0.339,,,,525,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_R,0.1735,,,,490,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_S,0.4244,,,,985,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_T,0.3038,,,,780,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_V,0.6288,,,,660,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_W,0.2254,,,,244,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
+recall_restype_Y,0.2893,,,,643,ProBID recall,20260803,python3 src/probid_estimators.py --out results/probid_gap_estimators.csv
