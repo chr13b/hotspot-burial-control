@@ -1,0 +1,11 @@
+model,actual_deficit,composition_predicted,frac_explained,hardest6,hot_frac_in_hard,non_frac_in_hard,n_hot,n_interface,command
+esmif,0.0147,-0.006,-0.41,QMKSHT,0.168,0.31,244.0,3709.0,python3 src/composition_confound.py
+mif,0.0394,-0.0288,-0.73,MQHKSN,0.185,0.316,325.0,5745.0,python3 src/composition_confound.py
+mpnn,0.0747,-0.0373,-0.5,MQHWKR,0.32,0.259,325.0,5745.0,python3 src/composition_confound.py
+pifold,0.0362,-0.0437,-1.21,MQKHER,0.283,0.296,325.0,5745.0,python3 src/composition_confound.py
+recall_corr::esmif_vs_mif,0.902,,,,,,,,python3 src/composition_confound.py
+recall_corr::esmif_vs_mpnn,0.874,,,,,,,,python3 src/composition_confound.py
+recall_corr::esmif_vs_pifold,0.896,,,,,,,,python3 src/composition_confound.py
+recall_corr::mif_vs_mpnn,0.896,,,,,,,,python3 src/composition_confound.py
+recall_corr::mif_vs_pifold,0.881,,,,,,,,python3 src/composition_confound.py
+recall_corr::mpnn_vs_pifold,0.878,,,,,,,,python3 src/composition_confound.py
