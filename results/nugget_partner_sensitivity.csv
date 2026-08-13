@@ -1,0 +1,8 @@
+metric,feature,value,lo,hi,p_gt0,seed,note,command
+auroc,burial,0.6887,0.6563,0.7196,,20260803,nugget: confidence HURTS over burial; partner-sensitivity (ΔSASA~KL) HELPS; ΔSASA needs no neural net,python3 src/nugget_partner_sensitivity.py
+auroc,ΔSASA(partner-contact),0.6727,0.6343,0.7142,,20260803,nugget: confidence HURTS over burial; partner-sensitivity (ΔSASA~KL) HELPS; ΔSASA needs no neural net,python3 src/nugget_partner_sensitivity.py
+auroc,KL(learned partner-sens.),0.6942,0.6585,0.7311,,20260803,nugget: confidence HURTS over burial; partner-sensitivity (ΔSASA~KL) HELPS; ΔSASA needs no neural net,python3 src/nugget_partner_sensitivity.py
+auroc,model confidence (logp),0.5377,0.5009,0.5759,,20260803,nugget: confidence HURTS over burial; partner-sensitivity (ΔSASA~KL) HELPS; ΔSASA needs no neural net,python3 src/nugget_partner_sensitivity.py
+dAUROC_over_burial,model confidence,-0.0561,-0.0894,-0.0221,0.0,20260803,nugget: confidence HURTS over burial; partner-sensitivity (ΔSASA~KL) HELPS; ΔSASA needs no neural net,python3 src/nugget_partner_sensitivity.py
+dAUROC_over_burial,ΔSASA (geometry),0.0421,0.0097,0.0764,0.995,20260803,nugget: confidence HURTS over burial; partner-sensitivity (ΔSASA~KL) HELPS; ΔSASA needs no neural net,python3 src/nugget_partner_sensitivity.py
+dAUROC_over_burial,KL (learned),0.041,0.0123,0.071,0.998,20260803,nugget: confidence HURTS over burial; partner-sensitivity (ΔSASA~KL) HELPS; ΔSASA needs no neural net,python3 src/nugget_partner_sensitivity.py
