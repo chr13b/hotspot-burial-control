@@ -1,0 +1,13 @@
+fixture,metric,value,lo,hi,p_gt0,seed,command
+SKEMPI_crystal,partial_KL_y|burial,0.0284,,,,20260803,python3 src/kl_geometry_control.py
+SKEMPI_crystal,partial_KL_y|dsasa,0.009,,,,20260803,python3 src/kl_geometry_control.py
+SKEMPI_crystal,partial_KL_y|burial+dsasa,-0.0215,,,,20260803,python3 src/kl_geometry_control.py
+SKEMPI_crystal,partial_KL_y|burial+nbr+dsasa,-0.0222,,,,20260803,python3 src/kl_geometry_control.py
+SKEMPI_crystal,dAUROC_KL_over_burial_alone,0.041,0.0123,0.0706,0.998,20260803,python3 src/kl_geometry_control.py
+SKEMPI_crystal,dAUROC_KL_over_full_geometry,0.0074,-0.0036,0.0189,0.899,20260803,python3 src/kl_geometry_control.py
+Bennett_denovo,partial_KL_y|burial,0.0507,,,,20260803,python3 src/kl_geometry_control.py
+Bennett_denovo,partial_KL_y|dsasa,0.1288,,,,20260803,python3 src/kl_geometry_control.py
+Bennett_denovo,partial_KL_y|burial+dsasa,-0.0276,,,,20260803,python3 src/kl_geometry_control.py
+Bennett_denovo,partial_KL_y|burial+nbr+dsasa,-0.0347,,,,20260803,python3 src/kl_geometry_control.py
+Bennett_denovo,dAUROC_KL_over_burial_alone,-0.0115,-0.025,0.0026,0.06,20260803,python3 src/kl_geometry_control.py
+Bennett_denovo,dAUROC_KL_over_full_geometry,-0.0123,-0.0189,-0.0054,0.0,20260803,python3 src/kl_geometry_control.py
