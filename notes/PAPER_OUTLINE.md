@@ -109,6 +109,13 @@ co-design model).
   architecture null (+0.098); that was a complex-averaging + AA-composition artifact and is **withdrawn**.
   The honest reading: their deficit reproduces and is a composition/burial confound — consistent with the
   thesis via a *different* confound than burial alone, not a clean sixth null (the comprehensively-scanned stratum is post-hoc but robust and principled). → probid_gap_estimators.csv, §4.2e.
+- **Residue-type composition is stereotyped but NOT the deficit driver (composition_confound.csv).** Per-
+  residue-type recall is remarkably consistent across ESM-IF1 / MIF / ProteinMPNN-soluble / PiFold (Spearman
+  0.87–0.90) — all inverse-folding models recover the same types (M/Q/K/H/R/W) worst. But on SKEMPI the
+  uncontrolled hotspot deficit is POSITIVE (burial-driven, +0.02…+0.08) and composition-predicted deficits
+  are small/negative — so **BURIAL, not composition, is the dominant confound here**; ProBID-Net's
+  composition-driven deficit reflects its voxel-CNN's unusually extreme type-dependence (0.17–0.98), not a
+  general law. Reinforces burial as *the* confound. → §2.2, composition_confound.csv.
 - **Figure 1:** the confound (recovery vs burial by hotspot class) + the matched-pair forest plot
   across 5 models.
 

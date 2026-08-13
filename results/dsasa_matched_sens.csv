@@ -1,0 +1,4 @@
+pairs_file,n_pairs,n_cx,dsasa_imbalance,imb_lo,imb_hi,raw_deficit,raw_lo,raw_hi,dsasa_adjusted_deficit,adj_lo,adj_hi,seed,command
+p0_dssp_pairs_SECONDARY_B_any_interface.csv,384,129,0.072,0.0453,0.1003,-0.0421,-0.2205,0.1292,-0.0281,-0.2221,0.1652,20260803,python3 src/dsasa_matched_sens.py
+p0_dssp_pairs_AAMATCHED_any_interface.csv,51,38,0.0601,0.001,0.1212,0.2887,-0.1691,0.7499,0.3296,-0.1853,0.8282,20260803,python3 src/dsasa_matched_sens.py
+p0_dssp_pairs_PRIMARY_loose_null.csv,47,31,0.0244,-0.0238,0.073,0.4201,-0.0516,0.8849,0.4463,-0.054,0.9339,20260803,python3 src/dsasa_matched_sens.py
