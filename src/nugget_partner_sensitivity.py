@@ -76,7 +76,10 @@ def main():
                          hi=round(hi, 4), p_gt0=round(p, 3)))
 
     out = pd.DataFrame(rows); out["seed"] = SEED
-    out["note"] = "nugget: confidence HURTS over burial; partner-sensitivity (ΔSASA~KL) HELPS; ΔSASA needs no neural net"
+    out["note"] = ("nugget (combiner-free): confidence near-chance (AUROC 0.538) and ranks BELOW random for "
+                   "top-3 triage (capture@3 0.064<0.084), adds ~nothing beyond geometry (partial|full=-0.01, null); "
+                   "the z-sum -0.056 'HURTS' OVERSTATES (combiner artifact -- restate via CPI). Partner-sensitivity "
+                   "ΔSASA (+0.042, no neural net) HELPS as much as learned KL (+0.041).")
     out["command"] = "python3 src/nugget_partner_sensitivity.py"
     out.to_csv(a.out, index=False)
     print(f"\nwrote {a.out}")

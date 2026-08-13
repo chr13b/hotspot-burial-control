@@ -22,9 +22,10 @@ solvent exposure, secondary structure and packing, hotspots are recovered no wor
 interface positions. But native crystal backbones are carved by the very side chains being predicted.
 Even on that crystal backbone, asking *what does* flag a hotspot exposes the core asymmetry: **the one
 quantity a designer would naively trust — the model's own confidence — is near-chance at hotspots (AUROC
-0.53), and adding it to a burial heuristic even hurts; the signal that works is free and sequence-free —
-the partner-induced shift in the model's backbone-only distribution (KL), needing no residue identity and
-no binding-energy term.**
+0.53), and it ranks hotspots BELOW random for top-3 triage (0.064 vs 0.084) — carrying no information
+beyond geometry; the signal that works needs no network at all: a trivial partner-contact-area feature
+(ΔSASA) predicts hotspots as well as any learned signal.** [combiner-free; the z-sum "hurts" number retired
+per the baseline audit — restate rigorously via conditional predictive impact (CPI).]
 On **OpenFold3-predicted** backbones of the same complexes the burial-matched deficit **appears**
 (−0.19 nats, paired Δ −0.15), as large where the prediction is accurate as where it is not. A
 **sequence-free** signal — the partner-induced shift in the model's backbone-only distribution —
