@@ -59,6 +59,12 @@ co-design model).
 > diagnostic protocol** (not a benchmark; ProtDBench exists) — AFTER the decisive predicted-backbone ΔSASA
 > control (R1, notes/SHERLOCK_HANDOFF_dsasa.md; CPU-only), which decides ICLR (KL earns its keep off the
 > native manifold, unifying the story on one axis) vs TMLR (honest correction). idea-critic verdict: REFINE.
+> **R1 RESOLVED (2026-08-13, c59688e).** KL adds ≈0 over full geometry on OF3 (+0.008) and AF2 (+0.005) too
+> — scalar-KL-as-method is demoted on ALL 4 backbone classes (crystal/OF3/AF2/Bennett). **But Big Idea 1
+> (P3-fire) supplies a POSITIVE** — partner-conditioning adds interface-binding information (the *full*
+> distribution, not the scalar KL). So the venue no longer hinges on this; the reframe can now proceed
+> **nugget-forward + Big-Idea-1-forward**, with the scalar KL demoted to "a learned frustratometer that
+> equals the classical geometry."
 
 ## Section map
 

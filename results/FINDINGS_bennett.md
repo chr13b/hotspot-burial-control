@@ -68,7 +68,9 @@ via geometry it does not improve on.
   the geometry ranker **HURTS** AUROC (0.734→0.721). The CV-logistic +0.005 has a CI spanning zero
   (one-sided p≈0.07) — a null, not a positive. The naive rank-avg −0.003 is separately a dilution artifact,
   but the fair verdict from the full baseline is the same: **on these de-novo binders KL provides no
-  advantage over trivial geometry.** (My earlier "DOES add" was a second over-correction; withdrawn.)
+  advantage over trivial geometry.** **[Update after R1 (c59688e): the "HURTS" / partial −0.06 here were
+  fragile-metric reads (partial sign flips +0.03..−0.06 by ΔSASA flavour); the robust ΔAUROC is a NULL — KL
+  adds ≈0, consistent across crystal/OF3/AF2/de-novo. The anchor is ΔAUROC, not the partial.]** (My earlier "DOES add" was a second over-correction; withdrawn.)
 
 ## Interpretation and caveats (report as such)
 

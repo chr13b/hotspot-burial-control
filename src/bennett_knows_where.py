@@ -128,7 +128,9 @@ def main():
                                      P=float(Pv[IDX[sub]]), Q=float(Qv[IDX[sub]]),
                                      blosum=float(B[native, sub]),
                                      vol=-abs(VOL[sub] - VOL[native]),
-                                     hydro=-abs(fc.KD_HYDRO[sub] - fc.KD_HYDRO[native])))
+                                     hydro=-abs(fc.KD_HYDRO[sub] - fc.KD_HYDRO[native]),
+                                     dsasa=float(dsasa), sub_vol=VOL[sub], nat_vol=VOL[native],
+                                     rsasa=float(rsasa) if np.isfinite(rsasa) else np.nan))
     d = pd.DataFrame(recs)
     d.to_csv(a.out.replace(".csv", "_pairs.csv"), index=False)
     print(f"pairs: {len(d)}  layers={d.groupby('layer').size().to_dict()}  "
