@@ -210,6 +210,25 @@ co-design model).
   the Tsuboyama+SKEMPI fixture with a folding-energy-difference parameterization; distinct question).
   Refolding-limitations (self-consistency oracles are biased; why we report recovery + a binding
   readout, not a fold-and-score number as primary).
+- **Prior art we MUST cite and differentiate (added 2026-08-13; ✎ verify each URL before submission —
+  BAIF/DeSAE/CPI abstracts fetched, the rest search-only/unverified):** *Frustratometer* (Ferreiro/Parra,
+  NAR 2012 & 2016) — partner-induced local-frustration change at interfaces is a 2012 statistical-mechanics
+  result; our KL is essentially a **learned frustratometer**, and KL≈ΔSASA means the neural version does not
+  beat the classical geometry. Cite as the physics ancestor, not an ignored competitor. *BAIF* (arXiv
+  2410.09543, 2024) — inverse-folding log-likelihood over bound-vs-unbound states (the same two conditioning
+  sets) for ΔΔG; **closest prior art.** We differ: a per-*substitution* experimental-binding test of the
+  full conditional distribution, stratified stability-vs-binding (Big Idea 1), not a mutation-level ΔΔG
+  cycle. *HotPoint/DBAC* (2010–11) — burial-based hotspot prediction beat ML a decade ago, so geometry is a
+  **cautionary contrast** against the current IF-for-hotspots wave, NEVER "geometry predicts hotspots."
+- **The BindCraft hook (field relevance):** the leading one-shot binder pipeline hard-codes a **4 Å
+  interface freeze that forbids inverse folding at the interface** — the field's *implicit admission* of our
+  thesis. We give that hack its measurement (confidence ranks interface hotspots below random; ΔSASA beats
+  the 4 Å contact set at matched budget) and a principled replacement.
+- **Conditioning-aware IF (concurrent, must position against):** AlphaFold-DB debiasing (DeSAE, arXiv
+  2506.08365), target-conditioned inverse folding, UMA-Inverse — methods that *presuppose* the conditioning-
+  set problem; we *measure* it and show the benchmark hides it. Surf2Spot (supervised hotspot predictor)
+  owns the method lane → we stay a measurement/correction. ProtDBench occupies the benchmark slot → we offer
+  the matched-pair design as a drop-in **protocol**.
 
 **8. Limitations (stated up front, not buried).**
 - Training leakage: every SKEMPI complex predates every checkpoint — but this makes the predicted-
