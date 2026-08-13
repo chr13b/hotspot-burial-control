@@ -1,0 +1,4 @@
+test,cpi,lo,hi,p_gt0,verdict,seed,note,command
+confidence | burial+nbr+ΔSASA,0.0,-0.00029,0.0003,0.499,conditionally INDEPENDENT (CI spans 0),20260803,CPI>0 => feature adds beyond controls; ~0 => conditional independence. confidence|geometry ~0 is the combiner-free nugget,python3 src/nugget_cpi.py
+ΔSASA | burial+nbr,0.01285,0.00917,0.0168,1.0,ADDS (CI>0),20260803,CPI>0 => feature adds beyond controls; ~0 => conditional independence. confidence|geometry ~0 is the combiner-free nugget,python3 src/nugget_cpi.py
+KL | burial+nbr+ΔSASA,0.00201,0.0006,0.0034,0.998,ADDS (CI>0),20260803,CPI>0 => feature adds beyond controls; ~0 => conditional independence. confidence|geometry ~0 is the combiner-free nugget,python3 src/nugget_cpi.py
