@@ -108,7 +108,15 @@ predicted backbones (CIs exclude zero, at crystal magnitude), so the method clai
 and enters the paper — no longer gated. The RFdiffusion generative arm is underpowered (9 complexes) but
 shares the positive sign.
 
-## Lever 2 — binding-energy-weighted readout (kcal/mol)  [added 2026-08-13]
+## Lever 2 — binding-energy-weighted readout (kcal/mol)  [added 2026-08-13; **WITHDRAWN 2026-08-13**]
+
+**⚠️ WITHDRAWN — baseline artifact.** The +0.32 kcal/mol advantage below is KL+burial vs the *neighbour-count*
+baseline (`nbr`). Against the rSASA-burial the rest of the paper uses, or the full cheap-geometry baseline
+(rSASA+nbr+ΔSASA), KL adds **nothing**: energy-capture@3 Δ(KL+rSASA − rSASA) = −0.007 (ns), Δ(full+KL − full)
+= −0.003 (ns), while **free geometry − nbr = +0.027 (P=0.997)**. Same defect as the count-based capture@k
+(the triage baseline `src/kl_triage.py` uses integer `nbr`, not rSASA). KL-as-method is demoted (see the
+ΔSASA finding, results/kl_geometry_control.csv, results/nugget_partner_sensitivity.csv). Numbers below are
+retained only as the record of the withdrawn claim.
 
 Reviewers ask "your readout isn't binding." This re-expresses the same triage in EXPERIMENTAL binding
 free energy. Among interface residues with an Ala-scan measurement (111 complexes, 1325 positions, mean

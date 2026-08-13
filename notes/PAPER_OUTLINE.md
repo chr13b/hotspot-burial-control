@@ -39,13 +39,25 @@ under both. It is absent on noised-crystal generative backbones at equal distanc
 *independent reconstruction*, not distance-from-native. And the sequence-free KL signal is not merely
 diagnostic: as a fixed-budget design-time triage ranker it captures significantly more experimental
 hotspots than the burial heuristic on the predicted backbones designers actually use (capture@3
-+0.08–0.09, CIs exclude zero) — a validated method. The tax is
++0.08–0.09) — **but this KL-triage method claim is WITHDRAWN (weak-baseline artifact; see reframe note below).** The tax is
 real but it is a property of the **conditioning set**, not of hotspot chemistry: the field benchmarks
 on crystal backbones, which hide it, while designers work on non-native backbones, where it bites.
 Two proposed alternative mechanisms — a low-temperature constellation cost and a commitment-ordering
 schedule effect — are each measured and neither survives (the constellation cost is generic to any
 multi-position set; commitment reordering is inert on both an autoregressive and a coupled
 co-design model).
+
+> **⚠️ REFRAME PENDING (2026-08-13).** The sequence-free KL detector was found to largely recapitulate ΔSASA
+> (partner-contact area, trivial geometry): on crystal KL adds only +0.007 (ns) over a full cheap-geometry
+> baseline (burial+nbr+ΔSASA), and the KL-triage method claims (capture@k *and* Lever-2 kcal/mol) are
+> baseline artifacts — computed vs integer `nbr`; null vs rSASA/full-geometry (free geometry even beats the
+> `nbr` baseline by more than KL does). **KL-as-method is WITHDRAWN.** The NUGGET survives and *sharpens*:
+> adding the model's own confidence significantly HURTS even a free-geometry ranker (−0.020, P=0.009;
+> results/nugget_partner_sensitivity.csv). This abstract / §4 / contributions (iii) will be rewritten
+> **nugget-forward, KL demoted to a learned partner-sensitivity probe, matched-pair design framed as a
+> diagnostic protocol** (not a benchmark; ProtDBench exists) — AFTER the decisive predicted-backbone ΔSASA
+> control (R1, notes/SHERLOCK_HANDOFF_dsasa.md; CPU-only), which decides ICLR (KL earns its keep off the
+> native manifold, unifying the story on one axis) vs TMLR (honest correction). idea-critic verdict: REFINE.
 
 ## Section map
 
@@ -123,8 +135,8 @@ co-design model).
   paper as a validated design-time method, not crystal-only. **In binding units (Lever 2):**
   among interface residues with Ala-scan data, the top-3 KL+burial positions capture more of the complex's
   total *experimental* binding free energy than burial alone — 51.3% vs 49.5%, +0.32 kcal/mol [+0.01,+0.65]
-  (fractional +1.8pp, P=0.96; modest, small-budget-only, null at 25%) — the payoff in experimental kcal/mol,
-  not a model score. → src/kl_triage_energy.py, results/kl_triage_energy.csv. → src/kl_triage.py, results/kl_triage_exp{A,D}.csv,
+  (fractional +1.8pp, P=0.96; modest, small-budget-only, null at 25%) — **[WITHDRAWN 2026-08-13 — baseline artifact: the +0.32 kcal is KL+burial vs the *nbr* baseline; against
+  rSASA / full-geometry KL adds nothing (−0.007 / −0.003, ns). KL-as-method demoted.]** → src/kl_triage_energy.py, results/kl_triage_energy.csv. → src/kl_triage.py, results/kl_triage_exp{A,D}.csv,
   FINDINGS_kl_triage.md §4.
 - Why crystal backbones hide it: they are carved by the side chains being predicted, so the model
   already has the partner information that makes the frustrated residue favourable and never pays for
