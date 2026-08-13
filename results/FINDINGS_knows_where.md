@@ -46,7 +46,16 @@ conditioning **does** add real, baseline-beating interface-binding signal (P1, P
   but a geometric one. The sharp follow-up: does interface AUROC(P) beat AUROC(Q) **after controlling for
   ΔSASA / a clash model** (per-substitution volume increase × contact area)? If yes → the model encodes
   binding beyond geometry; if no → it is occlusion. This is the per-substitution analogue of the KL≈ΔSASA
-  test and is the natural next experiment (CPU, same data).
+  test and is the natural next experiment (CPU, same data). **DONE 2026-08-13
+  (`src/bennett_occlusion_energetics.py`, `results/bennett_occlusion_energetics.csv`): P ADDS beyond
+  geometry.** Against a geometric clash/occlusion baseline (volume increase, its product with ΔSASA
+  contact area, and ΔSASA), cross-validated logistic ΔAUROC(P over geometry) = **+0.025 [+0.021,+0.030],
+  P(>0)=1.000**; P alone (0.615) already *subsumes* the geometry baseline (0.587). So the model encodes
+  per-substitution binding **energetics beyond steric occlusion**. This **reconciles R1**: the *scalar* KL
+  ≈ ΔSASA (pure geometry, demoted on all 4 backbone classes), yet the *full* per-substitution distribution
+  carries binding signal the scalar summary discards — the model knows more about binding than its
+  confidence or its KL summary reveal. Caveat: our occlusion baseline is volume/contact-based; a richer
+  all-atom clash model could narrow the +0.025.
 - Labels convolve display/fold-stability with binding — the three-way stratification is the control (core
   = stability). 4 targets / one epitope each; design-clustered bootstrap; report per-target signs.
 - Parent sequences are ProteinMPNN outputs (native-biased) — but the native is excluded and we rank the 19
