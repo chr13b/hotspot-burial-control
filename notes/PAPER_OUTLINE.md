@@ -5,50 +5,44 @@ Working draft, 2026-08-10. Iterate as Experiment C lands. Every claim maps to a 
 
 ## Working title
 
-**"Inverse folding is not blind to binding hotspots — until you take away the crystal.
-The factorization tax lives in the conditioning set."**
+**"Confidence is not competence: interface-hotspot 'blindness' in inverse folding is a conditioning-set
+artifact — and what the model knows about binding lives in its distribution, not its confidence."**
 
-Alt: *"The hotspot design gap is a conditioning-set artifact: hidden by native backbones, exposed by
-the predicted backbones designers use."*
+Alt: *"Free geometry finds binding hotspots; inverse-folding confidence does not — and the model's binding
+knowledge hides in its full distribution, not its scalar summaries."*
 
 ## One-paragraph abstract (sketch)
 
-Staged binder design — generate a backbone, then inverse-fold a sequence — is widely believed to
-struggle at interface *hotspots*, the few residues that carry most of the binding free energy, and a
-published result (ProBID-Net) reports inverse-folding sequence recovery of 0.334 at hotspots vs 0.472
-elsewhere. We show, pre-registered across five inverse-folding architectures on SKEMPI 2.0, that on
-**native crystal backbones this gap is entirely a burial confound**: matched within complex for
-solvent exposure, secondary structure and packing, hotspots are recovered no worse than non-hotspot
-interface positions. But native crystal backbones are carved by the very side chains being predicted.
-Even on that crystal backbone, asking *what does* flag a hotspot exposes the core asymmetry: **the one
-quantity a designer would naively trust — the model's own confidence — is near-chance at hotspots (AUROC
-0.53), and it ranks hotspots BELOW random for top-3 triage (0.064 vs 0.084) — carrying no information
-beyond geometry; the signal that works needs no network at all: a trivial partner-contact-area feature
-(ΔSASA) predicts hotspots as well as any learned signal.** [combiner-free; the z-sum "hurts" number retired
-per the baseline audit — restate rigorously via conditional predictive impact (CPI).]
-On **OpenFold3-predicted** backbones of the same complexes the burial-matched deficit **appears**
-(−0.19 nats, paired Δ −0.15), as large where the prediction is accurate as where it is not. A
-**sequence-free** signal — the partner-induced shift in the model's backbone-only distribution —
-predicts where, strengthens on the predicted backbones, and **transfers to RFdiffusion generative
-backbones** wherever a physical interface forms [Exp C]; on those same generative backbones the raw
-log-prob deficit is present only at large backbone drift and the binding-energy ranking collapses off
-the native manifold — a mixed result we report as such.
-Crucially the deficit is **predictor-general, not a per-model artifact**: on backbones from a second,
-architecturally-independent folder (AF2-multimer) the same burial-matched deficit emerges (−0.23 nats),
-and the two predictors' per-complex deficits correlate (ρ = +0.57, n=127) — the *same complexes* are hard
-under both. It is absent on noised-crystal generative backbones at equal distance, so it tracks
-*independent reconstruction*, not distance-from-native. And the sequence-free KL signal is not merely
-diagnostic: as a fixed-budget design-time triage ranker it captures significantly more experimental
-hotspots than the burial heuristic on the predicted backbones designers actually use (capture@3
-+0.08–0.09) — **but this KL-triage method claim is WITHDRAWN (weak-baseline artifact; see reframe note below).** The tax is
-real but it is a property of the **conditioning set**, not of hotspot chemistry: the field benchmarks
-on crystal backbones, which hide it, while designers work on non-native backbones, where it bites.
-Two proposed alternative mechanisms — a low-temperature constellation cost and a commitment-ordering
-schedule effect — are each measured and neither survives (the constellation cost is generic to any
-multi-position set; commitment reordering is inert on both an autoregressive and a coupled
-co-design model).
+Staged binder design — generate a backbone, then inverse-fold a sequence — is widely believed to struggle
+at interface *hotspots*, and a published result (ProBID-Net) reports inverse-folding recovery of 0.334 at
+hotspots vs 0.472 elsewhere. We report four results and a mechanism. **(1) The gap is a burial confound.**
+Pre-registered across **five inverse-folding architectures** on SKEMPI 2.0 with a burial-matched matched-pair
+design, the crystal-backbone deficit vanishes; ProBID-Net's own released model reproduces its deficit and
+then dissolves it under burial+composition matching. **(2) The tax is real and lives in the conditioning
+set.** On backbones from **two architecturally-independent structure predictors** (OpenFold3, AF2-multimer)
+a burial-matched deficit appears, and the two predictors' per-complex deficits correlate (ρ = +0.57, n=127)
+— the *same complexes* are hard under both; it is absent on noised-crystal generative backbones at equal
+distance, so it tracks *independent reconstruction*, not distance-from-native. **(3) Confidence is not
+competence.** At hotspots the model's own confidence is near-chance (AUROC 0.53), ranks hotspots *below
+random* for fixed-budget triage (0.064 vs 0.084), and — by a conditional-independence test immune to any
+combiner (conditional predictive impact **0.000 [−0.0003,+0.0003]**) — carries *zero* information beyond
+structure; a **free geometric partner-sensitivity feature** (ΔSASA, partner-contact area, no neural net)
+predicts hotspots instead. A learned sequence-free detector — the KL between the model's complex- and
+monomer-conditioned distributions — merely **recapitulates ΔSASA** on all four backbone classes (crystal,
+OpenFold3, AF2, de-novo; ΔAUROC over full cheap geometry ≈ 0): a *learned frustratometer*, not a new method.
+**(4) But the model *does* know binding — in its distribution, not its confidence.** On genuinely de-novo
+designed binders with **experimental site-saturation binding data**, the model's per-substitution complex-
+conditioned distribution ranks the 19 substitutions by measured binding (pre-registered), does so better at
+the fold-*stability* question than the *binding* question (a dissociation), gains specifically from
+conditioning on the partner (+0.076, interface-specific, consistent across four targets), and adds **beyond
+a geometric occlusion baseline** (+0.025) — genuine binding energetics the scalar summaries discard. **The
+mechanism:** the hotspot deficit is a property of the **conditioning set** the field benchmarks on (crystal
+backbones, carved by the side chains being predicted, hide it; predicted backbones expose it), not of the
+model's competence — so *read hotspots from partner geometry, not from model confidence, and the model's
+binding knowledge lives in its full distribution, not its scalar summaries.* Two competing mechanisms — a
+low-temperature constellation cost and a commitment-ordering schedule — are each measured and refuted.
 
-> **⚠️ REFRAME PENDING (2026-08-13).** The sequence-free KL detector was found to largely recapitulate ΔSASA
+> **⚠️ REFRAME — DONE (2026-08-13); the title + abstract above are the reframed, nugget-forward + Big-Idea-1-forward version. This blockquote is the audit trail of how we got here.** The sequence-free KL detector was found to largely recapitulate ΔSASA
 > (partner-contact area, trivial geometry): on crystal KL adds only +0.007 (ns) over a full cheap-geometry
 > baseline (burial+nbr+ΔSASA), and the KL-triage method claims (capture@k *and* Lever-2 kcal/mol) are
 > baseline artifacts — computed vs integer `nbr`; null vs rSASA/full-geometry (free geometry even beats the
@@ -74,18 +68,21 @@ co-design model).
   term, misses them. → BRIEF §2.1.
 - ProBID-Net's 0.334/0.472 gap and its dynamics attribution; the confound nobody controlled: hotspots
   are buried, and burial is where inverse folding is *most* confident.
-- Contributions: (i) the gap is a burial artifact on crystal backbones (five architectures, pre-registered) —
-  and the burial-matched matched-pair design is offered as a reusable **protocol/benchmark** for
-  evaluating inverse folding at interface hotspots without the confound; (ii) the tax is real and lives
-  in the conditioning set — a burial-matched deficit appears on the backbones of TWO independent structure
-  predictors (cross-predictor per-complex ρ=+0.57), is absent on noised-crystal generative backbones
-  (so it is *independent-reconstruction*, not distance-from-native), and a sequence-free **partner-
-  sensitivity** signal detects it across four backbone classes — while the model's own **confidence** does
-  NOT (near-chance; naively hurts); (iii) that signal is a **validated design-time method** — as a
-  fixed-budget triage ranker KL+burial captures more experimental hotspots than the burial heuristic,
-  holding on crystal AND on the OpenFold3 + AF2-multimer predicted backbones designers use (capture@3
-  +0.08–0.10, CIs exclude zero); (iv) two competing mechanisms (constellation cost, commitment ordering)
-  measured and refuted.
+- Contributions: **(i) Confidence is not competence (the headline).** At interface hotspots the model's own
+  confidence is near-chance (AUROC 0.53), ranks them *below random* for triage, and is **conditionally
+  independent** of hotspot-ness given structure (CPI 0.000 [−0.0003,+0.0003]) — while a *free* geometric
+  partner-sensitivity feature (ΔSASA) predicts them; the obvious learned detector (KL of the complex-vs-
+  monomer distribution) merely recapitulates ΔSASA on all four backbone classes (a **learned frustratometer**,
+  demoted). **(ii) The published deficit is a burial confound** on crystal backbones (five architectures +
+  ProBID-Net's own model; pre-registered burial-matched matched-pair design, offered as a reusable diagnostic
+  **protocol**, not a benchmark). **(iii) The tax is real and lives in the conditioning set** — a
+  burial-matched deficit appears on the backbones of TWO independent structure predictors (cross-predictor
+  per-complex ρ=+0.57), absent on noised-crystal generative backbones (*independent-reconstruction*, not
+  distance-from-native). **(iv) But the model *does* know binding — in its distribution, not its confidence:**
+  on de-novo designs with experimental site-saturation labels, its per-substitution complex-conditioned
+  distribution ranks substitutions by measured binding, dissociates stability-vs-binding, gains from the
+  partner (+0.076), and adds **beyond geometric occlusion** (+0.025) — binding energetics the scalar summaries
+  discard. (Two competing mechanisms — constellation cost, commitment ordering — measured and refuted.)
 
 **2. Setup and pre-registration.**
 - SKEMPI 2.0; hotspot = Ala-scan ΔΔG>1 (and strict >2, ProBID-Net's threshold); null |ΔΔG|<0.25.
