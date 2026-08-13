@@ -1,0 +1,13 @@
+kind,signal,auroc,lo,hi,capture3,p_gt0,verdict,seed,note,command
+single,random,0.5,0.5,0.5,0.0844,,,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+single,neighbour-count (nbr),0.6726,0.6412,0.7051,0.1392,,,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+single,burial (-rSASA),0.6887,0.6563,0.7195,0.2144,,,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+single,ΔSASA (partner-contact),0.6727,0.6339,0.7142,0.233,,,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+single,KL (learned),0.6942,0.6585,0.7309,0.2186,,,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+single,model confidence,0.5377,0.5011,0.5757,0.0639,,,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+single,FULL geometry (rSASA+nbr+ΔSASA),0.7344,0.709,0.7603,0.2556,,,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+delta_audit,KL over burial-alone,0.041,0.0122,0.0707,,0.998,ADDS,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+delta_audit,KL over FULL geometry,0.0074,-0.0036,0.019,,0.902,ns,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+delta_audit,confidence over burial-alone,-0.0561,-0.0893,-0.0218,,0.0,HURTS,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+delta_audit,confidence over FULL geometry,-0.0231,-0.0405,-0.0064,,0.003,HURTS,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
+delta_audit,ΔSASA over burial-alone,0.0421,0.0097,0.0767,,0.995,ADDS,20260803,full baseline = rSASA-burial + nbr + ΔSASA; confidence HURTS even the full baseline; KL adds nothing over full,python3 src/baseline_audit.py
