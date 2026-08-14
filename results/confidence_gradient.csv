@@ -1,0 +1,7 @@
+regime,rank,conf_auroc,lo,hi,mean_burial,n_hot,n_cx,note,p_gt0,seed,framing,command
+TCR/pMHC,0.0,0.4656,0.4059,0.5364,-0.1406,34,16,,,20260803,EXPLORATORY support for pre-registered T3; binding-permanence axis (NOT obligate/transient; SKEMPI has no obligate endpoint),python3 src/p_confidence_gradient.py
+AB/AG,1.0,0.4621,0.3841,0.5231,-0.1667,67,23,,,20260803,EXPLORATORY support for pre-registered T3; binding-permanence axis (NOT obligate/transient; SKEMPI has no obligate endpoint),python3 src/p_confidence_gradient.py
+other,,0.5631,0.5087,0.6206,-0.1797,195,91,,,20260803,EXPLORATORY support for pre-registered T3; binding-permanence axis (NOT obligate/transient; SKEMPI has no obligate endpoint),python3 src/p_confidence_gradient.py
+Pr/PI,2.0,0.5611,0.4903,0.6085,-0.1521,29,11,,,20260803,EXPLORATORY support for pre-registered T3; binding-permanence axis (NOT obligate/transient; SKEMPI has no obligate endpoint),python3 src/p_confidence_gradient.py
+de-novo,3.0,0.596,,,,,,Bennett T3 endpoint,,20260803,EXPLORATORY support for pre-registered T3; binding-permanence axis (NOT obligate/transient; SKEMPI has no obligate endpoint),python3 src/p_confidence_gradient.py
+INTERACTION_conf_x_rank_given_burial,,0.1278,-0.1087,0.3528,,,,interaction CI spans 0 (underpowered / weak),0.857,20260803,EXPLORATORY support for pre-registered T3; binding-permanence axis (NOT obligate/transient; SKEMPI has no obligate endpoint),python3 src/p_confidence_gradient.py
