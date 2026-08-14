@@ -59,5 +59,11 @@ dissociation (blindness), not a frustration story.
 ## Caveats
 - ESM-2 runs unmasked (sees the native token); neutralised for the within-type comparison (token constant in
   a stratum). Masked-marginal ESM-2 would clean the *raw* magnitudes; optional.
+- The chain-truncation artifact is specifically in the MPNN *entropy* measure (monomer−multimer gap +0.119
+  [+0.023, +0.221], significant), not logp(native) (+0.046, n.s.); on monomers both MPNN measures are at
+  chance. ESM-2 is invariant to truncation (0.764 vs 0.774), as it must be (never sees structure).
+- The fully-crossed strictest cell (monomers × complex × amino-acid × burial) is underpowered (~39 catalytic
+  residues) and n.s. (+0.143 [−0.134, +0.426]); the powered strict cell (monomers × aa × burial) holds
+  (+0.174 [+0.062, +0.288], P=0.999). Report the powered cell; do not over-read the fully-crossed one.
 - Contrast with the binding nugget: that survives its geometry control cleanly (CPI 0.000). Both now stand.
 - Provenance: `src/mcsa_build_labels.py` reproduces `mcsa_labels.csv`; DATA.md has the M-CSA entry.
