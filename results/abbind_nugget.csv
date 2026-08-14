@@ -1,0 +1,9 @@
+feature,auroc,lo,hi,verdict,p_gt0,seed,n_interface,n_hot,n_complexes,note,command
+confidence_logp,0.5595,0.4967,0.6243,~CHANCE,,20260803,324,173,27,"AB-Bind antibody-antigen 2nd fixture; nugget replication (confidence~chance, geometry predicts)",python3 src/abbind_nugget.py
+burial,0.7276,0.6588,0.796,predicts,,20260803,324,173,27,"AB-Bind antibody-antigen 2nd fixture; nugget replication (confidence~chance, geometry predicts)",python3 src/abbind_nugget.py
+dSASA,0.604,0.5488,0.6658,predicts,,20260803,324,173,27,"AB-Bind antibody-antigen 2nd fixture; nugget replication (confidence~chance, geometry predicts)",python3 src/abbind_nugget.py
+nbr,0.6579,0.5947,0.728,predicts,,20260803,324,173,27,"AB-Bind antibody-antigen 2nd fixture; nugget replication (confidence~chance, geometry predicts)",python3 src/abbind_nugget.py
+geometry_full,0.6773,,,,,20260803,324,173,27,"AB-Bind antibody-antigen 2nd fixture; nugget replication (confidence~chance, geometry predicts)",python3 src/abbind_nugget.py
+geometry+confidence,0.6853,,,,,20260803,324,173,27,"AB-Bind antibody-antigen 2nd fixture; nugget replication (confidence~chance, geometry predicts)",python3 src/abbind_nugget.py
+dAUROC_confidence_over_geometry,0.008,-0.0049,0.0207,,0.891,20260803,324,173,27,"AB-Bind antibody-antigen 2nd fixture; nugget replication (confidence~chance, geometry predicts)",python3 src/abbind_nugget.py
+positive_control_wt_match,0.9317,,,,,20260803,324,173,27,"AB-Bind antibody-antigen 2nd fixture; nugget replication (confidence~chance, geometry predicts)",python3 src/abbind_nugget.py
