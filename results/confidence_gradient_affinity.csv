@@ -1,0 +1,5 @@
+metric,tertile,conf_auroc,mean_burial,n_hot,n_cx,lo,hi,p_gt0,note,seed,framing,command
+tertile_auroc,weak,0.5878,-0.1748,68,47,,,,,20260803,EXPLORATORY continuous-affinity power-up of the binding-permanence gradient; supports pre-registered T3,python3 src/p_confidence_gradient_affinity.py
+tertile_auroc,mid,0.5052,-0.1734,93,47,,,,,20260803,EXPLORATORY continuous-affinity power-up of the binding-permanence gradient; supports pre-registered T3,python3 src/p_confidence_gradient_affinity.py
+tertile_auroc,tight,0.5339,-0.1661,164,47,,,,,20260803,EXPLORATORY continuous-affinity power-up of the binding-permanence gradient; supports pre-registered T3,python3 src/p_confidence_gradient_affinity.py
+interaction_conf_x_pkd_given_burial,,-0.0072,0.0212,325,141,-0.1725,0.1359,0.433,still spans 0,20260803,EXPLORATORY continuous-affinity power-up of the binding-permanence gradient; supports pre-registered T3,python3 src/p_confidence_gradient_affinity.py
