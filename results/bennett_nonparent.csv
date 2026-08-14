@@ -1,0 +1,6 @@
+metric,value,lo,hi,p_gt0,model,n_pairs,n_designs,seed,command
+interface_auroc_P_esm,0.6246,0.6084,0.6409,,esmif,27170,73,20260803,python3 src/p_bennett_nonparent.py
+interface_auroc_Q_esm,0.5453,,,,esmif,27170,73,20260803,python3 src/p_bennett_nonparent.py
+P_minus_Q_esm,0.0793,0.069,0.0904,1.0,esmif,27170,73,20260803,python3 src/p_bennett_nonparent.py
+dAUROC_Pesm_over_allatom_geometry,0.016,0.0129,0.0194,1.0,esmif,27170,73,20260803,python3 src/p_bennett_nonparent.py
+verdict,circularity DEFUSED (non-parent ESM-IF1 reproduces the signal),,,,esmif,27170,73,20260803,python3 src/p_bennett_nonparent.py
