@@ -1,0 +1,265 @@
+# Confidence is not competence: interface-hotspot "blindness" in inverse folding is a conditioning-set artifact — and what the model knows about binding lives in its distribution, not its confidence
+
+*Working prose draft, 2026-08-14. Expands notes/PAPER_OUTLINE.md (Spine B). Every quantitative claim carries
+a `→ file.csv` trace to a committed result. Sections marked ⟨PENDING …⟩ await a running analysis.*
+
+---
+
+## Abstract
+
+Staged binder design — generate a backbone, then inverse-fold a sequence onto it — is widely believed to
+stumble at protein–protein interface *hotspots*, the few residues that dominate binding free energy. A
+prominent report (ProBID-Net) quantifies this as an inverse-folding sequence-recovery of 0.334 at hotspots
+against 0.472 elsewhere, and attributes it to protein dynamics. We show the phenomenon is real but almost
+entirely misread, and in the process characterise what inverse-folding models do and do not know about
+binding. **First, confidence is not competence.** Across five inverse-folding architectures, a model's own
+per-residue confidence ranks interface hotspots no better than chance (AUROC 0.50–0.54), and a combiner-free
+conditional-independence test shows it carries *zero* information about hotspot-ness beyond cheap structural
+geometry (conditional predictive impact 0.000); a free geometric feature — the buried surface area a residue
+loses on binding — predicts hotspots instead. The obvious learned detector, the divergence between a model's
+complex- and monomer-conditioned distributions, merely recapitulates that geometry: it is a learned
+frustratometer, not a new method. This pattern replicates on a second, biophysically distinct fixture
+(antibody–antigen ΔΔG). **Second, and in tension with the first, the model does know binding — in its
+distribution, not its confidence.** On genuinely de-novo designed binders with experimental site-saturation
+binding measurements, a model's per-substitution complex-conditioned distribution ranks substitutions by
+measured binding, does so better for the fold-stability question than the binding question (a built-in
+control), gains specifically from conditioning on the partner, and — the decisive test — still adds signal
+beyond an all-atom, rotamer-repacked steric-occlusion baseline: after repacking, 95% of substitutions incur
+no clash, so occlusion cannot explain the effect. A non-parent model reproduces every part of this, ruling
+out circularity. **Third, the published deficit is a burial confound**, and the residual signal lives in the
+*conditioning set* the field benchmarks on: under a pre-registered burial-matched design the crystal-backbone
+deficit vanishes (five architectures plus ProBID-Net's own released model), yet it reappears on the predicted
+backbones designers actually use, where two independent structure predictors agree, per complex, on which
+interfaces are hard — agreement that survives controlling for burial. The upshot is practical: read hotspots
+from partner geometry, not model confidence, and read the model's binding knowledge from its full
+distribution, not its scalar summaries.
+
+## 1. Introduction
+
+The dominant paradigm for designing protein binders is staged: a generative model proposes a backbone, and an
+inverse-folding model assigns a sequence by maximising `p(sequence | backbone)`. This factorisation is
+convenient but it omits the very quantity a binder exists to optimise — there is no binding-energy term
+anywhere in `p(sequence | backbone)`. The concern this raises is sharpest at *interface hotspots*: the small
+set of residues that contribute most of the binding free energy, and which are frequently *frustrated* —
+buried polar residues or strained rotamers that are locally unfavourable for the monomer's fold but bought
+because they pay off in binding. If inverse folding optimises fold-compatibility, the reasoning goes, it
+should systematically miss exactly these residues, and a hotspot should sit in the tail of the model's
+distribution rather than at its mode. A prominent measurement appears to confirm this: ProBID-Net reports
+inverse-folding recovery of 0.334 at hotspots versus 0.472 elsewhere, and attributes the gap to dynamics.
+
+There is a confound that no prior analysis controls, and it runs opposite to intuition. Hotspots are, on
+average, *more deeply buried* than other interface residues, and burial is precisely where inverse folding is
+*most* confident and accurate. An uncontrolled hotspot-vs-rest comparison therefore mixes a putative binding
+effect with a large burial effect of the opposite sign — so the naive comparison **hides** any real deficit
+rather than inventing one. Controlling burial is not a detail; it is the experiment.
+
+We make four contributions.
+
+**(i) Confidence is not competence.** At interface hotspots, a model's own per-residue confidence is at
+chance (AUROC 0.538 for ProteinMPNN; 0.50–0.54 across five architectures) and ranks hotspots *below* random
+for fixed-budget triage. A conditional-predictive-impact test — cross-fitted and immune to any choice of
+combiner — shows confidence is conditionally independent of hotspot-ness given cheap geometry (CPI 0.000
+[−0.0003, +0.0003]). What predicts hotspots is a free geometric feature, the change in solvent-accessible
+surface area on binding (ΔSASA, i.e. partner-contact area). The natural learned detector — the KL divergence
+between a model's complex-conditioned and monomer-conditioned sequence distributions — adds essentially
+nothing over that geometry on any of four backbone classes: it is a *learned frustratometer*, and we demote
+it accordingly. The entire pattern replicates on a second, independent fixture (antibody–antigen ΔΔG).
+→ nugget_cpi.csv, xmodel_confidence.csv, baseline_audit.csv, kl_geometry_control{,_predicted}.csv, abbind_nugget.csv.
+
+**(ii) The model knows binding — in its distribution, not its confidence.** On de-novo designed binders with
+experimental site-saturation binding data, the model's per-substitution complex-conditioned distribution
+ranks the 19 non-native substitutions by measured binding (AUROC 0.615, beating substitution-similarity
+baselines), answers the fold-*stability* question better than the *binding* question (a dissociation that
+serves as a positive control), and gains specifically from conditioning on the partner (+0.076,
+interface-specific). Crucially, this signal survives an *all-atom, rotamer-repacked* occlusion baseline
+(+0.018 [+0.015, +0.022]); since 95% of substitutions incur no steric clash after repacking, occlusion cannot
+account for it — the model encodes per-substitution binding *energetics* beyond geometry. A non-parent scorer
+reproduces the interface ranking, the partner-gain, and the beyond-occlusion signal, ruling out that this is
+a model scoring around its own mode. → bennett_knows_where.csv, bennett_occlusion_allatom.csv, bennett_nonparent.csv.
+
+**(iii) The published deficit is a burial confound.** Under a pre-registered burial-matched matched-pair
+design (matching within-complex on relative SASA, secondary-structure class, and neighbour count), the
+crystal-backbone hotspot deficit vanishes across five inverse-folding architectures, and ProBID-Net's own
+released voxel-CNN reproduces its published deficit and then dissolves it under joint burial-and-composition
+matching. We offer the matched-pair design as a reusable diagnostic *protocol*. → probid_gap_estimators.csv,
+composition_confound.csv.
+
+**(iv) The residual tax lives in the conditioning set.** On the predicted backbones designers actually use —
+from two architecturally-independent structure predictors — a burial-matched deficit reappears, and the two
+predictors' per-complex deficits agree (ρ = 0.57): the *same* complexes are hard under both. This agreement
+survives residualising on interface burial (partial ρ = 0.53), so it is not a recursive burial effect, and it
+is absent on noised-crystal backbones at matched distance — it tracks *independent reconstruction*, not
+distance-from-native. → deficit_burial_residualize.csv. Two competing mechanisms — a low-temperature
+constellation cost and a commitment-ordering schedule — are separately measured and refuted.
+
+## 2. Setup and pre-registration
+
+**Fixtures.** Our primary fixture is SKEMPI 2.0, from which we take single-mutation binding data and define a
+hotspot as an alanine-scan ΔΔG_bind > 1 kcal/mol (and a strict variant > 2, ProBID-Net's threshold), with a
+null set of |ΔΔG| < 0.25. Because SKEMPI complexes are crystal structures of *natural* complexes, we add two
+independent fixtures of different character: **Bennett-2023 de-novo designed binders**, which carry
+experimental site-saturation binding measurements over four targets and constitute a true design-regime test;
+and **AB-Bind**, antibody–antigen ΔΔG over 32 complexes, a second SKEMPI-class fixture with distinct
+biophysics.
+
+**The matched-pair protocol.** The core of the burial analysis is a within-complex optimal 1:1 matching of
+hotspots to null residues on relative complex SASA (±0.05), secondary-structure class, and neighbour count
+(±1). Effects are aggregated by complex-level bootstrap; every seed is fixed (20260803) and reported with its
+bootstrap replicate count. → PREREG.md, PREREG_knows_where.md, PREREG_bennett_hardening.md.
+
+**Models.** Five inverse-folding architectures span the design space: ProteinMPNN (vanilla and soluble
+variants), ESM-IF1 (a 142M-parameter GVP-transformer), PiFold (a one-shot GNN), MIF (masked inverse folding),
+and ProBID-Net (a voxel CNN). A positive control gates every scoring path.
+
+## 3. Confidence is not competence
+
+The quantity a practitioner is most tempted to trust — the model's own confidence that the native residue
+belongs at a position — is useless for locating hotspots. On SKEMPI interface positions, ProteinMPNN's
+per-residue confidence attains an AUROC of 0.538 for hotspots, barely above chance, and for a fixed-budget
+triage (the top-3 interface positions per complex) it captures *fewer* hotspots than random selection
+(0.064 vs 0.084). → baseline_audit.csv, confidence_antipredicts.csv.
+
+One might object that any single scalar can be rescued by combining it with structure. It cannot. We apply a
+conditional predictive impact (CPI) test: cross-fit a model of hotspot-ness on cheap geometry (burial,
+neighbour count, ΔSASA), then measure how much predictive information confidence adds when its
+geometry-conditional information is destroyed by permutation within geometry strata. The estimate is
+**0.000 [−0.0003, +0.0003]**: confidence is conditionally independent of hotspot-ness given structure. By the
+same test, ΔSASA adds real information (+0.013) and the KL detector adds a token amount (+0.002). → nugget_cpi.csv.
+
+This is not a quirk of one network. Across all five architectures, interface-hotspot confidence-AUROC lies in
+0.50–0.54 (ProteinMPNN 0.538, ESM-IF1 0.517, PiFold 0.499, MIF 0.509, ProBID-Net 0.536), each 0.15–0.19 below
+what trivial burial alone achieves. *Confidence is not competence* is thus a property of inverse folding, not
+an artefact of a particular model. → xmodel_confidence.csv.
+
+What does predict hotspots is free geometry. Burial alone reaches 0.689; ΔSASA — the partner-contact area,
+computable without any neural network — reaches 0.585; and a cheap-geometry combination reaches 0.734. The
+obvious learned alternative is the sequence-free divergence between the model's complex- and
+monomer-conditioned distributions (a KL detector), which one might hope captures partner-induced frustration
+beyond geometry. It does not: over the full cheap-geometry baseline it adds ΔAUROC ≈ 0 on all four backbone
+classes (crystal +0.007, OpenFold3 +0.008, AF2-multimer +0.005), i.e. it *is* the geometry. This is exactly
+what a *learned frustratometer* should be — a neural estimate of the classical statistical-mechanics quantity
+— and we treat it as a diagnostic, not a contribution. → kl_geometry_control{,_predicted}.csv.
+
+Finally, none of this is specific to SKEMPI. On AB-Bind (antibody–antigen ΔΔG), the identical pattern holds:
+confidence-AUROC for hotspots is 0.560 (chance; CI includes 0.5), burial 0.728 and ΔSASA 0.604 predict, and
+confidence adds +0.008 (indistinguishable from zero) over full geometry. → abbind_nugget.csv.
+
+## 4. The model knows binding — in its distribution, not its confidence
+
+The results so far are corrective: the model's confidence is uninformative about hotspots, and the natural
+learned detector reduces to geometry. Taken alone they would make a purely negative paper. But they concern
+only *scalar summaries* of the model — its confidence, and a one-number divergence. The model's full
+per-substitution distribution is a richer object, and it turns out to carry genuine binding information that
+those scalars discard. Establishing this requires a fixture with *per-substitution* binding measurements, so
+we turn to de-novo designed binders (Bennett-2023), which come with experimental site-saturation mutagenesis
+over four targets: for each interface position, the binding phenotype of all 19 non-native substitutions. A
+sanity control passes exactly — the single amino acid absent from each SSM library equals the design's native
+residue in 4137/4137 positions. → bennett_knows_where.csv.
+
+We pre-registered three tests (P1–P3). **(P1)** The model's complex-conditioned distribution ranks the 19
+substitutions by whether they retain binding at an interface AUROC of 0.615 [0.601, 0.628], above chance and
+above every sequence baseline — BLOSUM62 (0.589), hydropathy (0.579), and volume similarity (0.539) — so it
+is not merely a substitution-similarity matrix in disguise. **(P2)** The same model answers the fold-
+*stability* question markedly better than the *binding* question: at buried core positions (a stability
+positive control) its AUROC is 0.721, versus 0.615 at the interface, a dissociation of +0.107 with
+non-overlapping intervals. This is the control the design demands — a model trained on `p(sequence|structure)`
+*should* be better at stability than at binding. **(P3)** Conditioning on the partner adds binding
+information specifically at the interface: the complex-conditioned distribution beats the binder-alone
+distribution by +0.076 [+0.068, +0.084] at interface positions, and by essentially nothing at core and
+surface positions, where the partner is irrelevant. → bennett_knows_where.csv.
+
+**The decisive test: beyond all-atom occlusion.** A skeptic's natural objection is that P3's partner-gain is
+mere steric *occlusion* — a bulky substitution at a contacted position clashes with the partner and also
+abolishes binding, so the model's "binding knowledge" is just a clash detector. We test this with the
+strongest occlusion baseline we can build. For every (interface position, substitution) we construct the
+substituted side chain in explicit all-atom detail (rdkit ETKDG rotamers), superpose it on the true backbone,
+and compute its minimum van-der-Waals clash against the partner *over all rotamers* — i.e. the best steric fit
+achievable by repacking, precisely the operation the objection invokes. A pre-registered validity gate passes
+(the builder reconstructs native side chains to a median 0.278 Å). The result inverts the objection: after
+repacking, **95.1% of substitutions incur zero clash** — occlusion is nearly absent as a mechanism, and the
+all-atom clash predicts binding at 0.519, no better than chance. On a geometry baseline that now includes this
+all-atom clash together with contact count, ΔSASA and volume (and is *stronger* than the earlier proxy, 0.619
+vs 0.587), the model's per-substitution probability still adds ΔAUROC = **+0.0182 [+0.0145, +0.0220]**,
+P(>0)=1.000. The model encodes per-substitution binding *energetics* beyond all-atom steric occlusion. (We
+report the process in full: an early run mis-implemented the validity gate as a clash-correlation, which
+failed for lack of dynamic range; we corrected it to the pre-registered reconstruction gate and remained
+blind to the ΔAUROC until that gate passed.) → bennett_occlusion_allatom.csv.
+
+**Not circularity.** Because the SSM parents are themselves ProteinMPNN outputs, one might worry the model is
+scoring substitutions around its own mode. A non-parent model — ESM-IF1, which did not generate the designs —
+reproduces every component: interface AUROC 0.625, partner-gain +0.079, and the beyond-occlusion signal
++0.016, all with intervals excluding the null. → bennett_nonparent.csv.
+
+**Why de-novo, and only de-novo.** The theory that organises these results is a distinction between
+*constraint* and *leverage*. Inverse-folding confidence estimates how *constrained* a position is by the fold
+it conditions on; hotspot-ness is *leverage*, how much binding free energy depends on the residue. These
+coincide only when selection on a position is binding-dominated. De-novo binders are the extreme of that
+regime — they exist only to bind — so the prediction is that the model's binding signal should be *most*
+accessible there. Two observations bear it out. First, scalar confidence, which is at chance for hotspots on
+natural SKEMPI complexes (0.538), rises to 0.60 on de-novo interfaces. → bennett_conf_fork.csv. Second, and
+more tellingly, the *beyond-geometry* positive itself is de-novo-specific: repeating the per-substitution test
+on natural antibody–antigen mutations (AB-Bind), the model's distribution correlates with ΔΔG in the right
+direction (Spearman −0.17) and beats chance standalone (0.578), but is weaker than burial (0.691) and adds
+nothing beyond geometry (+0.008 [−0.014, +0.026]). → abbind_bigidea1.csv. The picture is therefore unified
+rather than contradictory: on *natural* complexes every binding-relevant quantity we can extract from the
+model reduces to geometry (the scalar KL equals ΔSASA; the per-substitution distribution adds nothing beyond
+it), whereas on *de-novo* designs the distribution carries binding energetics that geometry does not. The
+model's binding knowledge is real, latent in its distribution, and unlocked by the binding-dominated regime.
+
+**What did not generalise (reported for the record).** Two attempts to extend this failed their own controls,
+and we state them plainly because the discipline is part of the claim. A finer *within*-SKEMPI
+confidence-decay gradient (binned by binding affinity) is null on 141 complexes; the natural regime simply
+does not furnish an obligate endpoint (it is defined by measurable dissociation), so the transient→obligate
+gradient is not constructible here. → confidence_gradient{,_affinity}.csv. And the generalisation of "blindness"
+from binding hotspots to *catalytic* residues does not survive an amino-acid-composition control: the striking
+raw signal (IF confidence anti-predicts catalytic residues) is entirely that catalytic residues are the
+amino-acid types inverse folding recovers worst, not a functional-blindness effect beyond composition. →
+FINDINGS_catalytic.md. Notably, the binding-hotspot nugget *does* survive its analogous control (CPI given
+geometry, §3), which makes it the cleaner result; ⟨PENDING Fable-5 audit of the catalytic experiment⟩.
+
+## 5. On crystal backbones, the hotspot gap is a burial artifact
+
+We now return to the published deficit and show, on crystal backbones, that it is a burial confound. The
+confound is visible directly: as hotspot strength increases, both sequence recovery and burial rise in
+lockstep (recovery 0.347→0.529, relative SASA 0.218→0.080). Under the pre-registered matched-pair design —
+pairing each hotspot to a null residue in the same complex at matched relative SASA, secondary-structure
+class, and neighbour count — the deficit vanishes: the matched estimate is −0.042 [−0.222, +0.129] and a
+higher-powered regression estimator is +0.059 [−0.051, +0.167], with every architecture's primary interval
+containing zero across all five models. → FINDINGS.md.
+
+The strongest form of this test uses ProBID-Net's own released voxel-CNN. Run on our fixture, its port is
+faithful (overall interface recovery 0.472, matching its reported non-hotspot number), and its published
+hotspot deficit *does* reproduce — concentrated, as one would expect, in comprehensively alanine-scanned
+complexes (five or more measured hotspots: −0.113 [−0.208, −0.022], p=0.007). But it dissolves under
+confound-matching: matching residue type turns it positive (+0.120), matching burial gives −0.038, matching
+hydrophobicity −0.051, every interval spanning zero. ProBID-Net's deficit is thus a residue-composition and
+burial confound — its voxel-CNN has an unusually extreme amino-acid-type dependence (per-type recall spanning
+0.17 to 0.98), and hotspots are enriched in the types it recovers worst — not evidence of binding-specific
+blindness. → probid_gap_estimators.csv, composition_confound.csv. (We correct an earlier draft of our own
+that mislabeled this as an opposite-sign, fixture-specific null; that reading was a complex-averaging
+artifact and is withdrawn.) We offer the matched-pair design itself as a reusable diagnostic protocol.
+
+## 6. The tax lives in the conditioning set
+
+If the deficit were purely a benchmark artifact, it should disappear everywhere once burial is controlled. It
+does not — it reappears on the *predicted* backbones that designers actually condition on, and there it
+behaves like a real, structured signal. On backbones from two architecturally-independent structure
+predictors, OpenFold3 and AlphaFold2-multimer, a burial-matched deficit is present (−0.191 [−0.37, −0.004]
+and −0.233 [−0.44, −0.035]; the crystal deficit is ≈0). The claim does not rest on either marginal number —
+neither survives dropping its three most influential complexes — but on their *agreement*: the two predictors'
+per-complex deficits correlate at ρ = 0.565 [0.40, 0.71], so the same complexes are hard under both. A
+per-predictor memorisation or architecture artifact would produce disjoint deficits; two independent
+reconstructions instead agree, per complex. → FINDINGS_expA.md, FINDINGS_expD.md.
+
+Two controls sharpen this. First, the agreement is not a burial confound one level up: partial correlation of
+the two deficits controlling for interface burial is +0.529 [0.354, 0.678], and it survives dropping the
+shared top-three complexes (+0.533). The predictors agree on which interfaces are hard *beyond* what burial
+predicts. → deficit_burial_residualize.csv. Second, the effect tracks *how* a backbone is non-native, not how
+far: on partial-diffusion backbones that are noised crystals at the same interface RMSD, the deficit is
+absent. It is a property of *independent reconstruction* — the small, systematic errors a predictor makes at
+an interface it must build without seeing the side chains — precisely the regime a de-novo design occupies. →
+FINDINGS_expC2.md.
+
+## 7. Ruling out competing mechanisms  ⟨prose TODO — condense N_hot + commitment-ordering nulls⟩
+## 8. Related work and positioning  ⟨prose TODO — Frustratometer (learned frustratometer), BAIF (closest prior art), BindCraft 4Å-freeze hook, conditioning-aware IF (DeSAE/target-conditioned/UMA-Inverse), StaB-ddG⟩
+## 9. Limitations  ⟨prose TODO — two fixtures + de-novo; modest effects (tight CIs); occlusion is a repack proxy; no wet-lab loop; strict-tier underpowered⟩
