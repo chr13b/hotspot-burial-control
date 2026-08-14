@@ -206,16 +206,24 @@ model reduces to geometry (the scalar KL equals ΔSASA; the per-substitution dis
 it), whereas on *de-novo* designs the distribution carries binding energetics that geometry does not. The
 model's binding knowledge is real, latent in its distribution, and unlocked by the binding-dominated regime.
 
-**What did not generalise (reported for the record).** Two attempts to extend this failed their own controls,
-and we state them plainly because the discipline is part of the claim. A finer *within*-SKEMPI
-confidence-decay gradient (binned by binding affinity) is null on 141 complexes; the natural regime simply
-does not furnish an obligate endpoint (it is defined by measurable dissociation), so the transient→obligate
-gradient is not constructible here. → confidence_gradient{,_affinity}.csv. And the generalisation of "blindness"
-from binding hotspots to *catalytic* residues does not survive an amino-acid-composition control: the striking
-raw signal (IF confidence anti-predicts catalytic residues) is entirely that catalytic residues are the
-amino-acid types inverse folding recovers worst, not a functional-blindness effect beyond composition. →
-FINDINGS_catalytic.md. Notably, the binding-hotspot nugget *does* survive its analogous control (CPI given
-geometry, §3), which makes it the cleaner result; ⟨PENDING Fable-5 audit of the catalytic experiment⟩.
+**The blindness generalises beyond binding — to catalytic residues.** "Confidence is not competence" is not
+specific to binding hotspots. On M-CSA catalytic residues, controlling for amino-acid composition by
+stratifying *within* amino-acid type, structure-conditioned confidence is blind (within-type AUROC 0.48–0.50,
+chance) while a sequence language model's conservation predicts them (0.771 [0.723, 0.822]) — a dissociation
+of +0.288 [+0.235, +0.336] that survives on monomers alone (ruling out a partner-chain-truncation artifact:
+there MPNN is 0.516, chance) and after additionally controlling for burial (+0.174 [+0.062, +0.288]).
+Inverse-folding confidence is thus blind to functional importance across function types; what predicts
+function is free geometry (for binding) or sequence conservation (for catalysis). We are deliberate about
+mechanism: the model's confidence is *blind* (at chance), not actively *frustrated* — the raw anti-prediction
+we first observed was an amino-acid-composition and single-chain-truncation artifact, not a determinacy
+signal. → FINDINGS_catalytic.md, catalytic_audit.py. (Methodological note for the appendix: the effect is
+invisible to a ΔAUROC-over-amino-acid-identity control, whose detection floor is a within-type AUROC of
+~0.55; the correct readout is the within-type AUROC itself.)
+
+**One attempt did not generalise (reported for the record).** A finer *within*-SKEMPI confidence-decay
+gradient, binned by binding affinity, is null on 141 complexes; the natural regime does not furnish an
+obligate endpoint (it is defined by measurable dissociation), so a transient→obligate gradient is not
+constructible here. → confidence_gradient{,_affinity}.csv.
 
 ## 5. On crystal backbones, the hotspot gap is a burial artifact
 
