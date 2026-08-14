@@ -1,0 +1,8 @@
+feature,auroc,lo,hi,verdict,p_gt0,seed,n_pos,n_catalytic,n_enzymes,note,command
+MPNN_confidence,0.3983,0.3598,0.4394,anti,,20260803,40951,391,114,M-CSA catalytic residues; IF confidence vs ESM-2 entropy dissociation (constraint vs function),python3 src/catalytic_dissociation.py
+ESM2_negentropy,0.7551,0.7042,0.8067,PREDICTS,,20260803,40951,391,114,M-CSA catalytic residues; IF confidence vs ESM-2 entropy dissociation (constraint vs function),python3 src/catalytic_dissociation.py
+ESM2_logp_native,0.7598,0.7116,0.8085,PREDICTS,,20260803,40951,391,114,M-CSA catalytic residues; IF confidence vs ESM-2 entropy dissociation (constraint vs function),python3 src/catalytic_dissociation.py
+dissociation_esm_minus_mpnn,0.3569,0.3065,0.4051,CONFIRMED,1.0,20260803,40951,391,114,M-CSA catalytic residues; IF confidence vs ESM-2 entropy dissociation (constraint vs function),python3 src/catalytic_dissociation.py
+aa_identity_baseline,0.8531,,,,,20260803,40951,391,114,M-CSA catalytic residues; IF confidence vs ESM-2 entropy dissociation (constraint vs function),python3 src/catalytic_dissociation.py
+mpnn_over_aa_identity,-0.0004,-0.0026,0.0017,,,20260803,40951,391,114,M-CSA catalytic residues; IF confidence vs ESM-2 entropy dissociation (constraint vs function),python3 src/catalytic_dissociation.py
+esm_negent_over_aa_identity,0.0317,0.0165,0.0472,,,20260803,40951,391,114,M-CSA catalytic residues; IF confidence vs ESM-2 entropy dissociation (constraint vs function),python3 src/catalytic_dissociation.py
