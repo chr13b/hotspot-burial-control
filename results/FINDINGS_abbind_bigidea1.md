@@ -35,3 +35,10 @@ NUGGET** (abbind_nugget.csv: confidence≈chance, geometry predicts) and **bound
   includes BLOSUM+volume (a strong baseline). But logP (0.578) is below burial (0.691) even standalone, so the
   non-addition is not merely a strong-baseline artifact.
 - Partner log-odds (P/Q) is near-chance on antibody interfaces (0.523), unlike Bennett's +0.076 — worth a line.
+
+## CORRECTION 2026-08-15 (over-kill sweep)
+"De-novo-specific" is **over-stated → the AB-Bind test is UNDERPOWERED, not a natural-complex null.** The
+conditional test on this fixture (n=420 mutations, 27 complexes) cannot certify even BLOSUM62 as adding beyond
+geometry (CPI +0.014 [−0.002, +0.032], spans 0) — a known-good predictor — so it cannot license "logP adds
+nothing." Within-mutant-identity logP AUROC is 0.593 [0.529, 0.660] (above chance). Verdict: the natural-complex
+collapse is **NOT established**; the pivotal test is the SKEMPI full-leverage decomposition (leverage_decomposition.*).

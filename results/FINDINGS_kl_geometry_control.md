@@ -194,3 +194,14 @@ bit-for-bit (crystal −0.0010, OF3 +0.0005, AF2 −0.0035).
   reproduces its two headline numbers to 4 dp); `results/FINDINGS_bennett.md` (the de-novo arm,
   where KL over full geometry is negative). Together: crystal + de-novo + OF3 + AF2 all agree KL
   adds ≤ 0 over cheap geometry.
+
+## CORRECTION 2026-08-15 (over-kill sweep + independent verification)
+The z-sum ΔAUROC-against-0 readout in kl_geometry_control.py has a **−0.021 noise floor** (adding a *pure-noise*
+feature to the geometry z-sum scores −0.021; verified). So "KL adds ≈0 / **actively hurts**" measured the
+combiner penalty, not KL — **that reading is WITHDRAWN.** Correct readouts: within-geometry-stratum AUROC of KL
+for hotspots = **0.605** (vs 0.499 leakage; verified), and the committed combiner-free **CPI(KL | geometry) =
++0.00201 [+0.0006, +0.0034], P=0.998 "ADDS"** (nugget_cpi.csv). **KL adds a small but real, significant
+increment beyond geometry** — a genuine learned-frustratometer signal, ~6× below ΔSASA, not "nothing/hurts".
+The z-sum-ΔAUROC-against-0 estimator is retired (sibling of the ΔAUROC-over-one-hot error). Negative control
+holds: within-stratum confidence 0.478 / negentropy 0.484 (both chance) — the nugget is unaffected, strengthened.
+OF3/AF2 arms (Sherlock) not re-audited under the corrected readout — outstanding.

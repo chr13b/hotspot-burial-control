@@ -17,8 +17,9 @@ per-residue confidence ranks interface hotspots no better than chance (AUROC 0.5
 conditional-independence test shows it carries *zero* information about hotspot-ness beyond cheap structural
 geometry (conditional predictive impact 0.000); a free geometric feature — the buried surface area a residue
 loses on binding — predicts hotspots instead. The obvious learned detector, the divergence between a model's
-complex- and monomer-conditioned distributions, merely recapitulates that geometry: it is a learned
-frustratometer, not a new method. This pattern replicates on a second, biophysically distinct fixture
+complex- and monomer-conditioned distributions, largely recapitulates that geometry (adding only a small real
+increment beyond it): a learned frustratometer, not a new method. This pattern replicates on a second,
+biophysically distinct fixture
 (antibody–antigen ΔΔG). **Second, and in tension with the first, the model does know binding — in its
 distribution, not its confidence.** On genuinely de-novo designed binders with experimental site-saturation
 binding measurements, a model's per-substitution complex-conditioned distribution ranks substitutions by
@@ -61,9 +62,10 @@ for fixed-budget triage. A conditional-predictive-impact test — cross-fitted a
 combiner — shows confidence is conditionally independent of hotspot-ness given cheap geometry (CPI 0.000
 [−0.0003, +0.0003]). What predicts hotspots is a free geometric feature, the change in solvent-accessible
 surface area on binding (ΔSASA, i.e. partner-contact area). The natural learned detector — the KL divergence
-between a model's complex-conditioned and monomer-conditioned sequence distributions — adds essentially
-nothing over that geometry on any of four backbone classes: it is a *learned frustratometer*, and we demote
-it accordingly. The entire pattern replicates on a second, independent fixture (antibody–antigen ΔΔG).
+between a model's complex-conditioned and monomer-conditioned sequence distributions — adds only a small real
+increment over that geometry (CPI +0.002, P=0.998; ~6× below ΔSASA): a *learned frustratometer* that largely
+recapitulates the classical geometry, which we treat as a diagnostic rather than a method. The entire pattern
+replicates on a second, independent fixture (antibody–antigen ΔΔG).
 → nugget_cpi.csv, xmodel_confidence.csv, baseline_audit.csv, kl_geometry_control{,_predicted}.csv, abbind_nugget.csv.
 
 **(ii) The model knows binding — in its distribution, not its confidence.** On de-novo designed binders with
@@ -135,10 +137,14 @@ What does predict hotspots is free geometry. Burial alone reaches 0.689; ΔSASA 
 computable without any neural network — reaches 0.585; and a cheap-geometry combination reaches 0.734. The
 obvious learned alternative is the sequence-free divergence between the model's complex- and
 monomer-conditioned distributions (a KL detector), which one might hope captures partner-induced frustration
-beyond geometry. It does not: over the full cheap-geometry baseline it adds ΔAUROC ≈ 0 on all four backbone
-classes (crystal +0.007, OpenFold3 +0.008, AF2-multimer +0.005), i.e. it *is* the geometry. This is exactly
-what a *learned frustratometer* should be — a neural estimate of the classical statistical-mechanics quantity
-— and we treat it as a diagnostic, not a contribution. → kl_geometry_control{,_predicted}.csv.
+beyond geometry. It captures a *small* one: under a combiner-free conditional test, KL adds CPI = +0.002
+[+0.0006, +0.0034], P=0.998 beyond full geometry, and its within-geometry-stratum AUROC is 0.60 (vs 0.50
+leakage) — a genuine learned-frustratometer signal, but ~6× smaller than ΔSASA's contribution and not worth
+the network as a standalone ranker. (We are careful here about readout: the unfitted z-sum ΔAUROC we first
+used has a −0.021 noise floor — it penalises adding *any* feature — so the earlier "KL adds ≈0 / actively
+hurts" reading measured the combiner, not KL; we retire that estimator, as we do the sibling
+ΔAUROC-over-one-hot in §4.) So KL is a learned frustratometer that *largely* recapitulates the classical
+geometry, adding only a small real increment beyond it. → kl_geometry_control{,_predicted}.csv, nugget_cpi.csv.
 
 Finally, none of this is specific to SKEMPI. On AB-Bind (antibody–antigen ΔΔG), the identical pattern holds:
 confidence-AUROC for hotspots is 0.560 (chance; CI includes 0.5), burial 0.728 and ΔSASA 0.604 predict, and
@@ -196,15 +202,18 @@ it conditions on; hotspot-ness is *leverage*, how much binding free energy depen
 coincide only when selection on a position is binding-dominated. De-novo binders are the extreme of that
 regime — they exist only to bind — so the prediction is that the model's binding signal should be *most*
 accessible there. Two observations bear it out. First, scalar confidence, which is at chance for hotspots on
-natural SKEMPI complexes (0.538), rises to 0.60 on de-novo interfaces. → bennett_conf_fork.csv. Second, and
-more tellingly, the *beyond-geometry* positive itself is de-novo-specific: repeating the per-substitution test
-on natural antibody–antigen mutations (AB-Bind), the model's distribution correlates with ΔΔG in the right
-direction (Spearman −0.17) and beats chance standalone (0.578), but is weaker than burial (0.691) and adds
-nothing beyond geometry (+0.008 [−0.014, +0.026]). → abbind_bigidea1.csv. The picture is therefore unified
-rather than contradictory: on *natural* complexes every binding-relevant quantity we can extract from the
-model reduces to geometry (the scalar KL equals ΔSASA; the per-substitution distribution adds nothing beyond
-it), whereas on *de-novo* designs the distribution carries binding energetics that geometry does not. The
-model's binding knowledge is real, latent in its distribution, and unlocked by the binding-dominated regime.
+natural SKEMPI complexes (0.538), rises to 0.60 on de-novo interfaces. → bennett_conf_fork.csv. Whether the
+*beyond-geometry* positive itself is de-novo-specific is the open question: on natural antibody–antigen
+mutations (AB-Bind) the model's distribution correlates with ΔΔG in the right direction (Spearman −0.17) and
+beats chance standalone (0.578), but that fixture is **underpowered** — it cannot certify even BLOSUM62 as
+adding beyond geometry in the conditional test — so it can neither confirm nor refute a natural-complex
+positive (n=420 mutations, 27 complexes). The pivotal test is on SKEMPI with the full per-mutation leverage
+operator (§4a, the decomposition); we report it there. → abbind_bigidea1.csv. The picture the decomposition
+predicts is *graded*, not binary: on *natural* complexes the model's binding signal is **mostly** geometry
+(the scalar KL adds only a small increment beyond ΔSASA), whereas on *de-novo* designs the distribution
+carries binding energetics that geometry does not (+0.018 beyond all-atom occlusion). The model's binding
+knowledge is real, latent in its distribution, and increasingly accessible as selection becomes
+binding-dominated.
 
 **The blindness generalises beyond binding — to catalytic residues.** "Confidence is not competence" is not
 specific to binding hotspots. On M-CSA catalytic residues, controlling for amino-acid composition by

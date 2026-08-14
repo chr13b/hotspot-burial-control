@@ -161,10 +161,11 @@ def main():
     df.to_csv(a.out, index=False)
     g = df.groupby("order")["rec_diff"].agg(["mean", "std", "count"])
     print("\n=== buried-minus-exposed recovery by order ===\n" + g.to_string())
-    sd = df.groupby("seed")["rec_diff"].std().mean()
+    # seed-to-seed SD of the per-seed MEAN rec_diff (NOT the mean of within-seed scatter — corrected 2026-08-15)
+    sd = df.groupby("seed")["rec_diff"].mean().std()
     span = float(g["mean"].max() - g["mean"].min())
-    print(f"\n[F4] order-span={span:.3f}  seed-SD~{sd:.3f}  ->  "
-          f"F4 {'FIRES (knob inert)' if span < sd else 'does NOT fire (order matters)'}")
+    print(f"\n[F4] order-span={span:.3f}  seed-to-seed-SD={sd:.3f}  ->  "
+          f"F4 {'FIRES (knob inert)' if span < sd else 'does NOT fire (order matters — knob NOT inert)'}")
     print(f"[done] wrote {a.out}")
 
 
