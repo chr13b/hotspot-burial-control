@@ -260,6 +260,60 @@ absent. It is a property of *independent reconstruction* — the small, systemat
 an interface it must build without seeing the side chains — precisely the regime a de-novo design occupies. →
 FINDINGS_expC2.md.
 
-## 7. Ruling out competing mechanisms  ⟨prose TODO — condense N_hot + commitment-ordering nulls⟩
-## 8. Related work and positioning  ⟨prose TODO — Frustratometer (learned frustratometer), BAIF (closest prior art), BindCraft 4Å-freeze hook, conditioning-aware IF (DeSAE/target-conditioned/UMA-Inverse), StaB-ddG⟩
-## 9. Limitations  ⟨prose TODO — two fixtures + de-novo; modest effects (tight CIs); occlusion is a repack proxy; no wet-lab loop; strict-tier underpowered⟩
+## 7. Ruling out competing mechanisms
+
+Two alternative explanations for a hotspot deficit, both plausible a priori, are separately measured and
+refuted. The first is a *sample-budget* effect: at the low sampling temperatures used in design, the joint
+probability of recovering a specific multi-residue hotspot constellation is astronomically small (~10⁻¹⁰),
+so perhaps hotspots are simply lost to sampling. But that cost is statistically identical at burial-matched
+*control* constellations (median difference 0.000, p=0.90): it is a generic property of low-temperature
+sampling of any buried residue set, not a hotspot-specific tax, and no amount of oversampling recovers it
+because the barrier is the temperature exponent itself. The second is a *commitment-ordering* effect: the
+autoregressive schedule might commit non-hotspot context first and paint hotspots into a corner. On
+ProteinMPNN, the oracle decoding order is inert (difference-in-differences −0.002); on MultiFlow, a coupled
+sequence-structure model, structure commits marginally before sequence but the unmasking-order knob is inert.
+The schedule mechanism is ruled out on both an autoregressive and a coupled model. → FINDINGS_expB.md. Neither
+competitor survives; what remains is the conditioning-set signal of §6.
+
+## 8. Related work and positioning
+
+Our sequence-free detector is, by construction, a **learned frustratometer**: the partner-induced change in
+local frustration at interfaces is a classical statistical-mechanics quantity (Ferreiro, Parra and
+colleagues), and our finding that the KL detector equals ΔSASA says the neural version does not beat the
+physics — which is why we demote it. The closest machine-learning prior art is **BAIF** (Boltzmann-aligned
+inverse folding), which scores mutations by inverse-folding log-likelihood over bound-versus-unbound states —
+the same two conditioning sets our KL uses — for ΔΔG prediction. We differ in question and in claim: we run a
+per-*substitution* test of the *full* conditional distribution against experimental binding, stratified by a
+stability positive control, and beyond an all-atom occlusion baseline (§4); and we keep the scalar detector
+demoted rather than proposing it as a method. **StaB-ddG** parameterises ΔΔG through a folding-energy
+difference on an overlapping fixture; a distinct question. On the phenomenon itself, **ProBID-Net** and
+**RedNet** report interface blindness (as recovery deficit and as a decoding problem respectively); we correct
+the attribution — it is neither dynamics nor decoding but conditioning, and a burial confound on the crystal
+benchmark. The most telling piece of related practice is **BindCraft**, whose one-shot binder pipeline
+hard-codes a 4 Å interface freeze that forbids inverse folding at the interface — the field's implicit
+admission of our thesis, to which we give a measurement (confidence ranks interface hotspots below random;
+free geometry beats the contact set at matched budget) and a principled reading. Finally, a wave of
+conditioning-aware inverse-folding methods (AlphaFold-DB debiasing / DeSAE, target-conditioned inverse
+folding, UMA-Inverse) *presupposes* the conditioning-set problem; we *measure* it and show the standard
+benchmark hides it. ⟨✎ verify all external citation URLs before submission — BAIF/DeSAE/CPI/free-energy-interp
+fetched; the remainder search-only.⟩
+
+## 9. Limitations
+
+We evaluate on three fixtures — SKEMPI (natural complexes, primary), Bennett de-novo designs (the
+design-regime positive), and AB-Bind (antibody–antigen) — but none is a full generate→design→wet-lab loop;
+the de-novo evidence is four targets. Effect sizes are modest (ΔAUROC ≈ 0.016–0.018), though their intervals
+exclude zero and the central nugget (CPI 0.000) is a clean rather than a small result. The all-atom occlusion
+baseline is a min-over-rotamer repacking proxy, not a full molecular-mechanics force field; the 95%-zero-clash
+prevalence bounds how much any clash model could recover, but a physics force field could shift the baseline.
+The de-novo binding labels convolve display and fold-stability with binding — the core/interface
+stratification is the control, and the native is excluded so the parent-is-model-output bias is uniform across
+strata. SKEMPI training leakage makes the predicted-backbone result *conservative* (the predictor nearly
+reconstructs complexes it has seen and the deficit appears anyway). The pre-registered strict-control tier is
+underpowered by design; the verdict rests on the higher-powered tiers declared in advance. And two extensions
+did not survive their controls — a within-natural confidence gradient, and the generalisation to catalytic
+sites — which we report rather than bury.
+
+---
+*Draft status: §1–9 in prose. Pending: fold in the Fable-5 catalytic audit (§4 note); a figure pass;
+external-citation URL verification; final length trim to 9 pages.*
