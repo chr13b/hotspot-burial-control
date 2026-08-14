@@ -1,0 +1,8 @@
+metric,value,lo,hi,n_complexes,merge_frac,seed,top3_dropped,verdict,command
+raw_rho,0.5652,0.3959,0.7085,127,1.0,20260803,5K39_A_B;4J2L_A_CD;3LB6_A_C,SURVIVES burial (agreement is NOT a recursive burial confound),python3 src/deficit_burial_residualize.py
+partial_rho_given_burial,0.5287,0.3538,0.6785,127,1.0,20260803,5K39_A_B;4J2L_A_CD;3LB6_A_C,SURVIVES burial (agreement is NOT a recursive burial confound),python3 src/deficit_burial_residualize.py
+partial_rho_given_burial_nbr_size,0.529,0.3487,0.682,127,1.0,20260803,5K39_A_B;4J2L_A_CD;3LB6_A_C,SURVIVES burial (agreement is NOT a recursive burial confound),python3 src/deficit_burial_residualize.py
+corr_dof3_burial,-0.3531,,,127,1.0,20260803,5K39_A_B;4J2L_A_CD;3LB6_A_C,SURVIVES burial (agreement is NOT a recursive burial confound),python3 src/deficit_burial_residualize.py
+corr_daf2_burial,-0.2411,,,127,1.0,20260803,5K39_A_B;4J2L_A_CD;3LB6_A_C,SURVIVES burial (agreement is NOT a recursive burial confound),python3 src/deficit_burial_residualize.py
+raw_rho_drop_top3,0.533,,,127,1.0,20260803,5K39_A_B;4J2L_A_CD;3LB6_A_C,SURVIVES burial (agreement is NOT a recursive burial confound),python3 src/deficit_burial_residualize.py
+partial_rho_burial_drop_top3,0.4983,,,127,1.0,20260803,5K39_A_B;4J2L_A_CD;3LB6_A_C,SURVIVES burial (agreement is NOT a recursive burial confound),python3 src/deficit_burial_residualize.py
