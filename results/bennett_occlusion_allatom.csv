@@ -1,0 +1,14 @@
+metric,feature,value,n,lo,hi,p_gt0,verdict,seed,K_conformers,command
+gate,native_reconstruction_rmsd_median,0.2781,1430.0,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+gate,gly_clash,0.0,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+gate,frac_zero_clash_postrepack,0.9506,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+gate,est_vs_real_native_clash_spearman,0.2583,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+gate,PASS,1.0,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+auroc_standalone,P_complex,0.6145,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+auroc_standalone,aa_clash,0.519,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+auroc_standalone,dSASA,0.5846,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+auroc_standalone,vol_sim,0.5389,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+auroc_standalone,old_vol_clash,0.4942,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+auroc_cv,geometry_allatom(clash+clashxc+dSASA+vol+contact),0.6188,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+auroc_cv,geometry_allatom+P,0.6371,,,,,,20260803,40,python3 src/p_bennett_occlusion_allatom.py
+dAUROC_P_over_allatom_geometry,P_adds_beyond_ALLATOM_occlusion,0.0182,,0.0145,0.022,1.0,SURVIVES -> Spine B / ICLR,20260803,40,python3 src/p_bennett_occlusion_allatom.py
