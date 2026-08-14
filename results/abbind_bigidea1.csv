@@ -1,0 +1,11 @@
+feature,auroc,lo,hi,p_gt0,verdict,seed,n,n_destab,command
+neg_logP(complex),0.5781,0.5137,0.6393,,,20260803,420,227,python3 src/abbind_bigidea1.py
+neg_logodds(P/Q),0.5232,0.4732,0.5745,,,20260803,420,227,python3 src/abbind_bigidea1.py
+burial,0.6908,0.6198,0.7656,,,20260803,420,227,python3 src/abbind_bigidea1.py
+dSASA,0.5852,0.5321,0.649,,,20260803,420,227,python3 src/abbind_bigidea1.py
+neg_BLOSUM,0.5833,0.5186,0.6504,,,20260803,420,227,python3 src/abbind_bigidea1.py
+vol_dissim,0.5593,0.5003,0.6178,,,20260803,420,227,python3 src/abbind_bigidea1.py
+spearman_logP_ddg,-0.1726,,,,,20260803,420,227,python3 src/abbind_bigidea1.py
+geom_sim_baseline,0.6604,,,,,20260803,420,227,python3 src/abbind_bigidea1.py
+geom_sim+logP,0.6678,,,,,20260803,420,227,python3 src/abbind_bigidea1.py
+dAUROC_logP_over_geom_sim,0.0075,-0.0136,0.0255,0.763,does not add (CI spans 0),20260803,420,227,python3 src/abbind_bigidea1.py
