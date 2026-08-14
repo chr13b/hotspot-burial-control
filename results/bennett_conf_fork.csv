@@ -1,0 +1,3 @@
+feature,auroc,lo,hi,skempi_ref,n,n_hot,verdict,seed,note,command
+logp_native,0.5955,0.5673,0.624,0.538,1430,747,theory FIRES (confidence>chance AND>SKEMPI),20260803,position hot = frac of subs abolishing binding >= interface median; de-novo = binding-dominated regime,python3 src/p_bennett_conf_fork.py
+negentropy,0.6266,0.598,0.6567,0.538,1430,747,theory FIRES (confidence>chance AND>SKEMPI),20260803,position hot = frac of subs abolishing binding >= interface median; de-novo = binding-dominated regime,python3 src/p_bennett_conf_fork.py
