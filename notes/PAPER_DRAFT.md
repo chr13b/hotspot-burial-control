@@ -287,10 +287,12 @@ so perhaps hotspots are simply lost to sampling. But that cost is statistically 
 sampling of any buried residue set, not a hotspot-specific tax, and no amount of oversampling recovers it
 because the barrier is the temperature exponent itself. The second is a *commitment-ordering* effect: the
 autoregressive schedule might commit non-hotspot context first and paint hotspots into a corner. On
-ProteinMPNN, the oracle decoding order is inert (difference-in-differences −0.002); on MultiFlow, a coupled
-sequence-structure model, structure commits marginally before sequence but the unmasking-order knob is inert.
-The schedule mechanism is ruled out on both an autoregressive and a coupled model. → FINDINGS_expB.md. Neither
-competitor survives; what remains is the conditioning-set signal of §6.
+ProteinMPNN, the oracle decoding order is inert (difference-in-differences −0.002, the decisive test); on
+MultiFlow, a coupled sequence-structure model, structure commits marginally before sequence and the
+unmasking-order knob has only a marginal effect (order-span 0.012, comparable to the seed-to-seed SD 0.011 —
+not the clean null an earlier miscomputed variance suggested; corrected). The schedule mechanism is thus ruled
+out decisively on the autoregressive model and shown marginal on the coupled one. → FINDINGS_expB.md. Neither
+competitor accounts for the effect; what remains is the conditioning-set signal of §6.
 
 ## 8. Related work and positioning
 
@@ -308,8 +310,12 @@ difference on an overlapping fixture; a distinct question. On the phenomenon its
 the attribution — it is neither dynamics nor decoding but conditioning, and a burial confound on the crystal
 benchmark. The most telling piece of related practice is **BindCraft**, whose one-shot binder pipeline
 hard-codes a 4 Å interface freeze that forbids inverse folding at the interface — the field's implicit
-admission of our thesis, to which we give a measurement (confidence ranks interface hotspots below random;
-free geometry beats the contact set at matched budget) and a principled reading. Finally, a wave of
+admission of our thesis, to which we give a measurement and a principled improvement. Ranking interface
+positions for hotspot triage at a matched budget, IF **confidence captures fewer hotspots than random**
+(capture@3 0.064 vs 0.089; @5 0.125 vs 0.138) — which *justifies* freezing the interface rather than trusting
+IF there — while free **ΔSASA captures ~3× more** (0.233 @3), well above the uniform freeze. So the field's
+hack is right about confidence and improvable with free geometry: freeze-then-prioritise-by-ΔSASA beats both
+trusting confidence and the uniform freeze. → bindcraft_triage.csv, FINDINGS_bindcraft.md. Finally, a wave of
 conditioning-aware inverse-folding methods (AlphaFold-DB debiasing / DeSAE, target-conditioned inverse
 folding, UMA-Inverse) *presupposes* the conditioning-set problem; we *measure* it and show the standard
 benchmark hides it. ⟨✎ verify all external citation URLs before submission — BAIF/DeSAE/CPI/free-energy-interp
