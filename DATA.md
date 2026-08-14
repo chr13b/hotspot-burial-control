@@ -60,3 +60,9 @@ not noise to be cleaned away.
 > upstream fixture (Jankauskaitė et al. 2019). RFdiffusion (Watson et al. 2023) and ProteinMPNN (Dauparas
 > et al. 2022) are used under their respective licenses; the pinned commit and checkpoint are in
 > `environment/README.md`.
+
+## M-CSA (catalytic residues)
+- Source: EBI M-CSA `curated_data.csv` (https://www.ebi.ac.uk/thornton-srv/m-csa/), reference PDBs from RCSB.
+- Location: `~/ftax/data/m-csa/` (curated_data.csv, pdbs/*.pdb). NOT committed (third-party).
+- Labels built by `src/mcsa_build_labels.py` → mcsa_labels.csv (130 enzymes, catalytic = role type "reactant").
+- Used by: catalytic_dissociation.py, catalytic_audit.py.

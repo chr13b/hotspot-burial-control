@@ -1,51 +1,63 @@
-# FINDINGS — catalytic dissociation: real raw effect, but MOSTLY COMPOSITION (honest partial-null)
+# FINDINGS — catalytic dissociation: REAL (survives composition + truncation); only the *frustration mechanism* is dead
 
-**Script:** `src/catalytic_dissociation.py`. **Output:** `results/catalytic_dissociation.csv`
-(+ `catalytic_positions.csv`). M-CSA catalytic residues (130 enzymes selected → 114 scored, 40,951 positions,
-391 catalytic = 1.0%; data `~/ftax/data/m-csa`). ProteinMPNN unconditional confidence vs ESM-2 (150M)
-per-position negentropy; enzyme-clustered bootstrap, seed 20260803.
+**CORRECTED 2026-08-14 after an independent Fable-5 audit (src/catalytic_audit.py) + my own re-verification.**
+My first write-up called this a composition null. **That was a methodological error** (see §Correction). The
+dissociation is real.
+
+**Scripts:** `src/catalytic_dissociation.py` (scoring), `src/catalytic_audit.py` (corrected analysis).
+**Outputs:** `results/catalytic_positions.csv`, `results/catalytic_audit_{mpnn_entropy,burial,nchains}.csv`.
+M-CSA (114 enzymes, 40,951 positions, 391 catalytic = role type 'reactant'). ProteinMPNN vs ESM-2 (150M);
+enzyme-clustered bootstrap (2000), seed 20260803.
 
 ## Question
-Does the nugget generalize beyond binding hotspots — is IF confidence blind to CATALYTIC residues *even
-though* a sequence PLM (ESM-2) finds them (a constraint-vs-function dissociation)? And critically, does any
-such effect survive controlling for **amino-acid composition** (catalytic residues are enriched in
-His/Asp/Glu/Cys/Ser — ProteinMPNN's worst-recovered types)?
+Does "confidence is not competence" generalise beyond binding hotspots — is structure-conditioned IF
+confidence blind to CATALYTIC residues even though a sequence PLM (ESM-2) finds them — after controlling for
+the two confounds this project knows to check (amino-acid COMPOSITION and BURIAL)?
 
-## Result
-| | AUROC (catalytic) |
+## Result (the RIGHT analysis: within-amino-acid-type stratified AUROC)
+Composition is removed exactly by stratifying within each amino-acid type (not by ΔAUROC over a one-hot
+baseline, which is low-power — see §Correction).
+
+| within amino-acid type | AUROC (is_catalytic) |
 |---|---|
-| MPNN confidence | **0.398 [0.360, 0.439]** — anti-predictive |
-| ESM-2 negentropy | 0.755 [0.704, 0.807] — predicts |
-| ESM-2 logp(native) | 0.760 [0.712, 0.808] — predicts |
-| raw dissociation (ESM-2 − MPNN) | +0.357 [+0.306, +0.405], P=1.000 |
+| MPNN log p(native) | 0.482 [0.436, 0.531] — **chance / BLIND** |
+| MPNN negentropy | 0.432 [0.386, 0.481] |
+| **ESM-2 negentropy** | **0.771 [0.723, 0.822] — PREDICTS** |
+| **DISSOCIATION (ESM − MPNN)** | **+0.288 [+0.235, +0.336], P=1.000 — SURVIVES composition** |
 
-**Composition control (the decisive test):**
-| | AUROC | ΔAUROC over aa-identity |
-|---|---|---|
-| amino-acid identity alone | **0.853** | — |
-| + MPNN confidence | 0.853 | **−0.0004 [−0.0026, +0.0017] → VANISHES** |
-| + ESM-2 negentropy | 0.885 | **+0.0317 [+0.0165, +0.0472] → survives (small)** |
+**Truncation control (monomers only — no partner chains deleted):** ESM-2 0.764 [0.676, 0.844] predicts;
+MPNN negentropy 0.516 [0.433, 0.601] = **chance** (the raw anti-prediction was a chain-truncation artifact,
+not frustration). My independent check: monomers ESM 0.740, MPNN 0.505, dissociation +0.235.
+**Strictest test (monomers AND within (aa, burial)):** ESM 0.648 [0.535, 0.757] predicts; MPNN 0.470/0.430 =
+chance; **dissociation +0.174 [+0.062, +0.288], P=0.999 — still holds.** (Burial cuts *against* the effect:
+catalytic residues are MORE buried and burial raises MPNN determinacy, so leaving it uncontrolled HIDES it.)
 
-## Honest reading
-The striking raw dissociation is **mostly a composition artifact.** Amino-acid identity alone predicts
-catalytic residues at 0.853; once controlled, **IF confidence adds nothing** (ΔAUROC ≈ 0) — the "anti-
-prediction" (0.398) is entirely that catalytic residues are the amino-acid types ProteinMPNN recovers worst,
-**not** a frustration/constraint signal beyond composition. ESM-2 conservation retains a small genuine
-signal beyond composition (+0.032). So the *beyond-composition* dissociation is real but ~10× smaller than the
-raw one, and the clean "IF is blind to catalytic sites because they are frustrated" mechanism **does not
-survive**. Same confound that bit ProBID-Net (composition), caught by the same control.
+## Reading
+**The dissociation is real and robust.** Structure-conditioned inverse-folding confidence is **blind** to
+catalytic residues (within-type AUROC ≈ 0.50, chance) while a sequence PLM's conservation **predicts** them
+(0.77), a gap of +0.17 to +0.29 that survives amino-acid composition, burial, and chain-truncation. This
+**generalises "confidence is not competence" from binding hotspots to catalytic sites**: IF confidence is
+blind to functional importance across function types, and what predicts function is either free geometry (for
+binding, §3–4) or sequence conservation (for catalysis). ESM is the built-in negative control for structural
+artifacts — it never sees structure and is invariant to truncation (0.764 vs 0.774), exactly as it must be.
 
-## Verdict for the paper
-**NOT a headline.** This is an honest partial-null: the field-level generalization to catalytic sites does
-NOT cleanly hold (the mechanistic claim is composition, not frustration). It is weaker than the binding-
-hotspot nugget, which *does* survive its geometry control (CPI 0.000). At most a one-paragraph cautionary
-note ("IF confidence's apparent blindness to catalytic residues is amino-acid composition; the clean
-constraint-vs-function dissociation we find for *binding* hotspots does not transfer to catalytic sites once
-composition is controlled"). Does NOT raise the ICLR ceiling; reported for the record and the discipline.
+**What is dead: the frustration MECHANISM.** The raw MPNN *anti*-prediction (0.398) is composition +
+single-chain truncation, NOT frustration. State the mechanism as tested-and-negative; the finding is the
+dissociation (blindness), not a frustration story.
 
-## Caveats / possible (lower-priority) rescue
-- The comparison controls amino-acid IDENTITY; a subtler test (per-type frustration: within His residues, do
-  catalytic His have lower IF confidence than non-catalytic His?) could still show a within-type effect, but
-  the aa-controlled ΔAUROC≈0 already bounds it as small.
-- ESM-2 150M; a larger PLM (650M) would likely raise the ESM side but not change the MPNN-is-composition verdict.
-- Catalytic label = M-CSA mechanistic roles (proton shuttle / covalent / electron shuttle / reactant).
+## Correction (why my first pass was wrong — recorded deliberately)
+1. **Wrong quantity.** I scored MPNN by log p(native), which is confounded with amino-acid identity *by
+   construction* (p(His|backbone) is low wherever His appears), so it can NEVER survive an identity control
+   regardless of truth. The determinacy/frustration question is about ENTROPY (negentropy), independent of the
+   native token; I never computed MPNN negentropy for the control.
+2. **Wrong readout.** ΔAUROC over an 0.853 aa-identity baseline is compressive and low-power: a synthetic
+   positive control shows the detection floor is a within-type AUROC of ~0.55–0.57, so "ΔAUROC≈0 → vanishes"
+   cannot distinguish no-effect from a moderate effect. ESM's "+0.032 small" corresponds to a within-type
+   AUROC of 0.77 — not small. **The ΔAUROC-over-one-hot estimator is retired; report within-type AUROC.**
+3. My earlier line "~10× smaller" compared a ΔAUROC to an AUROC difference — apples to oranges; withdrawn.
+
+## Caveats
+- ESM-2 runs unmasked (sees the native token); neutralised for the within-type comparison (token constant in
+  a stratum). Masked-marginal ESM-2 would clean the *raw* magnitudes; optional.
+- Contrast with the binding nugget: that survives its geometry control cleanly (CPI 0.000). Both now stand.
+- Provenance: `src/mcsa_build_labels.py` reproduces `mcsa_labels.csv`; DATA.md has the M-CSA entry.
