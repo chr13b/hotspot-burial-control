@@ -1,0 +1,6 @@
+model,conf_feature,n,n_hot,auroc_conf,conf_lo,conf_hi,auroc_burial,d_conf_minus_burial,note,seed,command
+ProteinMPNN,logp_native,5742,325,0.5377,0.5009,0.5759,0.6887,-0.1511,ABOVE chance,20260803,python3 src/xmodel_confidence.py
+ESM-IF1,logp_native,3706,244,0.517,0.4684,0.5682,0.6887,-0.1717,confidence ~ CHANCE,20260803,python3 src/xmodel_confidence.py
+PiFold,logp_native,5742,325,0.4994,0.4611,0.5383,0.6887,-0.1894,confidence ~ CHANCE,20260803,python3 src/xmodel_confidence.py
+MIF,logp_native,5742,325,0.5088,0.4729,0.5458,0.6887,-0.18,confidence ~ CHANCE,20260803,python3 src/xmodel_confidence.py
+ProBID(top_prob),top_prob,4793,294,0.5363,0.4966,0.5736,0.6832,-0.147,confidence ~ CHANCE,20260803,python3 src/xmodel_confidence.py
