@@ -7,33 +7,32 @@ a `→ file.csv` trace to a committed result. Sections marked ⟨PENDING …⟩ 
 
 ## Abstract
 
-Staged binder design — generate a backbone, then inverse-fold a sequence onto it — is widely believed to
-stumble at protein–protein interface *hotspots*, the few residues that dominate binding free energy. A
-prominent report (ProBID-Net) quantifies this as an inverse-folding sequence-recovery of 0.334 at hotspots
-against 0.472 elsewhere, and attributes it to protein dynamics. We show the phenomenon is real but almost
-entirely misread, and in the process characterise what inverse-folding models do and do not know about
-binding. **First, confidence is not competence.** Across five inverse-folding architectures, a model's own
-per-residue confidence ranks interface hotspots no better than chance (AUROC 0.50–0.54), and a combiner-free
-conditional-independence test shows it carries *zero* information about hotspot-ness beyond cheap structural
-geometry (conditional predictive impact 0.000); a free geometric feature — the buried surface area a residue
-loses on binding — predicts hotspots instead. The obvious learned detector, the divergence between a model's
-complex- and monomer-conditioned distributions, largely recapitulates that geometry (adding only a small real
-increment beyond it): a learned frustratometer, not a new method. This pattern replicates on a second,
-biophysically distinct fixture
-(antibody–antigen ΔΔG). **Second, and in tension with the first, the model does know binding — in its
-distribution, not its confidence.** On genuinely de-novo designed binders with experimental site-saturation
-binding measurements, a model's per-substitution complex-conditioned distribution ranks substitutions by
-measured binding, does so better for the fold-stability question than the binding question (a built-in
-control), gains specifically from conditioning on the partner, and — the decisive test — still adds signal
-beyond an all-atom, rotamer-repacked steric-occlusion baseline: after repacking, 95% of substitutions incur
-no clash, so occlusion cannot explain the effect. A non-parent model reproduces every part of this, ruling
-out circularity. **Third, the published deficit is a burial confound**, and the residual signal lives in the
-*conditioning set* the field benchmarks on: under a pre-registered burial-matched design the crystal-backbone
-deficit vanishes (five architectures plus ProBID-Net's own released model), yet it reappears on the predicted
-backbones designers actually use, where two independent structure predictors agree, per complex, on which
-interfaces are hard — agreement that survives controlling for burial. The upshot is practical: read hotspots
-from partner geometry, not model confidence, and read the model's binding knowledge from its full
-distribution, not its scalar summaries.
+Staged binder design — generate a backbone, then inverse-fold a sequence — is believed to stumble at
+protein–protein interface *hotspots*, and a prominent report (ProBID-Net) quantifies this as inverse-folding
+recovery of 0.334 at hotspots versus 0.472 elsewhere, attributed to dynamics. We show the phenomenon is real
+but misread, and give the reason as a theorem. **Confidence and competence are two orthogonal derivatives of
+the same inverse-folding likelihood.** A model's per-residue *confidence* is the *diagonal* term — a scalar
+summary of one conditioning — and estimates fold-stability constraint; a residue's binding *leverage* is the
+*mixed second derivative*, the response to ablating the binding partner, `[log p(a|complex)−log p(wt|complex)]
+− [log p(a|monomer)−log p(wt|monomer)]`, which estimates the binding effect. Two positions can share an
+identical bound distribution — hence identical confidence — yet differ in leverage, so **confidence is blind
+to binding by construction, not by failure** (we verify: confidence-matched positions retain 30% of the
+leverage spread). Every readout the field has used — recovery, confidence, the complex-vs-monomer KL — is a
+*scalar* summary, and on natural complexes such summaries reduce to cheap geometry: across five architectures
+confidence ranks interface hotspots at chance and adds *zero* beyond geometry (conditional predictive impact
+0.000), and the KL detector is a *learned frustratometer* recapitulating partner-contact area. **The mixed
+derivative does not reduce to geometry.** On our main fixture (SKEMPI, natural complexes) it adds substantial
+binding information beyond geometry — mutation-level CPI +0.059, Spearman with experimental ΔΔG −0.30, ~21×
+confidence — robustly, exactly where every scalar summary fails. This is a *feature-class law*: scalar
+summaries are geometry; the mixed derivative is competence. It unifies the field's observations as corollaries
+— the published deficit is a burial confound (pre-registered matched design, five architectures plus
+ProBID-Net's own model); the blindness generalises from binding to *catalytic* residues (structure-conditioned
+confidence blind while sequence conservation predicts, triple-controlled); and the recipe generalises beyond
+inverse folding: to read un-trained function from any conditional generative model, ablate the conditioner and
+read the mixed derivative, not the confidence. The leverage operator itself is BA-Cycle (Jiao et al. 2024); our
+contribution is the decomposition, the blindness theorem, the first beyond-geometry control, and the
+feature-class law. Practically: rank interface positions by partner geometry, not confidence (below random),
+and read binding from the mixed derivative, not the scalar summaries.
 
 ## 1. Introduction
 
@@ -54,39 +53,42 @@ average, *more deeply buried* than other interface residues, and burial is preci
 effect with a large burial effect of the opposite sign — so the naive comparison **hides** any real deficit
 rather than inventing one. Controlling burial is not a detail; it is the experiment.
 
-We make four contributions.
+We make five contributions.
 
-**(i) Confidence is not competence.** At interface hotspots, a model's own per-residue confidence is at
-chance (AUROC 0.538 for ProteinMPNN; 0.50–0.54 across five architectures) and ranks hotspots *below* random
-for fixed-budget triage. A conditional-predictive-impact test — cross-fitted and immune to any choice of
-combiner — shows confidence is conditionally independent of hotspot-ness given cheap geometry (CPI 0.000
-[−0.0003, +0.0003]). What predicts hotspots is a free geometric feature, the change in solvent-accessible
-surface area on binding (ΔSASA, i.e. partner-contact area). The natural learned detector — the KL divergence
-between a model's complex-conditioned and monomer-conditioned sequence distributions — adds only a small real
-increment over that geometry (CPI +0.002, P=0.998; ~6× below ΔSASA): a *learned frustratometer* that largely
-recapitulates the classical geometry, which we treat as a diagnostic rather than a method. The entire pattern
-replicates on a second, independent fixture (antibody–antigen ΔΔG).
-→ nugget_cpi.csv, xmodel_confidence.csv, baseline_audit.csv, kl_geometry_control{,_predicted}.csv, abbind_nugget.csv.
+**(i) The Confidence–Leverage Decomposition (a theorem).** A model's per-residue *confidence* is the *diagonal*
+term of the inverse-folding log-likelihood — a scalar functional of one conditioning — and estimates
+fold-stability constraint; a residue's binding *leverage* is the *mixed second derivative*, the per-substitution
+response to ablating the partner (the BA-Cycle operator of Jiao et al. 2024). Confidence is blind to leverage
+*by construction* — an identical bound distribution yields identical confidence but arbitrary leverage; we
+verify this is non-vacuous (confidence-matched interface positions retain ≈30% of the leverage spread). This
+yields a **feature-class law**: on natural complexes every *scalar* summary of the distribution reduces to cheap
+geometry (confidence adds CPI 0.000; the KL detector recapitulates ΔSASA), whereas the *mixed derivative* does
+not — on SKEMPI it adds binding information beyond geometry (mutation-level CPI +0.059, Spearman with
+experimental ΔΔG −0.30; ~21× confidence), robustly. The model knows binding on natural complexes; the knowledge
+was invisible to every scalar readout the field has used. → leverage_decomposition.csv, nugget_cpi.csv.
 
-**(ii) The model knows binding — in its distribution, not its confidence.** On de-novo designed binders with
-experimental site-saturation binding data, the model's per-substitution complex-conditioned distribution
-ranks the 19 non-native substitutions by measured binding (AUROC 0.615, beating substitution-similarity
-baselines), answers the fold-*stability* question better than the *binding* question (a dissociation that
-serves as a positive control), and gains specifically from conditioning on the partner (+0.076,
-interface-specific). Crucially, this signal survives an *all-atom, rotamer-repacked* occlusion baseline
-(+0.018 [+0.015, +0.022]); since 95% of substitutions incur no steric clash after repacking, occlusion cannot
-account for it — the model encodes per-substitution binding *energetics* beyond geometry. A non-parent scorer
-reproduces the interface ranking, the partner-gain, and the beyond-occlusion signal, ruling out that this is
-a model scoring around its own mode. → bennett_knows_where.csv, bennett_occlusion_allatom.csv, bennett_nonparent.csv.
+**(ii) Confidence is not competence — a property of inverse folding, with a practical consequence.** The
+diagonal is blind across five architectures (interface-hotspot AUROC 0.50–0.54; conditionally independent of
+hotspot-ness given geometry, CPI 0.000). This measures the field's implicit BindCraft interface-freeze: ranking
+interface positions by confidence captures *fewer* hotspots than random (capture@3 0.064 vs 0.089), while free
+ΔSASA captures ~3× more (0.233) — so rank by geometry, not confidence. De-novo designs corroborate the positive
+of (i) with even the scalar distribution: it beats substitution baselines (0.615), dissociates stability from
+binding, and adds +0.018 beyond an all-atom rotamer-repacked occlusion baseline, reproduced by a non-parent
+scorer. → xmodel_confidence.csv, baseline_audit.csv, bindcraft_triage.csv, bennett_occlusion_allatom.csv, bennett_nonparent.csv.
 
-**(iii) The published deficit is a burial confound.** Under a pre-registered burial-matched matched-pair
+**(iii) The blindness generalises across function types.** On catalytic residues (M-CSA), structure-conditioned
+confidence is blind (within-amino-acid-type AUROC ≈ 0.50) while a sequence language model's conservation
+predicts them (0.77) — a dissociation surviving composition, burial, and chain-truncation controls.
+Inverse-folding confidence is blind to functional importance in general, not only binding. → catalytic_audit.csv.
+
+**(iv) The published deficit is a burial confound.** Under a pre-registered burial-matched matched-pair
 design (matching within-complex on relative SASA, secondary-structure class, and neighbour count), the
 crystal-backbone hotspot deficit vanishes across five inverse-folding architectures, and ProBID-Net's own
 released voxel-CNN reproduces its published deficit and then dissolves it under joint burial-and-composition
 matching. We offer the matched-pair design as a reusable diagnostic *protocol*. → probid_gap_estimators.csv,
 composition_confound.csv.
 
-**(iv) The residual tax lives in the conditioning set.** On the predicted backbones designers actually use —
+**(v) The residual tax lives in the conditioning set.** On the predicted backbones designers actually use —
 from two architecturally-independent structure predictors — a burial-matched deficit reappears, and the two
 predictors' per-complex deficits agree (ρ = 0.57): the *same* complexes are hard under both. This agreement
 survives residualising on interface burial (partial ρ = 0.53), so it is not a recursive burial effect, and it
@@ -150,17 +152,49 @@ Finally, none of this is specific to SKEMPI. On AB-Bind (antibody–antigen ΔΔ
 confidence-AUROC for hotspots is 0.560 (chance; CI includes 0.5), burial 0.728 and ΔSASA 0.604 predict, and
 confidence adds +0.008 (indistinguishable from zero) over full geometry. → abbind_nugget.csv.
 
-## 4. The model knows binding — in its distribution, not its confidence
+## 4. The Confidence–Leverage Decomposition: the model knows binding — in the mixed derivative
 
-The results so far are corrective: the model's confidence is uninformative about hotspots, and the natural
-learned detector reduces to geometry. Taken alone they would make a purely negative paper. But they concern
-only *scalar summaries* of the model — its confidence, and a one-number divergence. The model's full
-per-substitution distribution is a richer object, and it turns out to carry genuine binding information that
-those scalars discard. Establishing this requires a fixture with *per-substitution* binding measurements, so
-we turn to de-novo designed binders (Bennett-2023), which come with experimental site-saturation mutagenesis
-over four targets: for each interface position, the binding phenotype of all 19 non-native substitutions. A
-sanity control passes exactly — the single amino acid absent from each SSM library equals the design's native
-residue in 4137/4137 positions. → bennett_knows_where.csv.
+The results so far are corrective, and every quantity the field has read off these models — recovery,
+confidence, the complex-vs-monomer KL — is a *scalar summary* of the distribution. There is a specific reason
+they all fail at hotspots, and stating it turns the corrections into a theorem.
+
+**The decomposition.** Write the model's per-position information as two orthogonal terms of the
+inverse-folding log-likelihood's interaction expansion in the partner. **Confidence** is the *diagonal* term —
+a scalar functional of the single bound-conditioned distribution `p(·|X_complex)` (log p(native), negentropy) —
+and estimates positional fold-stability constraint. **Leverage** is the *mixed second difference*, the
+per-substitution response to *ablating the partner*:
+`L_i(a) = [log p(a|X_complex) − log p(wt|X_complex)] − [log p(a|X_monomer) − log p(wt|X_monomer)]`,
+which by the thermodynamic cycle estimates −ΔΔG_bind (up to an unknown temperature). The scalar KL is one
+contraction of this vector: `KL(P‖Q) = E_{a∼P}[L(a)] + const` (verified to 1e-6). A methodological aside that
+also motivates L: the per-position softmax normaliser `log Z_i` contaminates confidence but *cancels* in L
+(each bracket is within-conditioning), so L is better-posed. **Confidence is blind to leverage by
+construction:** two positions with an identical bound distribution have identical confidence yet can differ
+arbitrarily in L — and this is not hypothetical, since matching interface positions on the *full* bound
+distribution still leaves ≈30% of the leverage spread free.
+
+**The feature-class law (on the main fixture, natural complexes).** On SKEMPI, the mixed derivative adds
+binding information beyond cheap geometry where every scalar summary does not. Per interface position
+(conditional predictive impact over burial+neighbours+ΔSASA, 13,401 positions, directly comparable to the
+confidence result of §3):
+
+| feature (all functionals of the same distribution) | CPI beyond geometry |
+|---|---|
+| **confidence** — the diagonal | **+0.0002 [−0.0002, +0.0007]** — conditionally independent |
+| scalar KL — a contraction of L | +0.0010 [+0.0004, +0.0017] |
+| **leverage L** — the mixed derivative | **+0.0048 [+0.0033, +0.0065]** (~21× confidence; survives dropping the 3 most influential complexes) |
+
+At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
+= **+0.059 [+0.046, +0.073]**, surviving controls from substitution similarity (BLOSUM, volume, hydropathy) and
+from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. So the model *does* know
+binding on natural complexes — the knowledge was invisible to every scalar readout the field used. The law is
+not about a *regime* but a *feature class*: on natural complexes scalar summaries reduce to geometry
+(confidence exactly, KL nearly); the mixed derivative does not.
+
+**De-novo designs corroborate — there, even the scalar distribution shows it.** Where selection is
+binding-dominated, the signal is accessible to blunter probes too. On Bennett-2023 de-novo binders with
+experimental site-saturation mutagenesis (four targets; a sanity control passes exactly — the SSM-excluded
+amino acid equals the native in 4137/4137 positions), the per-substitution complex-conditioned distribution
+itself ranks substitutions by binding. → bennett_knows_where.csv.
 
 We pre-registered three tests (P1–P3). **(P1)** The model's complex-conditioned distribution ranks the 19
 substitutions by whether they retain binding at an interface AUROC of 0.615 [0.601, 0.628], above chance and
@@ -196,24 +230,19 @@ scoring substitutions around its own mode. A non-parent model — ESM-IF1, which
 reproduces every component: interface AUROC 0.625, partner-gain +0.079, and the beyond-occlusion signal
 +0.016, all with intervals excluding the null. → bennett_nonparent.csv.
 
-**Why de-novo, and only de-novo.** The theory that organises these results is a distinction between
-*constraint* and *leverage*. Inverse-folding confidence estimates how *constrained* a position is by the fold
-it conditions on; hotspot-ness is *leverage*, how much binding free energy depends on the residue. These
-coincide only when selection on a position is binding-dominated. De-novo binders are the extreme of that
-regime — they exist only to bind — so the prediction is that the model's binding signal should be *most*
-accessible there. Two observations bear it out. First, scalar confidence, which is at chance for hotspots on
-natural SKEMPI complexes (0.538), rises to 0.60 on de-novo interfaces. → bennett_conf_fork.csv. Whether the
-*beyond-geometry* positive itself is de-novo-specific is the open question: on natural antibody–antigen
-mutations (AB-Bind) the model's distribution correlates with ΔΔG in the right direction (Spearman −0.17) and
-beats chance standalone (0.578), but that fixture is **underpowered** — it cannot certify even BLOSUM62 as
-adding beyond geometry in the conditional test — so it can neither confirm nor refute a natural-complex
-positive (n=420 mutations, 27 complexes). The pivotal test is on SKEMPI with the full per-mutation leverage
-operator (§4a, the decomposition); we report it there. → abbind_bigidea1.csv. The picture the decomposition
-predicts is *graded*, not binary: on *natural* complexes the model's binding signal is **mostly** geometry
-(the scalar KL adds only a small increment beyond ΔSASA), whereas on *de-novo* designs the distribution
-carries binding energetics that geometry does not (+0.018 beyond all-atom occlusion). The model's binding
-knowledge is real, latent in its distribution, and increasingly accessible as selection becomes
-binding-dominated.
+**Feature class, not regime.** An earlier reading of these results proposed a *regime* law — that the model's
+binding signal is accessible only where selection is binding-dominated (de-novo), reducing to geometry on
+natural complexes. Our own main fixture refutes it: the mixed derivative adds +0.059 on SKEMPI (above). What is
+true is the *feature-class* distinction: on natural complexes the binding signal is invisible to *scalar*
+summaries — confidence is at chance and adds zero beyond geometry (§3), and while a scalar confidence readout
+rises to 0.60 on de-novo interfaces it stays at chance on natural SKEMPI (0.538) → bennett_conf_fork.csv — yet
+the *mixed derivative* carries it. De-novo designs are simply where the signal is accessible to blunter probes
+as well: there, even the scalar complex-conditioned distribution adds +0.018 beyond an all-atom occlusion
+baseline. A methodological correction this forces: an earlier AB-Bind analysis reported the per-mutation
+distribution "adds nothing" on natural antibody–antigen ΔΔG (ΔAUROC +0.008), but under the correct conditional
+test on the same fixture it adds **CPI +0.042 [+0.022, +0.061]** — the ΔAUROC readout is the one with a −0.021
+noise floor (§3). AB-Bind's 27 complexes remain too few to be decisive either way; SKEMPI is where the question
+is settled. → abbind_bigidea1.csv, leverage_decomposition.csv.
 
 **The blindness generalises beyond binding — to catalytic residues.** "Confidence is not competence" is not
 specific to binding hotspots. On M-CSA catalytic residues, controlling for amino-acid composition by
@@ -299,12 +328,17 @@ competitor accounts for the effect; what remains is the conditioning-set signal 
 Our sequence-free detector is, by construction, a **learned frustratometer**: the partner-induced change in
 local frustration at interfaces is a classical statistical-mechanics quantity (Ferreiro, Parra and
 colleagues), and our finding that the KL detector equals ΔSASA says the neural version does not beat the
-physics — which is why we demote it. The closest machine-learning prior art is **BAIF** (Boltzmann-aligned
-inverse folding), which scores mutations by inverse-folding log-likelihood over bound-versus-unbound states —
-the same two conditioning sets our KL uses — for ΔΔG prediction. We differ in question and in claim: we run a
-per-*substitution* test of the *full* conditional distribution against experimental binding, stratified by a
-stability positive control, and beyond an all-atom occlusion baseline (§4); and we keep the scalar detector
-demoted rather than proposing it as a method. **StaB-ddG** parameterises ΔΔG through a folding-energy
+physics — which is why the *scalar* KL adds only a small increment. **The leverage operator L is not ours: it
+is BA-Cycle** (Jiao, Mao, Jin et al. 2024, arXiv:2410.09543), whose bound-versus-unbound double-difference
+rearranges to exactly our mixed second difference, and which we credit outright for the score (they report a
+comparable SKEMPI ΔΔG correlation). Our contribution is orthogonal to theirs: **(i)** the *decomposition* —
+identifying their score as the mixed derivative and confidence as the diagonal, with the constructive proof
+that confidence is blind to it; **(ii)** the *first beyond-geometry control* — BA-Cycle runs none (no
+burial/rSASA/ΔSASA/contact anywhere in their paper, which we verified), so the fact that L survives geometry
+(and that scalar summaries do not) is new; and **(iii)** the *feature-class law*. We also differ in construction
+— per-position sequence-free marginals (design-time usable, decoding-order-free) versus their whole-sequence
+autoregressive likelihoods. **StaB-ddG** parameterises ΔΔG through a folding-energy difference on an overlapping
+fixture; a distinct question. **StaB-ddG** parameterises ΔΔG through a folding-energy
 difference on an overlapping fixture; a distinct question. On the phenomenon itself, **ProBID-Net** and
 **RedNet** report interface blindness (as recovery deficit and as a decoding problem respectively); we correct
 the attribution — it is neither dynamics nor decoding but conditioning, and a burial confound on the crystal
@@ -323,19 +357,30 @@ fetched; the remainder search-only.⟩
 
 ## 9. Limitations
 
-We evaluate on three fixtures — SKEMPI (natural complexes, primary), Bennett de-novo designs (the
-design-regime positive), and AB-Bind (antibody–antigen) — but none is a full generate→design→wet-lab loop;
-the de-novo evidence is four targets. Effect sizes are modest (ΔAUROC ≈ 0.016–0.018), though their intervals
-exclude zero and the central nugget (CPI 0.000) is a clean rather than a small result. The all-atom occlusion
-baseline is a min-over-rotamer repacking proxy, not a full molecular-mechanics force field; the 95%-zero-clash
-prevalence bounds how much any clash model could recover, but a physics force field could shift the baseline.
-The de-novo binding labels convolve display and fold-stability with binding — the core/interface
-stratification is the control, and the native is excluded so the parent-is-model-output bias is uniform across
-strata. SKEMPI training leakage makes the predicted-backbone result *conservative* (the predictor nearly
-reconstructs complexes it has seen and the deficit appears anyway). The pre-registered strict-control tier is
-underpowered by design; the verdict rests on the higher-powered tiers declared in advance. And two extensions
-did not survive their controls — a within-natural confidence gradient, and the generalisation to catalytic
-sites — which we report rather than bury.
+We evaluate on three fixtures — SKEMPI (natural, primary), Bennett de-novo designs, and AB-Bind
+(antibody–antigen) — none a full generate→design→wet-lab loop; the de-novo evidence is four targets and
+AB-Bind's 27 complexes are indeterminate for the leverage test.
+
+**Caveats specific to the decomposition.** (a) *Orthogonal is not independent*: confidence cannot *express*
+leverage, but the two are weakly correlated (Spearman(confidence, |L|) = +0.075); we claim blindness by
+construction, not statistical independence. (b) The leverage operator L *is* BA-Cycle (Jiao et al. 2024); we
+credit the score and claim the decomposition, the beyond-geometry control, and the feature-class law. (c) L
+estimates −ΔΔG_bind only up to an unknown temperature — no calibrated kcal/mol reading; all our readouts are
+scale-invariant. (d) The per-position log-Z argument (that L is better-posed than confidence) is ours; we do
+*not* lean on the free-energy interpretation of Frellsen et al. (2025), whose normaliser is global-per-sequence
+and whose quantity is ΔΔG_fold, not binding. (e) Rigid backbone: the monomer conditioning is the complex
+backbone minus partner. (f) One inverse-folding model (ProteinMPNN, backbone-only marginals); the score's
+model-generality is untested here. (g) CPI is not formally commensurable across fixtures, so "natural ≫
+de-novo" is a suggestive, not a formal, comparison.
+
+**Other limitations.** The all-atom occlusion baseline is a min-over-rotamer repacking proxy, not a force field
+(the 95%-zero-clash prevalence bounds what any clash model could recover). De-novo binding labels convolve
+display and fold-stability with binding — the core/interface stratification is the control, native excluded.
+SKEMPI training leakage makes the predicted-backbone result *conservative*. The strict-control tier is
+underpowered by design; the verdict rests on higher-powered tiers declared in advance. One extension did not
+survive its control — a within-natural confidence-decay gradient (null) — which we report rather than bury; the
+generalisation to catalytic residues, by contrast, *does* survive its composition, burial, and chain-truncation
+controls (§4).
 
 ---
 *Draft status: §1–9 in prose. Pending: fold in the Fable-5 catalytic audit (§4 note); a figure pass;
