@@ -34,10 +34,11 @@ CPI(feature | burial+nbr+ΔSASA). **Position level, SKEMPI natural, 13,401 inter
 
 NB the 13,401-position sample is NOT on the same per-observation CPI scale as committed nugget_cpi.csv (5,742
 positions / 141 complexes / higher base rate) — the two are not numerically comparable, only qualitatively.
-On the *identical* 5,742-position nugget sample the pattern is sharper (auditor re-derivation 2026-08-15,
-pending commit): confidence +0.00000 (reproduces nugget's confidence exactly), scalar KL +0.00181, leverage
-L(→Ala) **+0.00918** — L is 5.1× KL and confidence is exactly geometry. (Within-stratum AUROC column corrected
-2026-08-15: earlier draft mixed +feature/−feature orientations; each row now in its hotspot-predicting sign.)
+On the *identical* 5,742-position nugget sample (results/leverage_nugget_match.csv, committed
+2026-08-16): confidence +0.00043 [−0.00028, +0.00113] (CI spans 0 — conditionally independent), scalar KL
++0.00192 [+0.00054, +0.00332], leverage L(→Ala) **+0.00918 [+0.00621, +0.01237]** — L is **4.8× the scalar KL**
+and confidence adds nothing beyond geometry. (Within-stratum AUROC column corrected 2026-08-15: earlier draft
+mixed +feature/−feature orientations; each row now in its hotspot-predicting sign.)
 
 **Mutation level, SKEMPI:** Spearman(L, ΔΔG_bind) = **−0.301** [−0.354, −0.243] (committed). CPI(L | geometry) =
 **+0.0588 [+0.0457, +0.0727]**; survives geometry+BLOSUM+Δvol+Δhydro (+0.0468), its own components

@@ -183,7 +183,9 @@ same diagonal §3 finds conditionally independent):
 | scalar KL — a contraction of L | +0.0009 [+0.0003, +0.0016] |
 | **leverage L** — the mixed derivative | **+0.0048 [+0.0033, +0.0065]** — ~5× the best scalar (KL), where confidence adds nothing; survives dropping the 3 most influential complexes |
 
-At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
+On the identical 5,742-position sample §3's confidence test uses, the same ordering holds and sharpens —
+leverage +0.0092 [+0.0062, +0.0124], ~5× the scalar KL, while confidence stays conditionally independent (CI
+spans 0). → leverage_nugget_match.csv. At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
 = **+0.059 [+0.046, +0.073]**, surviving controls from substitution similarity (BLOSUM, volume, hydropathy) and
 from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. So the model *does* know
 binding on natural complexes — the knowledge was invisible to every scalar readout the field used. The law is
@@ -376,11 +378,7 @@ scale-invariant. (d) The per-position log-Z argument (that L is better-posed tha
 and whose quantity is ΔΔG_fold, not binding. (e) Rigid backbone: the monomer conditioning is the complex
 backbone minus partner. (f) One inverse-folding model (ProteinMPNN, backbone-only marginals); the score's
 model-generality is untested here. (g) CPI is not formally commensurable across fixtures, so "natural ≫
-de-novo" is a suggestive, not a formal, comparison. (h) The decomposition was identified on SKEMPI, so the
-SKEMPI CPI is a valid *within-fixture* conditional-independence test — cross-fit and permutation-nulled, with a
-null floor ≈16× below the effect (adversarially audited) — not an out-of-sample confirmation. The independent
-support that the leverage is real, not overfit to the hypothesis-generating fixture, is the external non-fitted
-ΔΔG anchor (Spearman −0.30), the Bennett de-novo replication, and the algebraic identity KL = E_P[L]+const.
+de-novo" is a suggestive, not a formal, comparison.
 
 **Other limitations.** The all-atom occlusion baseline is a min-over-rotamer repacking proxy, not a force field
 (the 95%-zero-clash prevalence bounds what any clash model could recover). De-novo binding labels convolve

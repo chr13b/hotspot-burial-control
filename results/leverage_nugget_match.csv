@@ -1,0 +1,4 @@
+sample,feature,cpi,lo,hi,p_gt0,verdict,n,n_groups,n_hot,seed,note,command
+nugget_5742,leverage L(->Ala),0.00918,0.00621,0.01237,1.0,ADDS (CI>0),5742,141,325,20260803,audit W2 strengthener: leverage features on the EXACT nugget_cpi.csv sample so confidence/KL/L are on one per-observation CPI scale,python3 src/leverage_nugget_match.py
+nugget_5742,scalar KL,0.00192,0.00054,0.00332,0.997,ADDS (CI>0),5742,141,325,20260803,audit W2 strengthener: leverage features on the EXACT nugget_cpi.csv sample so confidence/KL/L are on one per-observation CPI scale,python3 src/leverage_nugget_match.py
+nugget_5742,confidence,0.00043,-0.00028,0.00113,0.887,conditionally INDEPENDENT (CI spans 0),5742,141,325,20260803,audit W2 strengthener: leverage features on the EXACT nugget_cpi.csv sample so confidence/KL/L are on one per-observation CPI scale,python3 src/leverage_nugget_match.py
