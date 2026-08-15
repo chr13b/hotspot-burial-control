@@ -22,8 +22,8 @@ leverage spread). Every readout the field has used — recovery, confidence, the
 confidence ranks interface hotspots at chance and adds *zero* beyond geometry (conditional predictive impact
 0.000), and the KL detector is a *learned frustratometer* recapitulating partner-contact area. **The mixed
 derivative does not reduce to geometry.** On our main fixture (SKEMPI, natural complexes) it adds substantial
-binding information beyond geometry — mutation-level CPI +0.059, Spearman with experimental ΔΔG −0.30, ~21×
-confidence — robustly, exactly where every scalar summary fails. This is a *feature-class law*: scalar
+binding information beyond geometry — mutation-level CPI +0.059, Spearman with experimental ΔΔG −0.30 —
+robustly, exactly where every scalar summary (confidence included) adds nothing. This is a *feature-class law*: scalar
 summaries are geometry; the mixed derivative is competence. It unifies the field's observations as corollaries
 — the published deficit is a burial confound (pre-registered matched design, five architectures plus
 ProBID-Net's own model); the blindness generalises from binding to *catalytic* residues (structure-conditioned
@@ -64,7 +64,7 @@ verify this is non-vacuous (confidence-matched interface positions retain ≈30%
 yields a **feature-class law**: on natural complexes every *scalar* summary of the distribution reduces to cheap
 geometry (confidence adds CPI 0.000; the KL detector recapitulates ΔSASA), whereas the *mixed derivative* does
 not — on SKEMPI it adds binding information beyond geometry (mutation-level CPI +0.059, Spearman with
-experimental ΔΔG −0.30; ~21× confidence), robustly. The model knows binding on natural complexes; the knowledge
+experimental ΔΔG −0.30; ~5× the best scalar summary, where confidence adds nothing), robustly. The model knows binding on natural complexes; the knowledge
 was invisible to every scalar readout the field has used. → leverage_decomposition.csv, nugget_cpi.csv.
 
 **(ii) Confidence is not competence — a property of inverse folding, with a practical consequence.** The
@@ -174,14 +174,14 @@ distribution still leaves ≈30% of the leverage spread free.
 
 **The feature-class law (on the main fixture, natural complexes).** On SKEMPI, the mixed derivative adds
 binding information beyond cheap geometry where every scalar summary does not. Per interface position
-(conditional predictive impact over burial+neighbours+ΔSASA, 13,401 positions, directly comparable to the
-confidence result of §3):
+(conditional predictive impact over burial+neighbours+ΔSASA, 13,401 interface positions; confidence here is the
+same diagonal §3 finds conditionally independent):
 
 | feature (all functionals of the same distribution) | CPI beyond geometry |
 |---|---|
-| **confidence** — the diagonal | **+0.0002 [−0.0002, +0.0007]** — conditionally independent |
-| scalar KL — a contraction of L | +0.0010 [+0.0004, +0.0017] |
-| **leverage L** — the mixed derivative | **+0.0048 [+0.0033, +0.0065]** (~21× confidence; survives dropping the 3 most influential complexes) |
+| **confidence** — the diagonal | **+0.0002 [−0.0003, +0.0006]** — conditionally independent (CI spans 0) |
+| scalar KL — a contraction of L | +0.0009 [+0.0003, +0.0016] |
+| **leverage L** — the mixed derivative | **+0.0048 [+0.0033, +0.0065]** — ~5× the best scalar (KL), where confidence adds nothing; survives dropping the 3 most influential complexes |
 
 At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
 = **+0.059 [+0.046, +0.073]**, surviving controls from substitution similarity (BLOSUM, volume, hydropathy) and
@@ -338,9 +338,14 @@ burial/rSASA/ΔSASA/contact anywhere in their paper, which we verified), so the 
 (and that scalar summaries do not) is new; and **(iii)** the *feature-class law*. We also differ in construction
 — per-position sequence-free marginals (design-time usable, decoding-order-free) versus their whole-sequence
 autoregressive likelihoods. **StaB-ddG** parameterises ΔΔG through a folding-energy difference on an overlapping
-fixture; a distinct question. **StaB-ddG** parameterises ΔΔG through a folding-energy
-difference on an overlapping fixture; a distinct question. On the phenomenon itself, **ProBID-Net** and
-**RedNet** report interface blindness (as recovery deficit and as a decoding problem respectively); we correct
+fixture; a distinct question. **RedNet** independently operationalises exactly this leverage as a *design-time
+decoder*: its contrastive decode `logit_bound + α·(logit_bound − logit_apo)` — verified in their released code
+(zw2x/rednet_public: the α-tilt in `sampling_utils.py` and the partner-deleted apo contrast in
+`infer_pipeline.py`) — is our mixed derivative applied at sampling time. That an independent design pipeline
+reintroduces precisely this term is strong corroboration that the leverage is the *actionable* quantity, and we
+credit it as such; our contribution is again orthogonal — the decomposition, the first beyond-geometry control,
+and the feature-class law, none of which RedNet reports (it runs no burial/ΔSASA control and no scalar-vs-mixed
+split). On the phenomenon itself, **ProBID-Net** reports interface blindness as a recovery deficit; we correct
 the attribution — it is neither dynamics nor decoding but conditioning, and a burial confound on the crystal
 benchmark. The most telling piece of related practice is **BindCraft**, whose one-shot binder pipeline
 hard-codes a 4 Å interface freeze that forbids inverse folding at the interface — the field's implicit
@@ -371,7 +376,11 @@ scale-invariant. (d) The per-position log-Z argument (that L is better-posed tha
 and whose quantity is ΔΔG_fold, not binding. (e) Rigid backbone: the monomer conditioning is the complex
 backbone minus partner. (f) One inverse-folding model (ProteinMPNN, backbone-only marginals); the score's
 model-generality is untested here. (g) CPI is not formally commensurable across fixtures, so "natural ≫
-de-novo" is a suggestive, not a formal, comparison.
+de-novo" is a suggestive, not a formal, comparison. (h) The decomposition was identified on SKEMPI, so the
+SKEMPI CPI is a valid *within-fixture* conditional-independence test — cross-fit and permutation-nulled, with a
+null floor ≈16× below the effect (adversarially audited) — not an out-of-sample confirmation. The independent
+support that the leverage is real, not overfit to the hypothesis-generating fixture, is the external non-fitted
+ΔΔG anchor (Spearman −0.30), the Bennett de-novo replication, and the algebraic identity KL = E_P[L]+const.
 
 **Other limitations.** The all-atom occlusion baseline is a min-over-rotamer repacking proxy, not a force field
 (the 95%-zero-clash prevalence bounds what any clash model could recover). De-novo binding labels convolve
