@@ -61,11 +61,18 @@ def esmif_lp(model, alphabet, cx):
     return lp.mean(axis=0)
 
 
-def _score_one(model, alphabet, path, pdb, g1, g2, keep):
-    """Mirror of LD._score_one but with the ESM-IF1 scorer. -> list of dict rows."""
+def _score_one(model, alphabet, path, pdb, g1, g2, keep, max_residues=0):
+    """Mirror of LD._score_one but with the ESM-IF1 scorer. -> list of dict rows.
+
+    Returns ([], ("TOOLARGE", n)) for complexes above max_residues so the caller can drop-and-log
+    them instead of the whole process OOM-SIGKILLing (ESM-IF1's GVP graph scales badly in residues;
+    a ~2000-residue complex kills the process on a 4 GB box, uncatchable in-process).
+    """
     cx = fc.load_complex(path, pdb, g1, g2)
     if cx is None:
         return [], None
+    if max_residues and cx.n > max_residues:
+        return [], ("TOOLARGE", int(cx.n))
     lP = LD.logdists(esmif_lp(model, alphabet, cx))                 # [L,20] renorm over 20
     # native top-1 recovery on the complex (a positive control on the scorer + alphabet map)
     rec = float((lP.argmax(1) == np.array([IDX.get(s, -1) for s in cx.seq])).mean())
@@ -139,6 +146,10 @@ def stage_score(a):
             print(f"[score] resuming, {len(done)} complexes already scored", flush=True)
         except Exception:
             done = set()
+    skip = set()
+    if a.skip_file and os.path.exists(a.skip_file):
+        skip = {ln.strip() for ln in open(a.skip_file) if ln.strip()}
+        print(f"[score] skip-list ({len(skip)} OOM/oversized): {sorted(skip)}", flush=True)
     model, alphabet = fe.load_esmif(device="cpu")
     # alphabet positive control -- an ESM->MPNN column slip silently drops recovery to ~0.05
     amap = fe.build_alphabet_map(alphabet)
@@ -147,20 +158,33 @@ def stage_score(a):
     print(f"[+control] ESM-IF1 alphabet map round-trips to {back!r}", flush=True)
 
     fh = open(cache, "a" if done else "w", newline="")
-    writer, n, t0, recs, skipped = None, 0, time.time(), [], []
+    writer, n, t0, recs, skipped, dropped = None, 0, time.time(), [], [], []
     for ci, cid in enumerate(cx_ids):
-        if cid in done:
+        if cid in done or cid in skip:
             continue
         pdb, g1, g2 = cid.split("_")
         path = f"{DATA}/PDBs/{pdb}.pdb"
         if not os.path.exists(path):
             skipped.append((cid, "no pdb"))
             continue
+        if a.inflight_file:                       # marker so the wrapper can blame an OOM on this cid
+            open(a.inflight_file, "w").write(cid)
         try:
-            rows, rec = _score_one(model, alphabet, path, pdb, g1, g2, keep[cid])
+            rows, rec = _score_one(model, alphabet, path, pdb, g1, g2, keep[cid], a.max_residues)
         except Exception as e:
             skipped.append((cid, f"{type(e).__name__}: {e}"))
             print(f"  skip {cid}: {type(e).__name__}: {e}", flush=True)
+            if a.inflight_file:
+                open(a.inflight_file, "w").write("")
+            continue
+        if isinstance(rec, tuple) and rec[0] == "TOOLARGE":
+            dropped.append((cid, rec[1]))
+            print(f"[score] {ci+1}/{len(cx_ids)} {cid} DROPPED (too large: {rec[1]} > "
+                  f"{a.max_residues} residues) — logged, not scored", flush=True)
+            if a.skip_file:
+                open(a.skip_file, "a").write(cid + "\n")
+            if a.inflight_file:
+                open(a.inflight_file, "w").write("")
             continue
         if rec is not None:
             recs.append(rec)
@@ -173,10 +197,15 @@ def stage_score(a):
             writer.writerow(r)
             n += 1
         fh.flush()
+        if a.inflight_file:
+            open(a.inflight_file, "w").write("")
         dt = time.time() - t0
         print(f"[score] {ci+1}/{len(cx_ids)} {cid} rec={rec:.3f} rows={len(rows)} "
               f"({dt:.0f}s, {dt/max(1,ci+1):.1f}s/cx)", flush=True)
     fh.close()
+    if dropped:
+        print(f"[score] DROPPED {len(dropped)} oversized complexes (>{a.max_residues} res): {dropped}",
+              flush=True)
     print(f"\n[score] wrote {cache}: {n} rows; {len(skipped)} skipped; "
           f"mean complex top-1 recovery {np.mean(recs) if recs else float('nan'):.3f} "
           f"(ESM-IF1 healthy ~0.45-0.55; ~0.05 would mean a broken alphabet map)", flush=True)
@@ -243,6 +272,10 @@ def main():
     ap.add_argument("--out", default="results/leverage_esmif.csv")
     ap.add_argument("--threads", type=int, default=4)
     ap.add_argument("--limit", type=int, default=0, help="score only the first N complexes (smoke test)")
+    ap.add_argument("--max-residues", type=int, default=1200,
+                    help="drop-and-log complexes larger than this (ESM-IF1 GVP OOM guard)")
+    ap.add_argument("--skip-file", default="", help="file of complex_ids to skip; grows on OOM/oversize")
+    ap.add_argument("--inflight-file", default="", help="marker file naming the complex being scored")
     a = ap.parse_args()
     {"score": stage_score, "analyse": stage_analyse}[a.stage](a)
 
