@@ -402,6 +402,18 @@ survive its control — a within-natural confidence-decay gradient (null) — wh
 generalisation to catalytic residues, by contrast, *does* survive its composition, burial, and chain-truncation
 controls (§4).
 
+## Reproducibility and LLM-usage disclosure
+
+Every numerical result in this paper traces to a committed script and CSV under `results/`, each carrying the
+exact command and a fixed seed; the central result (the Confidence–Leverage Decomposition) was additionally
+subjected to an independent adversarial audit of its statistical machinery (the conditional-independence test
+was verified not to leak: pure-noise features give CPI ≈ 0, the null floor is ≈16× below the reported effect).
+Per the ICLR LLM-usage policy, we disclose that large language models (Anthropic's Claude) were used as an
+assistant for code generation, data analysis, prose drafting and editing, and research ideation. All
+experiments, numerical results, and citations were verified and validated by the authors, who are solely
+responsible for the contents of this submission; no result or citation is included that does not resolve to
+committed code and data or to a source we fetched and checked.
+
 ---
 *Draft status: §1–9 in prose. Pending: fold in the Fable-5 catalytic audit (§4 note); a figure pass;
 external-citation URL verification; final length trim to 9 pages.*
