@@ -385,7 +385,8 @@ and whose quantity is ΔΔG_fold, not binding. (e) Rigid backbone: the monomer c
 backbone minus partner. (f) The headline uses one inverse-folding model (ProteinMPNN, sequence-free
 marginals); the decomposition *replicates* under a second, architecturally-distinct model — ESM-IF1
 (GVP-transformer, native-teacher-forced conditional readout; 337/344 SKEMPI complexes, 7 oversized dropped for
-memory): confidence stays blind to hotspots (position-level CPI −0.0000, CI spans 0), while leverage adds beyond
+memory — re-running ProteinMPNN on that same 337-subset leaves it unchanged, CPI(L|geom) +0.060 and Spearman
+−0.303, so the model gap below is not a sample-selection artifact): confidence stays blind to hotspots (position-level CPI −0.0000, CI spans 0), while leverage adds beyond
 geometry (position +0.0042, survives drop-3; mutation Spearman(L,ΔΔG) = −0.26, CPI +0.035 surviving
 geometry+substitution+confidence+scalar-KL, and +0.010 fully controlled), with somewhat smaller magnitudes than
 ProteinMPNN. So the feature-class law is a property of the inverse-folding class, not one model. →

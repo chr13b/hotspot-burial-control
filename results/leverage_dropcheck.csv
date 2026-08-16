@@ -1,0 +1,5 @@
+level,sample,n,n_hot,cpi_L,cpi_L_lo,cpi_L_hi,cpi_conf,spearman_L_ddG,seed,note,command
+position,full-344,13401,327.0,0.00485,0.00326,0.00649,0.00021,,20260803,MPNN full-344 vs subset-337 (the 7 ESM-IF1-dropped complexes) — drop-bias control,python3 src/leverage_dropcheck.py
+position,subset-337,13037,317.0,0.00498,0.0034,0.0066,0.00014,,20260803,MPNN full-344 vs subset-337 (the 7 ESM-IF1-dropped complexes) — drop-bias control,python3 src/leverage_dropcheck.py
+mutation,full-344,2949,,0.05843,0.04581,0.07129,,-0.301,20260803,MPNN full-344 vs subset-337 (the 7 ESM-IF1-dropped complexes) — drop-bias control,python3 src/leverage_dropcheck.py
+mutation,subset-337,2900,,0.06007,0.04724,0.07349,,-0.303,20260803,MPNN full-344 vs subset-337 (the 7 ESM-IF1-dropped complexes) — drop-bias control,python3 src/leverage_dropcheck.py

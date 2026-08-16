@@ -42,6 +42,11 @@ more so. Identity KL = E_P[L] + [logP(wt)−logQ(wt)] holds to 3.6e-15.
 ## Honest differences to state (not problems, but report them)
 1. **Magnitudes are smaller under ESM-IF1** (CPI(L|geom) +0.035 vs +0.059; Spearman −0.26 vs −0.30). Direction,
    structure, and all control-set survivals replicate; the point estimate is architecture-dependent.
+   **The 7 dropped giants are NOT the cause** (drop-bias control, leverage_dropcheck.csv): re-running MPNN on
+   the same 337-complex subset gives CPI(L|geom) +0.0601 and Spearman −0.303 — unchanged from full-344 (+0.0584,
+   −0.301); the 7 are only 2.7% of positions / 1.7% of mutations. So the gap is a genuine model/readout effect.
+   Remaining candidate causes (not a confound, just the mechanism): the native-teacher-forced *conditional*
+   readout vs MPNN's sequence-free *unconditional* marginal, and ESM-IF1 using only N/CA/C atoms (no O, no CB).
 2. **ESM-IF1 confidence is a STRONGER mutation-level constraint signal than MPNN's.** At the mutation level
    CPI(confidence|geom) = **+0.0226** for ESM-IF1 vs **+0.0100** for MPNN, and Spearman(confidence, ΔΔG) = +0.245
    vs +0.184. This is NOT a contradiction: confidence = fold-stability *constraint*, and removing a
