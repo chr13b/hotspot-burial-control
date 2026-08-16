@@ -1,0 +1,4 @@
+quantity,spearman,lo,hi,p_gt0,n_pairs,n_complexes,seed,thresh_A,note,command
+leverage MAGNITUDE |L|_rms,0.094,0.0659,0.1224,1.0,6391.0,340,20260803,10.0,"reciprocity: contacting cross-interface residues have correlated leverage => the mixed derivative is a shared interface binding energy, not a per-chain artifact",python3 src/leverage_reciprocity.py --thresh 10.0
+alanine leverage L(->Ala),0.0333,0.0051,0.0608,0.99,6391.0,340,20260803,10.0,"reciprocity: contacting cross-interface residues have correlated leverage => the mixed derivative is a shared interface binding energy, not a per-chain artifact",python3 src/leverage_reciprocity.py --thresh 10.0
+complex_total_|L|_side1_vs_side2,0.5983,,,,,340,20260803,10.0,"reciprocity: contacting cross-interface residues have correlated leverage => the mixed derivative is a shared interface binding energy, not a per-chain artifact",python3 src/leverage_reciprocity.py --thresh 10.0
