@@ -207,7 +207,9 @@ functional of `P` alone can express it wherever `P` does not determine `Q` — w
 pairs above show is generic. Empirically, on natural complexes every such scalar collapses onto geometry:
 beyond burial+neighbours+ΔSASA, confidence adds CPI **+0.0002** (conditionally independent), entropy/perplexity
 **+0.0008**, and the KL detector **+0.0009** — all within a hair of the geometry baseline — while the *mixed*
-derivative adds **+0.0048**, roughly five times the best scalar. So any method that ranks interface positions by
+derivative adds **+0.0048**, roughly five times the best scalar. (That confidence and sequence recovery track
+burial is itself long known — Dauparas et al. 2022, Hsu et al. 2022; what is new here is the *formal*
+feature-class law, the conditional-independence control, and that the mixed derivative alone escapes it.) So any method that ranks interface positions by
 a scalar summary of the bound distribution is, on natural complexes, a geometry detector in disguise. This is
 one statement with several corollaries the field has met separately: ProBID-Net's recovery deficit is a burial
 confound (§5), BindCraft is right not to trust interface confidence (§8), and the learned KL detector merely
@@ -275,7 +277,11 @@ noise floor (§3). AB-Bind's 27 complexes remain too few to be decisive either w
 is settled. → abbind_bigidea1.csv, leverage_decomposition.csv.
 
 **The blindness generalises beyond binding — to catalytic residues.** "Confidence is not competence" is not
-specific to binding hotspots. On M-CSA catalytic residues, controlling for amino-acid composition by
+specific to binding hotspots. (The premise that a *functional*-site signal can be disentangled from a
+*stability* signal on this M-CSA benchmark is Cagiada et al.'s, 2023 — with sequence statistics plus a
+biophysical stability model, not inverse folding and without an AUROC; our distinct contribution is the
+inverse-folding-confidence-versus-PLM-conservation dissociation under a within-amino-acid-type control, and the
+finding that IF confidence is at chance.) On M-CSA catalytic residues, controlling for amino-acid composition by
 stratifying *within* amino-acid type, structure-conditioned confidence is blind (within-type AUROC 0.48–0.50,
 chance) while a sequence language model's conservation predicts them (0.771 [0.723, 0.822]) — a dissociation
 of +0.288 [+0.235, +0.336] that survives on monomers alone (ruling out a partner-chain-truncation artifact:
@@ -355,24 +361,37 @@ competitor accounts for the effect; what remains is the conditioning-set signal 
 
 ## 8. Related work and positioning
 
-Our sequence-free detector is, by construction, a **learned frustratometer**: the partner-induced change in
-local frustration at interfaces is a classical statistical-mechanics quantity (Ferreiro, Parra and
-colleagues), and our finding that the KL detector equals ΔSASA says the neural version does not beat the
-physics — which is why the *scalar* KL adds only a small increment. **The leverage operator L is not ours: it
+Our sequence-free KL detector is, by construction, a **learned frustratometer** — but the concept is not ours
+to claim, and we are careful to credit it. That partner ablation exposes *binding-site frustration* is a
+classical statistical-mechanics result: Ferreiro et al. (2007) find highly frustrated interactions clustered
+near binding sites, and the active-site case is Ferreiro et al. (2019); the *frustratometer* itself is Parra et
+al.'s tool, and neural predictors of the classical frustration index already exist (FrustraMPNN, FrustrAI-Seq).
+Our narrow, diagnostic point is only that we read the inverse-folding *likelihood itself* — not a physics energy
+function — as a per-residue partner-ablation signal, and find it equals ΔSASA, so the neural version does not
+beat the physics (which is why the *scalar* KL adds only a small increment). That a partner-conditioned-versus-
+masked KL is essentially a geometric quantity was in fact shown concurrently, for *ligand* conditioning, by
+UMA-Inverse; what is ours is the *formal* feature-class law and the beyond-geometry control, not the observation
+that this one scalar tracks geometry. **The leverage operator L is not ours: it
 is BA-Cycle** (Jiao, Mao, Jin et al. 2024, arXiv:2410.09543), whose bound-versus-unbound double-difference
 rearranges to exactly our mixed second difference, and which we credit outright for the score (they report a
 comparable SKEMPI ΔΔG correlation). Our contribution is orthogonal to theirs: **(i)** the *decomposition* —
 identifying their score as the mixed derivative and confidence as the diagonal, with the constructive proof
-that confidence is blind to it; **(ii)** the *first beyond-geometry control* — BA-Cycle runs none (no
-burial/rSASA/ΔSASA/contact anywhere in their paper, which we verified), so the fact that L survives geometry
-(and that scalar summaries do not) is new; and **(iii)** the *feature-class law*. We also differ in construction
+that confidence is blind to it; **(ii)** the *beyond-geometry control* — to our knowledge the
+first for an inverse-folding binding signal (BA-Cycle runs none — no burial/rSASA/ΔSASA/contact anywhere in
+their paper, which we verified), built on the conditional predictive impact (Watson & Wright 2021) with a
+conditional permutation test (Berrett et al. 2018), so the fact that L survives geometry (and that scalar
+summaries do not) is new; and **(iii)** the *feature-class law*. We also differ in construction
 — per-position sequence-free marginals (design-time usable, decoding-order-free) versus their whole-sequence
 autoregressive likelihoods. **StaB-ddG** parameterises ΔΔG through a folding-energy difference on an overlapping
 fixture; a distinct question. **RedNet** independently operationalises exactly this leverage as a *design-time
 decoder*: its contrastive decode `logit_bound + α·(logit_bound − logit_apo)` — verified in their released code
 (zw2x/rednet_public: the α-tilt in `sampling_utils.py` and the partner-deleted apo contrast in
-`infer_pipeline.py`) — is our mixed derivative applied at sampling time. That an independent design pipeline
-reintroduces precisely this term is strong corroboration that the leverage is the *actionable* quantity, and we
+`infer_pipeline.py`) — is our mixed derivative applied at sampling time. (One terminological guard: RedNet's own
+framing invokes the *thermodynamic* decomposition of binding free energy — the standard `ΔG_bind = ΔG_complex −
+Σ ΔG_partners`; our "decomposition" is a distinct object, a split of the *model's likelihood function* into a
+diagonal-confidence and a mixed-leverage derivative, which is what makes ours a diagnostic rather than a decoder
+objective.) That an independent design pipeline reintroduces precisely this term is strong corroboration that the
+leverage is the *actionable* quantity, and we
 credit it as such; our contribution is again orthogonal — the decomposition, the first beyond-geometry control,
 and the feature-class law, none of which RedNet reports (it runs no burial/ΔSASA control and no scalar-vs-mixed
 split). On the phenomenon itself, **ProBID-Net** reports interface blindness as a recovery deficit; we correct
