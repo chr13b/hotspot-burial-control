@@ -30,7 +30,7 @@ ProBID-Net's own model); the blindness generalises from binding to *catalytic* r
 confidence blind while sequence conservation predicts, triple-controlled); and the recipe generalises beyond
 inverse folding: to read un-trained function from any conditional generative model, ablate the conditioner and
 read the mixed derivative, not the confidence. The leverage operator itself is BA-Cycle (Jiao et al. 2024); our
-contribution is the decomposition, the blindness theorem, the first beyond-geometry control, and the
+contribution is the decomposition, the blindness theorem, the (to our knowledge) first beyond-geometry control, and the
 feature-class law. Practically: rank interface positions by partner geometry, not confidence (below random),
 and read binding from the mixed derivative, not the scalar summaries.
 
@@ -70,7 +70,7 @@ was invisible to every scalar readout the field has used. → leverage_decomposi
 **(ii) Confidence is not competence — a property of inverse folding, with a practical consequence.** The
 diagonal is blind across five architectures (interface-hotspot AUROC 0.50–0.54; conditionally independent of
 hotspot-ness given geometry, CPI 0.000). This measures the field's implicit BindCraft interface-freeze: ranking
-interface positions by confidence captures *fewer* hotspots than random (capture@3 0.064 vs 0.089), while free
+interface positions by confidence captures *fewer* hotspots than random (capture@3 0.064 vs 0.089, overlapping intervals; a trend, not yet significant), while free
 ΔSASA captures ~3× more (0.233) — so rank by geometry, not confidence. De-novo designs corroborate the positive
 of (i) with even the scalar distribution: it beats substitution baselines (0.615), dissociates stability from
 binding, and adds +0.018 beyond an all-atom rotamer-repacked occlusion baseline, reproduced by a non-parent
@@ -136,7 +136,7 @@ what trivial burial alone achieves. *Confidence is not competence* is thus a pro
 an artefact of a particular model. → xmodel_confidence.csv.
 
 What does predict hotspots is free geometry. Burial alone reaches 0.689; ΔSASA — the partner-contact area,
-computable without any neural network — reaches 0.585; and a cheap-geometry combination reaches 0.734. The
+computable without any neural network — reaches 0.673; and a cheap-geometry combination reaches 0.734. The
 obvious learned alternative is the sequence-free divergence between the model's complex- and
 monomer-conditioned distributions (a KL detector), which one might hope captures partner-induced frustration
 beyond geometry. It captures a *small* one: under a combiner-free conditional test, KL adds CPI = +0.002
@@ -335,7 +335,7 @@ reconstructions instead agree, per complex. → FINDINGS_expA.md, FINDINGS_expD.
 
 Two controls sharpen this. First, the agreement is not a burial confound one level up: partial correlation of
 the two deficits controlling for interface burial is +0.529 [0.354, 0.678], and it survives dropping the
-shared top-three complexes (+0.533). The predictors agree on which interfaces are hard *beyond* what burial
+shared top-three complexes (+0.498). The predictors agree on which interfaces are hard *beyond* what burial
 predicts. → deficit_burial_residualize.csv. Second, the effect tracks *how* a backbone is non-native, not how
 far: on partial-diffusion backbones that are noised crystals at the same interface RMSD, the deficit is
 absent. It is a property of *independent reconstruction* — the small, systematic errors a predictor makes at
@@ -364,7 +364,7 @@ competitor accounts for the effect; what remains is the conditioning-set signal 
 Our sequence-free KL detector is, by construction, a **learned frustratometer** — but the concept is not ours
 to claim, and we are careful to credit it. That partner ablation exposes *binding-site frustration* is a
 classical statistical-mechanics result: Ferreiro et al. (2007) find highly frustrated interactions clustered
-near binding sites, and the active-site case is Ferreiro et al. (2019); the *frustratometer* itself is Parra et
+near binding sites, and the active-site case is Freiberger et al. (2019); the *frustratometer* itself is Parra et
 al.'s tool, and neural predictors of the classical frustration index already exist (FrustraMPNN, FrustrAI-Seq).
 Our narrow, diagnostic point is only that we read the inverse-folding *likelihood itself* — not a physics energy
 function — as a per-residue partner-ablation signal, and find it equals ΔSASA, so the neural version does not
