@@ -199,6 +199,20 @@ know binding on natural complexes — the knowledge was invisible to every scala
 not about a *regime* but a *feature class*: on natural complexes scalar summaries reduce to geometry
 (confidence exactly, KL nearly); the mixed derivative does not.
 
+**A no-go for scalar readouts.** The blindness is not special to confidence. Write any scalar the field reads
+off an inverse-folding model as a functional `φ(P)` of the bound-conditioned distribution `P = p(·|X_complex)`
+*alone* — sequence recovery (an argmax match), confidence (`log P(native)`), entropy or perplexity, or a
+single-model KL-to-background. Binding leverage is a functional of the *pair* `(P, Q = p(·|X_monomer))`, and no
+functional of `P` alone can express it wherever `P` does not determine `Q` — which the distribution-matched
+pairs above show is generic. Empirically, on natural complexes every such scalar collapses onto geometry:
+beyond burial+neighbours+ΔSASA, confidence adds CPI **+0.0002** (conditionally independent), entropy/perplexity
+**+0.0008**, and the KL detector **+0.0009** — all within a hair of the geometry baseline — while the *mixed*
+derivative adds **+0.0048**, roughly five times the best scalar. So any method that ranks interface positions by
+a scalar summary of the bound distribution is, on natural complexes, a geometry detector in disguise. This is
+one statement with several corollaries the field has met separately: ProBID-Net's recovery deficit is a burial
+confound (§5), BindCraft is right not to trust interface confidence (§8), and the learned KL detector merely
+recapitulates ΔSASA (§8). Only the partner-ablation mixed derivative escapes the reduction.
+
 **De-novo designs corroborate — there, even the scalar distribution shows it.** Where selection is
 binding-dominated, the signal is accessible to blunter probes too. On Bennett-2023 de-novo binders with
 experimental site-saturation mutagenesis (four targets; a sanity control passes exactly — the SSM-excluded
