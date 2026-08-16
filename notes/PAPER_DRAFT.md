@@ -187,8 +187,11 @@ On the identical 5,742-position sample §3's confidence test uses, the same orde
 leverage +0.0092 [+0.0062, +0.0124], ~5× the scalar KL, while confidence stays conditionally independent (CI
 spans 0). → leverage_nugget_match.csv. At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
 = **+0.059 [+0.046, +0.073]**, surviving controls from substitution similarity (BLOSUM, volume, hydropathy) and
-from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. **This is not a ProteinMPNN
-artifact:** it replicates under ESM-IF1 — a GVP-transformer with a native-conditioned (not sequence-free) readout
+from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. To calibrate the effect
+size: L is a *zero-shot* readout of a model never trained on binding, yet it adds **+0.030 interface AUROC**
+(0.700→0.730) beyond a *supervised* geometry+substitution baseline fit directly on the binding labels, and on
+its own reaches AUROC 0.647 — near that supervised baseline. → leverage_effect_size.csv. **This is not a
+ProteinMPNN artifact:** it replicates under ESM-IF1 — a GVP-transformer with a native-conditioned (not sequence-free) readout
 — where confidence is again blind to hotspots and leverage again adds beyond geometry and beyond every scalar
 including confidence (337/344 complexes; mutation Spearman −0.26, CPI +0.035; position confidence CPI −0.0000),
 so the feature-class law is a property of the inverse-folding *class*. → leverage_esmif.csv. So the model *does*
