@@ -187,8 +187,12 @@ On the identical 5,742-position sample §3's confidence test uses, the same orde
 leverage +0.0092 [+0.0062, +0.0124], ~5× the scalar KL, while confidence stays conditionally independent (CI
 spans 0). → leverage_nugget_match.csv. At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
 = **+0.059 [+0.046, +0.073]**, surviving controls from substitution similarity (BLOSUM, volume, hydropathy) and
-from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. So the model *does* know
-binding on natural complexes — the knowledge was invisible to every scalar readout the field used. The law is
+from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. **This is not a ProteinMPNN
+artifact:** it replicates under ESM-IF1 — a GVP-transformer with a native-conditioned (not sequence-free) readout
+— where confidence is again blind to hotspots and leverage again adds beyond geometry and beyond every scalar
+including confidence (337/344 complexes; mutation Spearman −0.26, CPI +0.035; position confidence CPI −0.0000),
+so the feature-class law is a property of the inverse-folding *class*. → leverage_esmif.csv. So the model *does*
+know binding on natural complexes — the knowledge was invisible to every scalar readout the field used. The law is
 not about a *regime* but a *feature class*: on natural complexes scalar summaries reduce to geometry
 (confidence exactly, KL nearly); the mixed derivative does not.
 
@@ -369,15 +373,23 @@ We evaluate on three fixtures — SKEMPI (natural, primary), Bennett de-novo des
 AB-Bind's 27 complexes are indeterminate for the leverage test.
 
 **Caveats specific to the decomposition.** (a) *Orthogonal is not independent*: confidence cannot *express*
-leverage, but the two are weakly correlated (Spearman(confidence, |L|) = +0.075); we claim blindness by
-construction, not statistical independence. (b) The leverage operator L *is* BA-Cycle (Jiao et al. 2024); we
+leverage, but the two are weakly-to-moderately correlated and the correlation is model-dependent
+(Spearman(confidence, |L|) = +0.075 for ProteinMPNN, +0.31 for ESM-IF1); we claim blindness by construction
+(a confidence-matched pair still spans most of the leverage range — 73% of SD for ESM-IF1), not statistical
+independence. (b) The leverage operator L *is* BA-Cycle (Jiao et al. 2024); we
 credit the score and claim the decomposition, the beyond-geometry control, and the feature-class law. (c) L
 estimates −ΔΔG_bind only up to an unknown temperature — no calibrated kcal/mol reading; all our readouts are
 scale-invariant. (d) The per-position log-Z argument (that L is better-posed than confidence) is ours; we do
 *not* lean on the free-energy interpretation of Frellsen et al. (2025), whose normaliser is global-per-sequence
 and whose quantity is ΔΔG_fold, not binding. (e) Rigid backbone: the monomer conditioning is the complex
-backbone minus partner. (f) One inverse-folding model (ProteinMPNN, backbone-only marginals); the score's
-model-generality is untested here. (g) CPI is not formally commensurable across fixtures, so "natural ≫
+backbone minus partner. (f) The headline uses one inverse-folding model (ProteinMPNN, sequence-free
+marginals); the decomposition *replicates* under a second, architecturally-distinct model — ESM-IF1
+(GVP-transformer, native-teacher-forced conditional readout; 337/344 SKEMPI complexes, 7 oversized dropped for
+memory): confidence stays blind to hotspots (position-level CPI −0.0000, CI spans 0), while leverage adds beyond
+geometry (position +0.0042, survives drop-3; mutation Spearman(L,ΔΔG) = −0.26, CPI +0.035 surviving
+geometry+substitution+confidence+scalar-KL, and +0.010 fully controlled), with somewhat smaller magnitudes than
+ProteinMPNN. So the feature-class law is a property of the inverse-folding class, not one model. →
+leverage_esmif.csv. (g) CPI is not formally commensurable across fixtures, so "natural ≫
 de-novo" is a suggestive, not a formal, comparison.
 
 **Other limitations.** The all-atom occlusion baseline is a min-over-rotamer repacking proxy, not a force field
