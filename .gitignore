@@ -8,3 +8,4 @@ __pycache__/
 results/p0_dssp_positions.csv
 results/leverage_pq_skempi.csv
 results/leverage_bennett_pairs.csv
+results/leverage_pq_*.csv
