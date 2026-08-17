@@ -241,6 +241,36 @@ backbone→sequence pipeline misses hotspots (the predicted backbone's interface
 that carries binding), and why binding-aware decoders retrain rather than read a frozen model. →
 leverage_noise_ladder.csv.
 
+**And the knowledge extends past single effects to their *couplings* — the second mixed derivative.** If
+the single-mutant leverage is the model's first mixed derivative (partner ablation × one mutation), the
+natural next object is the second: the partner-ablated pairwise coupling `C_ij(a,b)` — the finite change in
+the (mutant-vs-wild-type) conditional log-odds at position *i* when position *j* is set to its mutant, read
+from the autoregressive likelihood and symmetrised over decoding orders. (That a second sequence-difference
+of the likelihood measures epistasis is Nambiar 2025's framing.<!-- pre-submission TODO: also credit the
+categorical-Jacobian method (Zhang & Ovchinnikov) once its DOI is verified — currently UNRESOLVED, checker
+returned TITLE-UNVERIFIED and web-search budget is exhausted; do not cite from memory (rule 5). -->) StaB-ddG
+conjectures — without testing it — that inverse-folding likelihoods carry pairwise binding epistasis; we
+measure it. On the 562 SKEMPI double mutants whose two single mutations are *also* measured (so the
+experimental coupling `g = ΔΔG_ab − ΔΔG_a − ΔΔG_b` is defined; 61 complexes), the model coupling tracks the
+measured epistasis with the cycle-predicted sign, Spearman(C, g) = −0.15 [−0.24, −0.08]; and — the honest
+test, since neighbouring residues couple trivially — it *survives* controlling for inter-residue distance,
+partial ρ = −0.13 [−0.22, −0.06]. On the clean subset of 388 *cross-interface* pairs (residues on opposite
+sides of the interface, coupled only through binding, so no monomer subtraction is needed) the
+distance-controlled coupling is −0.14 [−0.26, −0.05], and the method-matched CPI(|C| beyond distance,
+|g| > 0.5) = +0.015 [+0.007, +0.024] survives dropping its three most influential complexes
+(+0.007 [+0.002, +0.015]). Partner ablation is what surfaces it: for same-side pairs the *un-ablated* coupling
+is null (partial ρ = +0.01 [−0.15, +0.15]) and only the ablated one carries signal (−0.12) — subtracting the
+intra-fold coupling exposes the binding coupling, exactly as for single mutations. Three positive controls
+hold: the coupling magnitude rises monotonically with the measured |g| (mean |C| = 0.10 → 0.18 → 0.29 across
+tertiles), the two decoding directions agree (Spearman = +0.60), and the signal is strongest *within* contacts
+(−0.17), not an artifact of the contact boundary. Two honesties bound the claim: the effect is *modest* — about
+half the single-site leverage's −0.30 — and it is a signal about coupling *magnitude*, not sign (the model
+calls the cooperative-vs-buffering sign of an individual pair only ≈53% of the time). The direction is
+nonetheless unambiguous, and it is the first direct test of StaB-ddG's conjecture: what the model knows about
+binding reaches past single-residue effects to their epistatic couplings, and lives — at both derivative
+orders — in the structure of the distribution, not in the confidence. → p3_coupling.csv,
+FINDINGS_p3_coupling.md.
+
 **De-novo designs corroborate — there, even the scalar distribution shows it.** Where selection is
 binding-dominated, the signal is accessible to blunter probes too. On Bennett-2023 de-novo binders with
 experimental site-saturation mutagenesis (four targets; a sanity control passes exactly — the SSM-excluded
