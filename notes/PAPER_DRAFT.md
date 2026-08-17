@@ -283,18 +283,21 @@ is settled. → abbind_bigidea1.csv, leverage_decomposition.csv.
 **The blindness generalises beyond binding — to catalytic residues.** "Confidence is not competence" is not
 specific to binding hotspots. (The premise that a *functional*-site signal can be disentangled from a
 *stability* signal on this M-CSA benchmark is Cagiada et al.'s, 2023 — with sequence statistics plus a
-biophysical stability model, not inverse folding and without an AUROC; our distinct contribution is the
+biophysical stability model, not inverse folding; our distinct contribution is the
 inverse-folding-confidence-versus-PLM-conservation dissociation under a within-amino-acid-type control, and the
 finding that IF confidence is at chance.) On M-CSA catalytic residues, controlling for amino-acid composition by
 stratifying *within* amino-acid type, structure-conditioned confidence is blind (within-type AUROC 0.48–0.50,
 chance) while a sequence language model's conservation predicts them (0.771 [0.723, 0.822]) — a dissociation
-of +0.288 [+0.235, +0.336] that survives on monomers alone (ruling out a partner-chain-truncation artifact:
-there MPNN is 0.516, chance) and after additionally controlling for burial (+0.174 [+0.062, +0.288]).
+of +0.288 [+0.237, +0.338] that survives on monomers alone (ruling out a partner-chain-truncation artifact:
+there MPNN is 0.516 [0.429, 0.604], chance) and under an additional within-amino-acid-type burial control (rSASA
+and neighbour-count bins): +0.234 [+0.179, +0.290] on all enzymes, and +0.176 [+0.060, +0.293] with burial and
+truncation controlled jointly. (The fully-crossed within-complex cell retains only 39 of 119 catalytic residues
+and is not significant, +0.14 [−0.13, +0.43]; we report it rather than rest on it.)
 Inverse-folding confidence is thus blind to functional importance across function types; what predicts
 function is free geometry (for binding) or sequence conservation (for catalysis). We are deliberate about
 mechanism: the model's confidence is *blind* (at chance), not actively *frustrated* — the raw anti-prediction
 we first observed was an amino-acid-composition and single-chain-truncation artifact, not a determinacy
-signal. → FINDINGS_catalytic.md, catalytic_audit.py. (Methodological note for the appendix: the effect is
+signal. → catalytic_audit.csv, FINDINGS_catalytic.md. (Methodological note for the appendix: the effect is
 invisible to a ΔAUROC-over-amino-acid-identity control, whose detection floor is a within-type AUROC of
 ~0.55; the correct readout is the within-type AUROC itself.)
 

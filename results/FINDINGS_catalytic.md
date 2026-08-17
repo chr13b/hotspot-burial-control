@@ -29,8 +29,11 @@ baseline, which is low-power — see §Correction).
 MPNN negentropy 0.516 [0.433, 0.601] = **chance** (the raw anti-prediction was a chain-truncation artifact,
 not frustration). My independent check: monomers ESM 0.740, MPNN 0.505, dissociation +0.235.
 **Strictest test (monomers AND within (aa, burial)):** ESM 0.648 [0.535, 0.757] predicts; MPNN 0.470/0.430 =
-chance; **dissociation +0.174 [+0.062, +0.288], P=0.999 — still holds.** (Burial cuts *against* the effect:
-catalytic residues are MORE buried and burial raises MPNN determinacy, so leaving it uncontrolled HIDES it.)
+chance; **dissociation +0.176 [+0.060, +0.293], P=0.999 — still holds** (committed catalytic_audit.csv,
+monomers_only×aa_burial). (CORRECTED 2026-08-17: burial partly *contributes* to the raw gap — catalytic
+residues are more buried and burial raises MPNN's apparent determinacy — so controlling for it SHRINKS the
+dissociation, +0.288→+0.234(all)→+0.176; it SURVIVES but is smaller. This is the OPPOSITE of the binding case,
+where burial MASKS the effect — do not conflate the two.)
 
 ## Reading
 **The dissociation is real and robust.** Structure-conditioned inverse-folding confidence is **blind** to
