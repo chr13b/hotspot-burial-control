@@ -83,9 +83,10 @@ def score_L(model, path, pdb, g1, g2, muts, sd, rng):
     for j in range(cx.n):
         key = (cx.chains[j], int(cx.resnums[j]), cx.icodes[j])
         if key in muts and np.isfinite(lQ[j]).all():
-            wt, mut = muts[key]
-            if wt in IDX and mut in IDX and cx.seq[j] == wt:
-                out[key] = float((lP[j, IDX[mut]] - lP[j, IDX[wt]]) - (lQ[j, IDX[mut]] - lQ[j, IDX[wt]]))
+            for wt, mut in muts[key]:          # L depends on the MUTANT identity, not just the position
+                if wt in IDX and mut in IDX and cx.seq[j] == wt:
+                    out[(key[0], key[1], key[2], mut)] = float(
+                        (lP[j, IDX[mut]] - lP[j, IDX[wt]]) - (lQ[j, IDX[mut]] - lQ[j, IDX[wt]]))
     del cx, lP, lQ
     gc.collect()
     return out
@@ -125,13 +126,15 @@ def main():
             if not os.path.exists(path):
                 continue
             g = mut[mut.complex_id == cid]
-            muts = {(r.chain, int(r.resnum), r.icode): (r.wt, r.mut) for r in g.itertuples()}
+            muts = {}
+            for r in g.itertuples():
+                muts.setdefault((r.chain, int(r.resnum), r.icode), []).append((r.wt, r.mut))
             try:
-                for key, L in score_L(model, path, pdb, g1, g2, muts, sd, rng).items():
-                    Lv[(cid, key)] = L
+                for k4, L in score_L(model, path, pdb, g1, g2, muts, sd, rng).items():
+                    Lv[(cid,) + k4] = L         # (complex, chain, resnum, icode, mut)
             except Exception as e:
                 print(f"  skip {cid}: {type(e).__name__}: {e}", flush=True)
-        mut["Ln"] = [Lv.get((r.complex_id, (r.chain, int(r.resnum), r.icode)), np.nan)
+        mut["Ln"] = [Lv.get((r.complex_id, r.chain, int(r.resnum), r.icode, r.mut), np.nan)
                      for r in mut.itertuples()]
         d = mut.dropna(subset=["Ln"]).reset_index(drop=True)
         y = d.destab.to_numpy().astype(float); grp = d.complex_id.to_numpy()
