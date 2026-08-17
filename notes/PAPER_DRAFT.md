@@ -23,7 +23,7 @@ confidence ranks interface hotspots at chance and adds *zero* beyond geometry (c
 0.000), and the KL detector is a *learned frustratometer* recapitulating partner-contact area. **The mixed
 derivative does not reduce to geometry.** On our main fixture (SKEMPI, natural complexes) it adds substantial
 binding information beyond geometry — mutation-level CPI +0.059, Spearman with experimental ΔΔG −0.30 —
-robustly, exactly where every scalar summary (confidence included) adds nothing. This is a *feature-class law*: scalar
+robustly; and per interface position, where confidence is conditionally independent (CPI +0.0002), the mixed derivative adds ~5× the best scalar. This is a *feature-class law*: scalar
 summaries are geometry; the mixed derivative is competence. It unifies the field's observations as corollaries
 — the published deficit is a burial confound (pre-registered matched design, five architectures plus
 ProBID-Net's own model); the blindness generalises from binding to *catalytic* residues (structure-conditioned
@@ -61,10 +61,11 @@ fold-stability constraint; a residue's binding *leverage* is the *mixed second d
 response to ablating the partner (the BA-Cycle operator of Jiao et al. 2024). Confidence is blind to leverage
 *by construction* — an identical bound distribution yields identical confidence but arbitrary leverage; we
 verify this is non-vacuous (confidence-matched interface positions retain ≈30% of the leverage spread). This
-yields a **feature-class law**: on natural complexes every *scalar* summary of the distribution reduces to cheap
-geometry (confidence adds CPI 0.000; the KL detector recapitulates ΔSASA), whereas the *mixed derivative* does
-not — on SKEMPI it adds binding information beyond geometry (mutation-level CPI +0.059, Spearman with
-experimental ΔΔG −0.30; ~5× the best scalar summary, where confidence adds nothing), robustly. The model knows binding on natural complexes; the knowledge
+yields a **feature-class law**: on natural complexes a scalar read off the bound distribution *alone* recovers
+little beyond cheap geometry (confidence is conditionally independent, CPI +0.0002; one-pass negentropy adds a
+marginal +0.0008), whereas the *two-pass* mixed derivative does not reduce — per interface position it adds
++0.0048, ~5× the best scalar (CI disjoint from every scalar's), and on SKEMPI at the mutation level CPI +0.059
+with Spearman −0.30 against experimental ΔΔG, robustly. The model knows binding on natural complexes; the knowledge
 was invisible to every scalar readout the field has used. → leverage_decomposition.csv, nugget_cpi.csv.
 
 **(ii) Confidence is not competence — a property of inverse folding, with a practical consequence.** The
@@ -201,13 +202,15 @@ not about a *regime* but a *feature class*: on natural complexes scalar summarie
 
 **A no-go for scalar readouts.** The blindness is not special to confidence. Write any scalar the field reads
 off an inverse-folding model as a functional `φ(P)` of the bound-conditioned distribution `P = p(·|X_complex)`
-*alone* — sequence recovery (an argmax match), confidence (`log P(native)`), entropy or perplexity, or a
-single-model KL-to-background. Binding leverage is a functional of the *pair* `(P, Q = p(·|X_monomer))`, and no
-functional of `P` alone can express it wherever `P` does not determine `Q` — which the distribution-matched
-pairs above show is generic. Empirically, on natural complexes every such scalar collapses onto geometry:
-beyond burial+neighbours+ΔSASA, confidence adds CPI **+0.0002** (conditionally independent), entropy/perplexity
-**+0.0008**, and the KL detector **+0.0009** — all within a hair of the geometry baseline — while the *mixed*
-derivative adds **+0.0048**, roughly five times the best scalar. (That confidence and sequence recovery track
+*alone* — sequence recovery (an argmax match), confidence (`log P(native)`), or entropy/perplexity. Binding
+leverage is a functional of the *pair* `(P, Q = p(·|X_monomer))`, and no functional of `P` alone can express it
+wherever `P` does not determine `Q` — which the distribution-matched pairs above show is generic. Empirically
+the tiers are distinct. Confidence — a scalar of the bound distribution alone — is conditionally independent of
+hotspot status (CPI **+0.0002**, CI spanning zero); the one-pass negentropy adds a real but marginal
+**+0.0008** (0.7% of the available log-loss); the *two-pass* mixed derivative L(→Ala) adds **+0.0048**, its CI
+disjoint from every scalar's; and even its own P-weighted contraction — the KL detector, algebraically
+`E_P[L] + const` and hence itself *two-pass* — recovers only **+0.0009**, so collapsing the leverage vector to
+any scalar discards ~80% of its conditional signal. (That confidence and sequence recovery track
 burial is itself long known — Dauparas et al. 2022, Hsu et al. 2022; what is new here is the *formal*
 feature-class law, the conditional-independence control, and that the mixed derivative alone escapes it.) So any method that ranks interface positions by
 a scalar summary of the bound distribution is, on natural complexes, a geometry detector in disguise. This is
