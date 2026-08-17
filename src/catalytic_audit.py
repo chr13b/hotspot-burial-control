@@ -147,45 +147,62 @@ def main():
     STRATA = {"none_raw": [], "aa": ["aa"], "pdb_aa": ["pdb", "aa"],
               "aa_burial": ["aa", "sb", "nb"], "pdb_aa_burial": ["pdb", "aa", "sb", "nb"]}
     rows = []
-    for subn, mask in SUBSETS.items():
-        sub = d[mask]
+
+    def run_cell(subn, stn, cols, rng_cell, pas):
+        sub = d[SUBSETS[subn]]
         y = sub.is_catalytic.to_numpy(float)
         pdbc = pd.factorize(sub.pdb)[0]
         ids = np.unique(pdbc); idx = [np.where(pdbc == c)[0] for c in ids]
+        k = (np.zeros(len(sub), np.int64) if not cols else
+             pd.factorize(sub[cols].astype(str).agg("|".join, axis=1))[0].astype(np.int64))
+        V = {f: sub[f].to_numpy(float) for f in FE}
+        pt = {f: sauc(V[f], y, k) for f in FE}
+        bs = {f: [] for f in FE}
+        dis = {"esm_negent-mpnn_conf": [], "esm_negent-mpnn_negent": []}
+        for _ in range(NBOOT):
+            t = np.concatenate([idx[c] for c in rng_cell.integers(0, len(ids), len(ids))])
+            yt, kt = y[t], k[t]
+            cur = {f: sauc(V[f][t], yt, kt) for f in FE}
+            if not all(np.isfinite(v) for v in cur.values()):
+                continue
+            for f in FE:
+                bs[f].append(cur[f])
+            dis["esm_negent-mpnn_conf"].append(cur["esm_negent"] - cur["mpnn_conf"])
+            dis["esm_negent-mpnn_negent"].append(cur["esm_negent"] - cur["mpnn_negent"])
+        for f in FE:
+            lo, hi = np.percentile(bs[f], [2.5, 97.5])
+            rows.append(dict(subset=subn, strata=stn, quantity=f, auroc=round(pt[f], 4),
+                             lo=round(lo, 4), hi=round(hi, 4),
+                             verdict=("PREDICTS" if lo > 0.5 else "ANTI" if hi < 0.5 else "chance/BLIND"),
+                             n_enzymes=sub.pdb.nunique(), n_catalytic=int(y.sum()), n_pos=len(sub),
+                             boot_pass=pas))
+        for nm, arr in dis.items():
+            arr = np.array(arr); lo, hi = np.percentile(arr, [2.5, 97.5])
+            rows.append(dict(subset=subn, strata=stn, quantity="DISSOCIATION_" + nm,
+                             auroc=round(float(arr.mean()), 4), lo=round(lo, 4), hi=round(hi, 4),
+                             verdict=("DISSOCIATION" if lo > 0 else "no"),
+                             p_gt0=round(float(np.mean(arr > 0)), 4),
+                             n_enzymes=sub.pdb.nunique(), n_catalytic=int(y.sum()), n_pos=len(sub),
+                             boot_pass=pas))
+        print(f"  [{pas}] {subn:22s} {stn:16s} " +
+              " ".join(f"{f}={pt[f]:.3f}" for f in ("mpnn_conf", "mpnn_negent", "esm_negent")), flush=True)
+
+    # PASS 1 -- the original grid, in the original order, sharing one RNG stream.
+    # Untouched so that every previously published row reproduces bit-for-bit.
+    skipped = []
+    for subn in SUBSETS:
         for stn, cols in STRATA.items():
             if subn != "all" and stn not in ("aa", "pdb_aa_burial"):
+                skipped.append((subn, stn, cols))
                 continue
-            k = (np.zeros(len(sub), np.int64) if not cols else
-                 pd.factorize(sub[cols].astype(str).agg("|".join, axis=1))[0].astype(np.int64))
-            V = {f: sub[f].to_numpy(float) for f in FE}
-            pt = {f: sauc(V[f], y, k) for f in FE}
-            bs = {f: [] for f in FE}
-            dis = {"esm_negent-mpnn_conf": [], "esm_negent-mpnn_negent": []}
-            for _ in range(NBOOT):
-                t = np.concatenate([idx[c] for c in rng.integers(0, len(ids), len(ids))])
-                yt, kt = y[t], k[t]
-                cur = {f: sauc(V[f][t], yt, kt) for f in FE}
-                if not all(np.isfinite(v) for v in cur.values()):
-                    continue
-                for f in FE:
-                    bs[f].append(cur[f])
-                dis["esm_negent-mpnn_conf"].append(cur["esm_negent"] - cur["mpnn_conf"])
-                dis["esm_negent-mpnn_negent"].append(cur["esm_negent"] - cur["mpnn_negent"])
-            for f in FE:
-                lo, hi = np.percentile(bs[f], [2.5, 97.5])
-                rows.append(dict(subset=subn, strata=stn, quantity=f, auroc=round(pt[f], 4),
-                                 lo=round(lo, 4), hi=round(hi, 4),
-                                 verdict=("PREDICTS" if lo > 0.5 else "ANTI" if hi < 0.5 else "chance/BLIND"),
-                                 n_enzymes=sub.pdb.nunique(), n_catalytic=int(y.sum()), n_pos=len(sub)))
-            for nm, arr in dis.items():
-                arr = np.array(arr); lo, hi = np.percentile(arr, [2.5, 97.5])
-                rows.append(dict(subset=subn, strata=stn, quantity="DISSOCIATION_" + nm,
-                                 auroc=round(float(arr.mean()), 4), lo=round(lo, 4), hi=round(hi, 4),
-                                 verdict=("DISSOCIATION" if lo > 0 else "no"),
-                                 p_gt0=round(float(np.mean(arr > 0)), 4),
-                                 n_enzymes=sub.pdb.nunique(), n_catalytic=int(y.sum()), n_pos=len(sub)))
-            print(f"  {subn:22s} {stn:16s} " +
-                  " ".join(f"{f}={pt[f]:.3f}" for f in ("mpnn_conf", "mpnn_negent", "esm_negent")), flush=True)
+            run_cell(subn, stn, cols, rng, "grid")
+
+    # PASS 2 -- cells pass 1 skipped. Each gets its OWN RNG at the same seed, so adding or
+    # removing a cell here can never perturb another cell's CI. monomers_only x aa_burial is
+    # the composition+burial+truncation cell cited in FINDINGS_catalytic.md / the write-up;
+    # it had no committed row before, which is why it is computed here.
+    for subn, stn, cols in skipped:
+        run_cell(subn, stn, cols, np.random.default_rng(SEED), "added")
 
     out = pd.DataFrame(rows)
     out["seed"] = SEED; out["n_boot"] = NBOOT
