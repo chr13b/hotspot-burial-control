@@ -226,6 +226,19 @@ energy should be reciprocal across a contact, a per-chain confidence artifact wo
 per-*pair* statistic deliberately: a per-complex sum of |L| over both sides is dominated by a shared
 interface-size multiplier and is not evidence of reciprocity.) → leverage_reciprocity.csv.
 
+**But this knowledge is fragile to backbone error — a dose law.** The mixed derivative is read off a backbone,
+and it does not survive a large perturbation of one. Jittering the crystal backbone to a target interface RMSD
+and re-scoring (the monomer inheriting the *same* jitter, so the partner ablation stays clean; σ=0 reproduces
+the crystal value exactly, a positive control), CPI(L | geometry) holds — +0.059 at 0.25 Å, +0.047 at 0.5 Å —
+then collapses to +0.002 by 1.0 Å, and Spearman(L, ΔΔG) stays −0.29 through 0.5 Å before falling to −0.08. The
+binding signal is robust to *accurate* reconstruction and lost under an inaccurate one. This is a **lower bound**
+on the design-time damage: our own predicted-backbone experiment (§6) shows independent reconstructions collapse
+*harder* than distance-matched noise. So the leverage is a diagnostic on natural and accurately-reconstructed
+complexes, not a frozen-model readout for arbitrary predicted backbones — which is precisely *why* the staged
+backbone→sequence pipeline misses hotspots (the predicted backbone's interface error destroys the very signal
+that carries binding), and why binding-aware decoders retrain rather than read a frozen model. →
+leverage_noise_ladder.csv.
+
 **De-novo designs corroborate — there, even the scalar distribution shows it.** Where selection is
 binding-dominated, the signal is accessible to blunter probes too. On Bennett-2023 de-novo binders with
 experimental site-saturation mutagenesis (four targets; a sanity control passes exactly — the SSM-excluded
@@ -312,15 +325,17 @@ We now return to the published deficit and show, on crystal backbones, that it i
 confound is visible directly: as hotspot strength increases, both sequence recovery and burial rise in
 lockstep (recovery 0.347→0.529, relative SASA 0.218→0.080). Under the pre-registered matched-pair design —
 pairing each hotspot to a null residue in the same complex at matched relative SASA, secondary-structure
-class, and neighbour count — the deficit vanishes: the matched estimate is −0.042 [−0.222, +0.129] and a
-higher-powered regression estimator is +0.059 [−0.051, +0.167], with every architecture's primary interval
-containing zero across all five models. → FINDINGS.md.
+class, and neighbour count — the deficit attenuates to statistical indistinguishability: the matched estimate
+is −0.042 [−0.222, +0.129] and a higher-powered regression estimator is +0.059 [−0.051, +0.167], every
+architecture's primary interval containing zero (a two-one-sided-tests check does not certify equivalence at
+the ±0.115-nat margin — attenuation, not proven absence). → FINDINGS.md.
 
 The strongest form of this test uses ProBID-Net's own released voxel-CNN. Run on our fixture, its port is
 faithful (overall interface recovery 0.472, matching its reported non-hotspot number), and its published
 hotspot deficit *does* reproduce — concentrated, as one would expect, in comprehensively alanine-scanned
-complexes (five or more measured hotspots: −0.113 [−0.208, −0.022], p=0.007). But it dissolves under
-confound-matching: matching residue type turns it positive (+0.120), matching burial gives −0.038, matching
+complexes — the reproduction is carried by these 18 comprehensively-scanned complexes (five or more measured
+hotspots: −0.113 [−0.208, −0.022], p=0.007). But it attenuates under confound-matching: matching residue type
+turns it positive (+0.120), matching burial gives −0.038, matching
 hydrophobicity −0.051, every interval spanning zero. ProBID-Net's deficit is thus a residue-composition and
 burial confound — its voxel-CNN has an unusually extreme amino-acid-type dependence (per-type recall spanning
 0.17 to 0.98), and hotspots are enriched in the types it recovers worst — not evidence of binding-specific
@@ -406,15 +421,23 @@ the attribution — it is neither dynamics nor decoding but conditioning, and a 
 benchmark. The most telling piece of related practice is **BindCraft**, whose one-shot binder pipeline
 hard-codes a 4 Å interface freeze that forbids inverse folding at the interface — the field's implicit
 admission of our thesis, to which we give a measurement and a principled improvement. Ranking interface
-positions for hotspot triage at a matched budget, IF **confidence captures fewer hotspots than random**
-(capture@3 0.064 vs 0.089; @5 0.125 vs 0.138) — which *justifies* freezing the interface rather than trusting
-IF there — while free **ΔSASA captures ~3× more** (0.233 @3), well above the uniform freeze. So the field's
-hack is right about confidence and improvable with free geometry: freeze-then-prioritise-by-ΔSASA beats both
-trusting confidence and the uniform freeze. → bindcraft_triage.csv, FINDINGS_bindcraft.md. Finally, a wave of
+positions for hotspot triage at a matched budget, IF **confidence is at chance** (position-level AUROC 0.51;
+capture@3 0.064 vs 0.089 random, overlapping intervals) — which *justifies* freezing the interface rather than
+trusting IF confidence there. But the model's binding knowledge *is* actionable if read from the right place:
+on crystal backbones the **mixed derivative is the best single ranker** — leverage |L| reaches position-level
+AUROC **0.694**, above free ΔSASA (0.664; paired +0.030 [−0.001, +0.061], a strong trend) and burial (0.667),
+and the alanine leverage −L(→Ala) captures the most hotspots (capture@3 0.284 vs ΔSASA 0.238 vs confidence
+0.064). So the corrected practical rule is *rank interface positions by the mixed derivative, not the
+confidence* — a training-free readout that edges free geometry — with the dose-law caveat (§4) that this holds
+on accurate backbones and degrades with reconstruction error. → leverage_triage.csv, bindcraft_triage.csv. Finally, a wave of
 conditioning-aware inverse-folding methods (AlphaFold-DB debiasing / DeSAE, target-conditioned inverse
 folding, UMA-Inverse) *presupposes* the conditioning-set problem; we *measure* it and show the standard
-benchmark hides it. ⟨✎ verify all external citation URLs before submission — BAIF/DeSAE/CPI/free-energy-interp
-fetched; the remainder search-only.⟩
+benchmark hides it. Independent corroboration of the core claim comes from **Janusz et al. (2026)**, who
+benchmark antigen-aware antibody inverse folding and report "a very weak effect of antigen on the predictions" —
+structure validity acting as a statistical shortcut, with ProteinMPNN *losing* performance when the antigen
+chain is included — the same partner-insensitivity we quantify, from a group that did not compute the ablation.
+⟨✎ external citations DOI-verified via the reference checker: BA-Cycle, RedNet, StaB-ddG, Frellsen, DeSAE,
+UMA-Inverse, Cagiada, Ferreiro/Freiberger, Watson–Wright, Berrett, Janusz, ProteinMPNN; full .bib at submission.⟩
 
 ## 9. Limitations
 
