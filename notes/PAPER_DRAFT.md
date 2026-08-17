@@ -215,12 +215,13 @@ one statement with several corollaries the field has met separately: ProBID-Net'
 confound (§5), BindCraft is right not to trust interface confidence (§8), and the learned KL detector merely
 recapitulates ΔSASA (§8). Only the partner-ablation mixed derivative escapes the reduction.
 
-As a physical check that the mixed derivative is a genuine *shared* binding energy rather than a per-chain
-scoring artifact, we test its reciprocity across the interface: the total leverage on the two sides of an
-interface correlate at Spearman **0.60** (340 complexes), and contacting cross-interface residues have
-positively correlated leverage magnitudes (**+0.09** [0.07, 0.12] over 6,391 contact pairs; weaker per-pair, as
-expected when a hotspot faces a scaffold residue, but robustly positive). A binding energy should be reciprocal;
-a per-chain confidence artifact would not be. → leverage_reciprocity.csv.
+As a physical check that the mixed derivative behaves like a *shared* interface energy rather than a per-chain
+scoring artifact, contacting cross-interface residues have positively correlated leverage magnitudes: Spearman
+**+0.094** [0.066, 0.122], P(>0) > 0.999, over 6,391 cross-interface contact pairs. The correlation is modest
+per pair — as expected when a hotspot faces a structural scaffold residue — but robustly positive; a binding
+energy should be reciprocal across a contact, a per-chain confidence artifact would not be. (We report the
+per-*pair* statistic deliberately: a per-complex sum of |L| over both sides is dominated by a shared
+interface-size multiplier and is not evidence of reciprocity.) → leverage_reciprocity.csv.
 
 **De-novo designs corroborate — there, even the scalar distribution shows it.** Where selection is
 binding-dominated, the signal is accessible to blunter probes too. On Bennett-2023 de-novo binders with
