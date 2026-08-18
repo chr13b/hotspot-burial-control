@@ -1,0 +1,9 @@
+test,stat,lo,hi,p_lt0,n
+"partial(L,ddG|onepass+geom)",-0.1473,-0.1904,-0.1075,1.0,4187
+"partial(onepass,ddG|L+geom)",-0.0939,-0.1424,-0.0467,1.0,4187
+"marginal_spearman(L,ddG)",-0.2953,,,,4193
+"marginal_spearman(onepass,ddG)",-0.2353,,,,4193
+per_complex_neg_frac(n>=15),0.861,,,,72
+per_wttype_neg,18/19,,,,19
+per_wttype_nweighted_rho,-0.2593,,,,4183
+"Xala_only_spearman(L,ddG)",-0.2536,,,,2327

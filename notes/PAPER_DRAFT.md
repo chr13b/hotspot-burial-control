@@ -188,7 +188,17 @@ On the identical 5,742-position sample §3's confidence test uses, the same orde
 leverage +0.0092 [+0.0062, +0.0124], ~5× the scalar KL, while confidence stays conditionally independent (CI
 spans 0). → leverage_nugget_match.csv. At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
 = **+0.059 [+0.046, +0.073]**, surviving controls from substitution similarity (BLOSUM, volume, hydropathy) and
-from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. To calibrate the effect
+from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. Critically, the second pass
+earns its keep against the *standard* zero-shot readout — the one-pass complex log-odds
+`logP(mut|complex) − logP(wt|complex)`: controlling for it *and* geometry, leverage still tracks ΔΔG
+(partial Spearman = **−0.147 [−0.190, −0.108]**, P<0=1.0), while the reverse partial is only −0.094, so the
+partner-ablation pass carries ~1.6× the unique binding signal of the one-pass score. This scopes the
+feature-class law precisely: it is about *position-level* scalars of P (recovery, confidence, entropy); a
+*per-substitution* one-pass readout legitimately carries constraint and substitution-similarity information,
+but the *binding-specific* increment requires the second pass. The direction is robust, not a residue-type
+artifact — Spearman(L, ΔΔG) is negative in 62 of 72 complexes with ≥15 measured mutations and in 18 of 19
+wild-type residue types (n-weighted −0.26), and holds at −0.25 on alanine substitutions alone (n=2,327), so L
+is not a side-chain-volume or truncation proxy. → w2_onepass_control.csv. To calibrate the effect
 size: L is a *zero-shot* readout of a model never trained on binding, yet it adds **+0.030 interface AUROC**
 (0.700→0.730) beyond a *supervised* geometry+substitution baseline fit directly on the binding labels, and on
 its own reaches AUROC 0.647 — near that supervised baseline. → leverage_effect_size.csv. **This is not a
