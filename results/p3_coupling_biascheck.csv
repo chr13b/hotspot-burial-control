@@ -1,16 +1,16 @@
 check,stat,p,n_retained,n_dropped,note
-A1_g_dropped_vs_retained,0.1223,0.7739,562,28.0,meanabs_g retained=0.834 dropped=0.879
-A2_size_small,-0.0856,,324,,"CI[-0.224,-0.001] cplx=32"
-A2_size_large,-0.2023,,238,,"CI[-0.303,-0.112] cplx=29"
+A1_g_dropped_vs_retained,0.141,0.6323,557,27.0,meanabs_g retained=0.826 dropped=0.900
+A2_size_small,-0.0768,,322,,"CI[-0.218,+0.004] cplx=32"
+A2_size_large,-0.1865,,235,,"CI[-0.300,-0.101] cplx=29"
 A2_size_n>600_proxy,-0.2498,,48,,"CI[-0.380,+0.357] cplx=7"
-B_signacc_ALLpairs,0.5463,,562,,"CI[0.504,0.588]"
-B_signacc_|g|>0.5,0.5695,,295,,"CI[0.511,0.627]"
-B_signacc_|g|>1.0,0.6351,,148,,"CI[0.552,0.713]"
-B_signacc_|g|>1.5,0.5918,,98,,"CI[0.488,0.690]"
-B_signacc_|g|>2.0,0.6346,,52,,"CI[0.490,0.764]"
-B_signacc_all,0.5463,,562,,"CI[0.504,0.588] thr|C|=0.000"
-B_signacc_|C|>median,0.5552,,281,,"CI[0.495,0.614] thr|C|=0.056"
-B_signacc_|C|>p75,0.6596,,141,,"CI[0.575,0.737] thr|C|=0.210"
-B_signacc_|C|>p90,0.6842,,57,,"CI[0.548,0.801] thr|C|=0.490"
-B_signacc_bothstrong,0.68,,100,,"CI[0.579,0.770] |g|>1 & |C|>median"
-B_signacc_gweighted,0.5903,,562,,unweighted=0.546
+B_signacc_ALLpairs,0.5422,,557,,"CI[0.500,0.584]"
+B_signacc_|g|>0.5,0.5621,,290,,"CI[0.503,0.620]"
+B_signacc_|g|>1.0,0.625,,144,,"CI[0.541,0.704]"
+B_signacc_|g|>1.5,0.5745,,94,,"CI[0.468,0.676]"
+B_signacc_|g|>2.0,0.6275,,51,,"CI[0.481,0.759]"
+B_signacc_all,0.5422,,557,,"CI[0.500,0.584] thr|C|=0.000"
+B_signacc_|C|>median,0.5448,,279,,"CI[0.484,0.604] thr|C|=0.055"
+B_signacc_|C|>p75,0.65,,140,,"CI[0.565,0.729] thr|C|=0.208"
+B_signacc_|C|>p90,0.6786,,56,,"CI[0.540,0.797] thr|C|=0.489"
+B_signacc_bothstrong,0.6667,,96,,"CI[0.563,0.760] |g|>1 & |C|>median"
+B_signacc_gweighted,0.5822,,557,,unweighted=0.542

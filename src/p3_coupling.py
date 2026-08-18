@@ -5,7 +5,8 @@ The paper's single-mutant object is the partner-ablated log-odds (leverage)
   L_i(a) = [logP_i(a) - logP_i(wt)] - [logQ_i(a) - logQ_i(wt)]   ~  -DDG_bind(wt->a),
 a FIRST mixed derivative (partner ablation x one mutation).  StaB-ddG (appendix B) claims, untested,
 that such models also carry pairwise BINDING epistasis.  The natural object is the SECOND mixed
-derivative -- the categorical Jacobian of Zhang & Ovchinnikov (PNAS 2024), partner-ablated:
+derivative -- the categorical Jacobian of Zhang et al. 2024 (bioRxiv 10.1101/2024.01.30.577970),
+partner-ablated:
 
   C_ij(a,b) = L_ij(a,b) - L_i(a) - L_j(b)
             = [ how much setting j->b shifts the (a-vs-wt) log-odds at i ]  (partner-ablated).
@@ -14,7 +15,7 @@ Operationally, in the CONDITIONAL (autoregressive, teacher-forced) ProteinMPNN, 
 the input residue at j to its mutant and measuring the shift in the conditional log-odds at i (for
 orders where j is decoded before i), symmetrised over the two directions and averaged over decode
 orders.  Because C is a difference of log-ODDS at a fixed position, the per-position normalisation
-cancels -- raw conditional logits suffice.
+cancels -- the log-softmax conditionals can be differenced directly.
 
 Partner ablation:
  * CROSS-INTERFACE pair (i in group1, j in group2): the two residues couple ONLY through binding, so
@@ -63,7 +64,10 @@ def build_triangles():
     """SKEMPI -> one row per (double mutant with BOTH singles measured).  g = DDG_ab-DDG_a-DDG_b."""
     sk = fc.parse_skempi(f"{DATA}/skempi_v2.csv")
     sk["complex_id"] = sk.pdb + "_" + sk.group1 + "_" + sk.group2
-    sk["mutkey"] = sk["Mutation(s)_cleaned"].fillna("")
+    # canonicalise the mutation set (sort comma-separated tokens) so a double mutant listed in swapped
+    # order in two SKEMPI rows collapses to ONE physical pair and its ddG is median-aggregated together.
+    sk["mutkey"] = (sk["Mutation(s)_cleaned"].fillna("")
+                    .map(lambda s: ",".join(sorted(p.strip() for p in str(s).split(",") if p.strip()))))
     grp = (sk.groupby(["complex_id", "pdb", "group1", "group2", "mutkey", "n_mut"], as_index=False)
              .agg(ddG=("ddG", "median"), n_meas=("ddG", "size")))
     singles = {(r.complex_id, r.mutkey): r.ddG for r in grp[grp.n_mut == 1].itertuples()}
@@ -113,7 +117,8 @@ def clone_with_mut(cx, idx, aa):
 
 def _directed(cond_pass, base, rank, jp, ip, mut_i, wt_i):
     """Order-averaged shift in (mut_i-vs-wt_i) log-odds at position ip caused by conditioning jp->mut,
-    using only orders where jp is decoded before ip.  cond_pass/base are [K,n,21] raw logits."""
+    using only orders where jp is decoded before ip.  cond_pass/base are [K,n,21] log-softmax conditionals
+    (per-position normalised; the normaliser cancels in the log-odds difference below)."""
     Lm, Lw = LIDX[mut_i], LIDX[wt_i]
     active = rank[:, jp] < rank[:, ip]
     if not active.any():

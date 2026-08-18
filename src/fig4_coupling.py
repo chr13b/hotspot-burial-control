@@ -74,25 +74,36 @@ ax[1].set_xticks(range(3)); ax[1].set_xticklabels([f"|g| {l}\n(n={int((dd.t==l).
                                                    for l in ["low", "mid", "high"]], fontsize=8.5)
 ax[1].set_ylabel("mean |C|  (model coupling)", fontsize=9)
 ax[1].set_title("b  coupling magnitude tracks epistasis", fontsize=10, loc="left", weight="bold")
+# distance-controlled partial (the raw tertiles are partly distance-driven) — annotate the honest number
+_r = stats.rankdata; _dd = dd
+_Z = np.column_stack([np.ones(len(_dd)), _r(_dd.dist_cb)])
+_ex = _r(_dd.C_lev.abs()) - _Z @ np.linalg.lstsq(_Z, _r(_dd.C_lev.abs()), rcond=None)[0]
+_ey = _r(_dd.g.abs()) - _Z @ np.linalg.lstsq(_Z, _r(_dd.g.abs()), rcond=None)[0]
+_pr = np.corrcoef(_ex, _ey)[0, 1]
+ax[1].text(0.5, 0.95, f"partial ρ(|C|,|g| | dist) = {_pr:+.2f}", transform=ax[1].transAxes,
+           ha="center", va="top", fontsize=7.6, color=MUT)
 
-# ---- (c) sign recovery ----------------------------------------------------
+# ---- (c) not a magnitude-skew artifact: partial rho negative in BOTH g-sign strata ----
 c = d.dropna(subset=["C_lev", "g"]).copy()
-gth = [0.0, 0.5, 1.0, 1.5, 2.0]
-gpts = [signacc(c[c.g.abs() > t]) for t in gth]
-cq = [0.0, 0.5, 0.75, 0.9]
-cpts = [signacc(c[c.C_lev.abs() >= c.C_lev.abs().quantile(q)]) for q in cq]
-xg = range(len(gth))
-ax[2].errorbar(xg, [p[0] for p in gpts], yerr=[[p[0]-p[1] for p in gpts], [p[2]-p[0] for p in gpts]],
-               marker="o", color=ACC, lw=1.6, capsize=3, label="by interaction |g|>t", zorder=3)
-ax[2].errorbar(xg[:len(cq)], [p[0] for p in cpts],
-               yerr=[[p[0]-p[1] for p in cpts], [p[2]-p[0] for p in cpts]],
-               marker="s", color=ACC2, lw=1.6, capsize=3, ls="--", label="by model |C| quantile", zorder=3)
-ax[2].axhline(0.5, color=MUT, lw=1.0, ls=":"); ax[2].text(0.05, 0.505, "chance", color=MUT, fontsize=7.5)
-ax[2].set_xticks(list(xg)); ax[2].set_xticklabels(["all", "0.5", "1.0", "1.5", "2.0"], fontsize=8.5)
-ax[2].set_xlabel("|g| threshold (kcal/mol)  /  |C| quantile", fontsize=8.5)
-ax[2].set_ylabel("sign accuracy", fontsize=9); ax[2].set_ylim(0.45, 0.78)
-ax[2].legend(fontsize=7.3, frameon=False, loc="upper left")
-ax[2].set_title("c  the sign recovers on strong pairs", fontsize=10, loc="left", weight="bold")
+def partial_sub(sub):
+    x, y, z = sub.C_lev.values, sub.g.values, sub.dist_cb.values
+    m = np.isfinite(x) & np.isfinite(y) & np.isfinite(z); x, y, z = x[m], y[m], z[m]
+    rx, ry, rz = (stats.rankdata(v) for v in (x, y, z)); Z = np.column_stack([np.ones_like(rz), rz])
+    ex = rx - Z @ np.linalg.lstsq(Z, rx, rcond=None)[0]; ey = ry - Z @ np.linalg.lstsq(Z, ry, rcond=None)[0]
+    return float(np.corrcoef(ex, ey)[0, 1]), int(m.sum())
+strata = [("all\ng<0", c[c.g < 0], ACC), ("all\ng>0", c[c.g > 0], ACC),
+          ("cross\ng<0", c[(c.g < 0) & (c.cross_interface == 1)], ACC2),
+          ("cross\ng>0", c[(c.g > 0) & (c.cross_interface == 1)], ACC2)]
+svals = [partial_sub(s[1]) for s in strata]
+ax[2].bar(range(4), [v[0] for v in svals], color=[s[2] for s in strata], width=0.64, zorder=3)
+for i, (v, n) in enumerate(svals):
+    ax[2].text(i, v - 0.006, f"n={n}", ha="center", va="top", fontsize=7, color="#fff")
+ax[2].axhline(0, color=INK, lw=0.9)
+ax[2].set_xticks(range(4)); ax[2].set_xticklabels([s[0] for s in strata], fontsize=8.3)
+ax[2].set_ylabel("partial-Spearman(C, g | dist)", fontsize=9)
+ax[2].set_title("c  not a magnitude-skew artifact", fontsize=10, loc="left", weight="bold")
+ax[2].text(0.5, 0.05, "negative in BOTH sign strata —\na skew artifact would flip g>0 positive",
+           transform=ax[2].transAxes, fontsize=7.3, color=MUT, ha="center", va="bottom")
 
 fig.tight_layout()
 os.makedirs("results/figures", exist_ok=True)
@@ -101,5 +112,5 @@ for ext in ("png", "pdf"):
 print("wrote results/figures/fig4_coupling.png / .pdf")
 print(f"  (a) cross partial={bars[0][1][0]:+.3f}; same un-ablated={bars[1][1][0]:+.3f}; "
       f"same ablated={bars[2][1][0]:+.3f}")
-print(f"  (b) mean|C| tertiles = {mean_c.round(3).to_dict()}")
-print(f"  (c) sign: all={gpts[0][0]:.3f}, |g|>1={gpts[2][0]:.3f}, |C|>p90={cpts[3][0]:.3f}")
+print(f"  (b) mean|C| tertiles = {mean_c.round(3).to_dict()}; partial(|C|,|g||dist)={_pr:+.3f}")
+print(f"  (c) sign-stratified partial rho = {[round(v[0],3) for v in svals]} (all g<0/g>0, cross g<0/g>0)")

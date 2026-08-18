@@ -1,0 +1,13 @@
+metric,subset,n,model,majority_baseline,balanced_acc,mcc
+sign_accuracy,all,557.0,0.5422,0.5314,0.5317,0.0672
+sign_accuracy,|g|>1.0,144.0,0.625,0.6944,0.5964,0.1821
+sign_accuracy,|C|>p75,140.0,0.65,0.6214,0.6041,0.2235
+sign_accuracy,|C|>p90,56.0,0.6786,0.6964,0.5867,0.1889
+"partial_sign_channel|absg,dist",all,557.0,0.0794,0.0117,0.1719,
+"partial_sign_channel|absg,dist",cross,383.0,0.088,-0.005,0.2132,
+"skew_strata_partial(C,g|dist)",g<0_all,296.0,-0.1188,,,
+"skew_strata_partial(C,g|dist)",g>0_all,261.0,-0.0882,,,
+"skew_strata_partial(C,g|dist)",g<0_cross,205.0,-0.0982,,,
+"skew_strata_partial(C,g|dist)",g>0_cross,178.0,-0.0926,,,
+"dose_partial(|C|,|g||dist)",all,,0.2139,,,
+"dose_partial(|C|,|g||dist)",cross,,0.1805,,,

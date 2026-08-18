@@ -248,31 +248,35 @@ the (mutant-vs-wild-type) conditional log-odds at position *i* when position *j*
 from the autoregressive likelihood and symmetrised over decoding orders — the partner-ablated analogue, for an
 inverse-folding model and *binding*, of the categorical Jacobian that Zhang et al. (2024) use to read
 coevolutionary couplings from a protein language model (that a second sequence-difference of the likelihood
-measures epistasis is Nambiar 2025's framing). StaB-ddG
-conjectures — without testing it — that inverse-folding likelihoods carry pairwise binding epistasis; we
-measure it. On the 562 SKEMPI double mutants whose two single mutations are *also* measured (so the
-experimental coupling `g = ΔΔG_ab − ΔΔG_a − ΔΔG_b` is defined; 61 complexes), the model coupling tracks the
-measured epistasis with the cycle-predicted sign, Spearman(C, g) = −0.15 [−0.24, −0.08]; and — the honest
-test, since neighbouring residues couple trivially — it *survives* controlling for inter-residue distance,
-partial ρ = −0.13 [−0.22, −0.06]. On the clean subset of 388 *cross-interface* pairs (residues on opposite
-sides of the interface, coupled only through binding, so no monomer subtraction is needed) the
-distance-controlled coupling is −0.14 [−0.26, −0.05], and the method-matched CPI(|C| beyond distance,
-|g| > 0.5) = +0.015 [+0.007, +0.024] survives dropping its three most influential complexes
-(+0.007 [+0.002, +0.015]). Partner ablation is what surfaces it: for same-side pairs the *un-ablated* coupling
+measures epistasis is Nambiar 2025's framing). StaB-ddG's
+Appendix&nbsp;B establishes, as a theoretical *expressivity* property, that such a folding-energy predictor
+*can* represent binding epistasis (unlike the additivity-enforcing predictors it compares against); whether
+the likelihood actually *does* is left untested — we measure it. On the 557 SKEMPI double mutants whose two single mutations are *also* measured (so the
+experimental coupling `g = ΔΔG_ab − ΔΔG_a − ΔΔG_b` is defined; 61 complexes, swapped-order duplicates merged),
+the model coupling tracks the measured epistasis with the cycle-predicted sign, Spearman(C, g) = −0.14
+[−0.23, −0.07]; and — the honest test, since neighbouring residues couple trivially — it *survives* controlling
+for inter-residue distance, partial ρ = −0.12 [−0.21, −0.05]. On the clean subset of 383 *cross-interface* pairs
+(residues on opposite sides of the interface, coupled only through binding, so no monomer subtraction is needed)
+the distance-controlled coupling is −0.13 [−0.25, −0.04], and the method-matched CPI(|C| beyond distance,
+|g| > 0.5) = +0.017 [+0.007, +0.029] survives dropping its three most influential complexes
+(+0.007 [+0.000, +0.016]). It is not a sign-skew artifact — the distance-controlled partial ρ is negative in
+*both* sign strata (g < 0 and g > 0), whereas a magnitude-plus-skew artifact would flip the g > 0 stratum
+positive. Partner ablation is what surfaces it: for same-side pairs the *un-ablated* coupling
 is null (partial ρ = +0.01 [−0.15, +0.15]) and only the ablated one carries signal (−0.12) — subtracting the
 intra-fold coupling exposes the binding coupling, exactly as for single mutations. Three positive controls
-hold: the coupling magnitude rises monotonically with the measured |g| (mean |C| = 0.10 → 0.18 → 0.29 across
-tertiles), the two decoding directions agree (Spearman = +0.60), and the signal is strongest *within* contacts
-(−0.17), not an artifact of the contact boundary. (The 14 complexes >800 residues dropped for memory do not
-bias this: their epistasis distribution is indistinguishable from the retained set — Kolmogorov–Smirnov
-p = 0.77 — and the effect is if anything *stronger* in larger retained complexes, so the exclusion is a
-conservative coverage limit, not a selection. → p3_coupling_biascheck.csv.) Two honesties bound the claim: the
-effect is *modest* — about half the single-site leverage's −0.30 — and it is carried more by coupling
-*magnitude* than *sign*: the model calls an individual pair's cooperative-vs-buffering sign only ≈53% of the
-time across *all* pairs, but this rises to ≈65–68% once the pair is a substantive interaction (|g| > 1 kcal/mol)
-or one the model itself scores in the top decile of couplings — the global figure is diluted by near-additive
-pairs whose sign is ill-defined. The direction is
-nonetheless unambiguous, and it is the first direct test of StaB-ddG's conjecture: what the model knows about
+hold: the coupling magnitude tracks the measured |g| even after controlling for distance (partial ρ = +0.21),
+the two decoding directions — read from *disjoint* order subsets — agree (Spearman = +0.61), and the signal is
+strongest *within* contacts (−0.16), not an artifact of the contact boundary. (The 14 complexes >800 residues
+dropped for memory are a coverage limit, not a detectable bias: on low power their epistasis distribution is not
+distinguishable from the retained set — Kolmogorov–Smirnov p = 0.63 — and the effect is if anything *stronger*
+in the larger retained complexes. → p3_coupling_biascheck.csv.) Two honesties bound the claim: the
+effect is *modest* — about half the single-site leverage's −0.30, and near SKEMPI's own reproducibility floor
+(the same physical pair measured twice differs by up to 1 kcal/mol) — and it is a signal about coupling
+*magnitude* more than *sign*. Per-pair sign accuracy is near chance (0.54) and does *not* beat the majority-class
+baseline on large-|g| or high-|C| subsets; only a small genuine sign channel survives a chance correction —
+controlling for |g| and distance, C still tracks the *direction* of epistasis at partial ρ = +0.08 [+0.01, +0.17],
+a few points of real sign information rather than the fifteen a naïve accuracy would suggest. The direction is
+nonetheless unambiguous, and it is the first direct empirical test of that expressivity property: what the model knows about
 binding reaches past single-residue effects to their epistatic couplings, and lives — at both derivative
 orders — in the structure of the distribution, not in the confidence. → p3_coupling.csv,
 FINDINGS_p3_coupling.md.
