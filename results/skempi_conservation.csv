@@ -1,0 +1,6 @@
+test,stat,lo,hi,p_gt0,n,n_complex
+CPI(conservation | geometry),0.00574,0.00159,0.01233,1.0,13160,343
+CPI(leverage -L | geometry),0.00718,0.00371,0.01261,1.0,13160,343
+CPI(leverage -L | geometry + conservation),0.00633,0.00337,0.0106,1.0,13160,343
+CPI(conservation | geometry + leverage),0.00421,0.00128,0.0087,1.0,13160,343
+CPI(leverage -L | geometry + conservation) drop-3,0.00398,0.00254,0.00549,1.0,12996,340

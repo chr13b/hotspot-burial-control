@@ -200,7 +200,14 @@ feature-class law precisely: it is about *position-level* scalars of P (recovery
 but the *binding-specific* increment requires the second pass. The direction is robust, not a residue-type
 artifact — Spearman(L, ΔΔG) is negative in 62 of 72 complexes with ≥15 measured mutations and in 18 of 19
 wild-type residue types (n-weighted −0.26), and holds at −0.25 on alanine substitutions alone (n=2,327), so L
-is not a side-chain-volume or truncation proxy. → w2_onepass_control.csv. To calibrate the effect
+is not a side-chain-volume or truncation proxy. → w2_onepass_control.csv. And the increment is not evolutionary
+conservation in disguise — the one control every *published* hotspot predictor uses: scoring each interface
+position's sequence conservation with a protein language model (ESM-2 negentropy) and adding it to the geometry
+control, leverage still adds (CPI **+0.0063 [+0.0034, +0.0106]**, surviving the drop of its 3 most influential
+complexes), while conservation — itself a real predictor here (+0.0057 beyond geometry) — adds beyond leverage
+in turn (+0.0042); the two are nearly orthogonal (Spearman = −0.14). So the mixed derivative adds beyond the
+**standard hotspot feature set** — geometry *and* conservation — not merely cheap geometry. →
+skempi_conservation.csv, FINDINGS_conservation.md. To calibrate the effect
 size: L is a *zero-shot* readout of a model never trained on binding, yet it adds **+0.030 interface AUROC**
 (0.700→0.730) beyond a *supervised* geometry+substitution baseline fit directly on the binding labels, and on
 its own reaches AUROC 0.647 — near that supervised baseline. → leverage_effect_size.csv. **This is not a

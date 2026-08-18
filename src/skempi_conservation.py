@@ -90,6 +90,17 @@ def stage_analyse(a):
     run("leverage -L | geometry", GEO, L_x)                                  # the paper's reference
     run("leverage -L | geometry + conservation", np.column_stack([GEO, cons_x]), L_x)  # THE headline
     run("conservation | geometry + leverage", np.column_stack([GEO, L_x]), cons_x)     # the reverse
+    # drop-3-influential robustness on the headline
+    Zh = np.column_stack([GEO, cons_x])
+    c, lo, hi, p, _, cvec = LD.cpi(y, g, Zh, L_x.copy(), np.random.default_rng(SEED))
+    contrib = pd.Series(cvec).groupby(pd.Series(g)).sum().sort_values(ascending=False)
+    drop = set(contrib.index[:3]); keep = ~pd.Series(g).isin(drop).to_numpy()
+    c2, lo2, hi2, p2, _, _ = LD.cpi(y[keep], g[keep], Zh[keep], L_x[keep].copy(), np.random.default_rng(SEED))
+    surv = "SURVIVES" if lo2 > 0 else "does not survive"
+    print(f"  [robustness] headline drop-3 {sorted(drop)}: {c2:+.5f} [{lo2:+.5f},{hi2:+.5f}]  {surv}")
+    rows.append(dict(test="CPI(leverage -L | geometry + conservation) drop-3", stat=round(c2, 5),
+                     lo=round(lo2, 5), hi=round(hi2, 5), p_gt0=round(p2, 3), n=int(keep.sum()),
+                     n_complex=int(pd.Series(g[keep]).nunique())))
     from scipy import stats as st
     print(f"  Spearman(conservation, -L) = {st.spearmanr(cons_x, L_x).correlation:+.3f} "
           f"(are they measuring the same thing?)")
