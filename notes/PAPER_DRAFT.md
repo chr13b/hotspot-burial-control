@@ -386,14 +386,17 @@ the ±0.115-nat margin — attenuation, not proven absence). → FINDINGS.md.
 
 The strongest form of this test uses ProBID-Net's own released voxel-CNN. Run on our fixture, its port is
 faithful (overall interface recovery 0.472, matching its reported non-hotspot number), and its published
-hotspot deficit *does* reproduce — concentrated, as one would expect, in comprehensively alanine-scanned
-complexes — the reproduction is carried by these 18 comprehensively-scanned complexes (five or more measured
-hotspots: −0.113 [−0.208, −0.022], p=0.007). But it attenuates under confound-matching: matching residue type
+hotspot deficit *does* reproduce — as a **dose-response in scan completeness**: the deficit deepens
+monotonically as more of a complex's interface is alanine-scanned (Spearman(n_hotspots, gap) = −0.20),
+reaching −0.113 [−0.208, −0.022] (p=0.007) in the comprehensively-scanned complexes (≥5 measured hotspots) —
+the pattern expected if the deficit is real and sparsely-scanned complexes merely lack the power to show it,
+not a cherry-picked subset. But it attenuates under confound-matching: matching residue type
 turns it positive (+0.120), matching burial gives −0.038, matching
 hydrophobicity −0.051, every interval spanning zero. ProBID-Net's deficit is thus a residue-composition and
 burial confound — its voxel-CNN has an unusually extreme amino-acid-type dependence (per-type recall spanning
-0.17 to 0.98), and hotspots are enriched in the types it recovers worst — not evidence of binding-specific
-blindness. → probid_gap_estimators.csv, composition_confound.csv. (We correct an earlier draft of our own
+0.17 to 0.98, a *global* property measured across all positions, not fit at hotspots, so matching residue type
+is a control rather than a post-hoc adjustment), and hotspots are enriched in the types it recovers worst — not
+evidence of binding-specific blindness. → probid_gap_estimators.csv, composition_confound.csv. (We correct an earlier draft of our own
 that mislabeled this as an opposite-sign, fixture-specific null; that reading was a complex-averaging
 artifact and is withdrawn.) We offer the matched-pair design itself as a reusable diagnostic protocol.
 
