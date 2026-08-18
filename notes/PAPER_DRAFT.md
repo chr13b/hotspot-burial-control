@@ -186,7 +186,9 @@ same diagonal §3 finds conditionally independent):
 
 On the identical 5,742-position sample §3's confidence test uses, the same ordering holds and sharpens —
 leverage +0.0092 [+0.0062, +0.0124], ~5× the scalar KL, while confidence stays conditionally independent (CI
-spans 0). → leverage_nugget_match.csv. At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
+spans 0). → leverage_nugget_match.csv. For an interpretable scale: on that same sample the zero-shot mixed
+derivative contributes **~71%** of what the partner-contact area (ΔSASA) — an explicit geometric measurement of
+the interface — contributes beyond burial and neighbour count (ΔSASA +0.0129; → nugget_cpi.csv). At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
 = **+0.059 [+0.046, +0.073]**, surviving controls from substitution similarity (BLOSUM, volume, hydropathy) and
 from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. Critically, the second pass
 earns its keep against the *standard* zero-shot readout — the one-pass complex log-odds
