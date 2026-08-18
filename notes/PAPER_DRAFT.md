@@ -245,10 +245,10 @@ leverage_noise_ladder.csv.
 the single-mutant leverage is the model's first mixed derivative (partner ablation × one mutation), the
 natural next object is the second: the partner-ablated pairwise coupling `C_ij(a,b)` — the finite change in
 the (mutant-vs-wild-type) conditional log-odds at position *i* when position *j* is set to its mutant, read
-from the autoregressive likelihood and symmetrised over decoding orders. (That a second sequence-difference
-of the likelihood measures epistasis is Nambiar 2025's framing.<!-- pre-submission TODO: also credit the
-categorical-Jacobian method (Zhang & Ovchinnikov) once its DOI is verified — currently UNRESOLVED, checker
-returned TITLE-UNVERIFIED and web-search budget is exhausted; do not cite from memory (rule 5). -->) StaB-ddG
+from the autoregressive likelihood and symmetrised over decoding orders — the partner-ablated analogue, for an
+inverse-folding model and *binding*, of the categorical Jacobian that Zhang et al. (2024) use to read
+coevolutionary couplings from a protein language model (that a second sequence-difference of the likelihood
+measures epistasis is Nambiar 2025's framing). StaB-ddG
 conjectures — without testing it — that inverse-folding likelihoods carry pairwise binding epistasis; we
 measure it. On the 562 SKEMPI double mutants whose two single mutations are *also* measured (so the
 experimental coupling `g = ΔΔG_ab − ΔΔG_a − ΔΔG_b` is defined; 61 complexes), the model coupling tracks the
@@ -263,9 +263,15 @@ is null (partial ρ = +0.01 [−0.15, +0.15]) and only the ablated one carries s
 intra-fold coupling exposes the binding coupling, exactly as for single mutations. Three positive controls
 hold: the coupling magnitude rises monotonically with the measured |g| (mean |C| = 0.10 → 0.18 → 0.29 across
 tertiles), the two decoding directions agree (Spearman = +0.60), and the signal is strongest *within* contacts
-(−0.17), not an artifact of the contact boundary. Two honesties bound the claim: the effect is *modest* — about
-half the single-site leverage's −0.30 — and it is a signal about coupling *magnitude*, not sign (the model
-calls the cooperative-vs-buffering sign of an individual pair only ≈53% of the time). The direction is
+(−0.17), not an artifact of the contact boundary. (The 14 complexes >800 residues dropped for memory do not
+bias this: their epistasis distribution is indistinguishable from the retained set — Kolmogorov–Smirnov
+p = 0.77 — and the effect is if anything *stronger* in larger retained complexes, so the exclusion is a
+conservative coverage limit, not a selection. → p3_coupling_biascheck.csv.) Two honesties bound the claim: the
+effect is *modest* — about half the single-site leverage's −0.30 — and it is carried more by coupling
+*magnitude* than *sign*: the model calls an individual pair's cooperative-vs-buffering sign only ≈53% of the
+time across *all* pairs, but this rises to ≈65–68% once the pair is a substantive interaction (|g| > 1 kcal/mol)
+or one the model itself scores in the top decile of couplings — the global figure is diluted by near-additive
+pairs whose sign is ill-defined. The direction is
 nonetheless unambiguous, and it is the first direct test of StaB-ddG's conjecture: what the model knows about
 binding reaches past single-residue effects to their epistatic couplings, and lives — at both derivative
 orders — in the structure of the distribution, not in the confidence. → p3_coupling.csv,

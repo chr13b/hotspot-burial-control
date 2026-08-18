@@ -4,7 +4,10 @@
 likelihoods carry pairwise *binding epistasis*, not just single-mutant effects. We measure it directly:
 the model's SECOND mixed derivative (partner-ablated pairwise coupling `C_ij`) vs the experimental
 epistasis energy `g_ij = ΔΔG_ab − ΔΔG_a − ΔΔG_b` from SKEMPI double mutants whose two singles are also
-measured. Second-difference = epistasis credited to Nambiar 2025 (bioRxiv 10.1101/2025.09.14.676130).
+measured. The operator is the partner-ablated analogue (for inverse folding and *binding*) of the
+**categorical Jacobian** — Zhang, Wayment-Steele, …, Ovchinnikov 2024, bioRxiv 10.1101/2024.01.30.577970
+(VERIFIED via OpenAlex+bioRxiv; used there to read coevolutionary couplings from a protein LANGUAGE model).
+That a second sequence-difference measures epistasis is Nambiar 2025's framing (bioRxiv 10.1101/2025.09.14.676130).
 
 ## Measurement
 Conditional (autoregressive, teacher-forced) ProteinMPNN v_48_020. `C_ij(a,b)` = shift in the
@@ -65,10 +68,21 @@ the single-mutant leverage story.
 ## Honest limitations
  * **Modest.** partial-Spearman ≈ −0.14 is about **half** the single-mutant leverage's −0.30. Pairwise
    epistasis is a smaller, subtler object than single-site ΔΔG and is predicted less well.
- * **Sign of individual pairs is weak.** sign(−C_lev)=sign(g) only ~0.53 (barely above chance): the model
-   ranks coupling *magnitude* (CPI, dose-response) far better than it calls the *sign* (cooperative vs
-   buffering) of any single pair. The rank correlation is carried by magnitude, not per-pair sign.
- * **Coverage.** 14 large complexes (28 triangles) dropped by the memory guard — a lower bound.
+ * **Sign of individual pairs is weak globally, but RECOVERABLE on substantive interactions**
+   (p3_coupling_biascheck.csv). sign(−C_lev)=sign(g) is only 0.546 [0.504,0.588] across all 562 pairs —
+   because most pairs are near-additive and their "true sign" is itself noise. Condition on substance and it
+   rises: |g|>1.0 kcal/mol → 0.635 [0.552,0.713]; the model's own top-decile couplings (|C|>p90) → 0.684
+   [0.548,0.801]; both strong (|g|>1 and |C|>median, n=100) → 0.680 [0.579,0.770]; |g|-weighted → 0.590. So
+   the model *does* call the sign of real epistatic interactions ~2/3 of the time; the 0.53 is near-additive
+   dilution, not blindness. (The |C|-conditioned figure is the operational one — it conditions only on the
+   model's output, so it is a deployable precision-at-confidence, not an outcome-selected number.)
+ * **Coverage, not bias** (p3_coupling_biascheck.csv). The 14 complexes / 28 triangles dropped by the
+   memory guard (n>800 res) are a lower bound, and — checked — NOT a biased slice: their experimental
+   epistasis distribution is indistinguishable from the retained set (KS |g| p=0.774, Mann-Whitney p=0.545;
+   mean|g| 0.879 dropped vs 0.834 retained), and within the retained set the effect is *stronger* in larger
+   complexes (partial ρ: small n≤372 −0.086, large 372<n≤800 −0.202), so excluding the largest complexes is
+   conservative (biases toward zero), not inflationary. The cut is on complex SIZE (a pre-outcome structural
+   property), so it cannot select on the outcome.
  * **28 cross-interface complexes** for the clustered bootstrap (moderate, not large).
 
 ## Bottom line
