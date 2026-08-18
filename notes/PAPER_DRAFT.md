@@ -478,11 +478,13 @@ admission of our thesis, to which we give a measurement and a principled improve
 positions for hotspot triage at a matched budget, IF **confidence is at chance** (position-level AUROC 0.51;
 capture@3 0.064 vs 0.089 random, overlapping intervals) — which *justifies* freezing the interface rather than
 trusting IF confidence there. But the model's binding knowledge *is* actionable if read from the right place:
-on crystal backbones the **mixed derivative is the best single ranker** — leverage |L| reaches position-level
-AUROC **0.694**, above free ΔSASA (0.664; paired +0.030 [−0.001, +0.061], a strong trend) and burial (0.667),
-and the alanine leverage −L(→Ala) captures the most hotspots (capture@3 0.284 vs ΔSASA 0.238 vs confidence
-0.064). So the corrected practical rule is *rank interface positions by the mixed derivative, not the
-confidence* — a training-free readout that edges free geometry — with the dose-law caveat (§4) that this holds
+on crystal backbones, **adding the mixed derivative to geometry sharpens hotspot ranking**. Leverage |L| on its
+own reaches position-level AUROC 0.694 — on par with free ΔSASA (0.664; paired +0.030 [−0.001, +0.061], a trend,
+CI touching zero) — but the decisive, actionable statement is the *combination*: adding |L| to the standard
+geometric feature set (burial + neighbours + ΔSASA) lifts hotspot AUROC from 0.704 to **0.717 (paired +0.0125
+[+0.0007, +0.0246], P(>0)=0.98)**, a CI that excludes zero. So the corrected practical rule is *rank interface
+positions by geometry **plus** the mixed derivative, not the confidence* — a training-free readout that adds to
+the standard feature set — with the dose-law caveat (§4) that this holds
 on accurate backbones and degrades with reconstruction error. → leverage_triage.csv, bindcraft_triage.csv. Finally, a wave of
 conditioning-aware inverse-folding methods (AlphaFold-DB debiasing / DeSAE, target-conditioned inverse
 folding, UMA-Inverse) *presupposes* the conditioning-set problem; we *measure* it and show the standard

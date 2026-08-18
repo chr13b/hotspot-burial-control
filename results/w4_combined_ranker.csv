@@ -1,0 +1,4 @@
+ranker,auroc,delta_vs_geom,lo,hi,p_gt0
+geometry (burial+nbr+dSASA),0.7039,0.0,,,
+geometry + |L|_rms,0.7165,0.0125,0.0007,0.0246,0.98
+geometry + (-L_ala),0.7229,0.019,-0.0055,0.0406,0.941
