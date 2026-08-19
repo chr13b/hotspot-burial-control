@@ -1,4 +1,4 @@
-# Confidence is not competence: inverse-folding models know binding in the mixed derivative, not the confidence
+# Confidence is not competence: inverse-folding models know binding in the mixed derivative
 
 *Working prose draft, 2026-08-14. Expands notes/PAPER_OUTLINE.md (Spine B). Every quantitative claim carries
 a `→ file.csv` trace to a committed result. Sections marked ⟨PENDING …⟩ await a running analysis.*
@@ -68,9 +68,10 @@ response to ablating the partner (the BA-Cycle operator of Jiao et al. 2024). Co
 *by construction* — an identical bound distribution yields identical confidence but arbitrary leverage; we
 verify this is non-vacuous (confidence-matched interface positions retain ≈30% of the leverage spread). This
 yields a **feature-class law**: on natural complexes a scalar read off the bound distribution *alone* recovers
-little beyond cheap geometry (confidence is conditionally independent, CPI +0.0002; one-pass negentropy adds a
-marginal +0.0008), whereas the *two-pass* mixed derivative does not reduce — per interface position it adds
-+0.0048, ~5× the best scalar (CI disjoint from every scalar's), and on SKEMPI at the mutation level CPI +0.059
+little beyond cheap geometry — confidence, negentropy, and the scalar KL all sit **at or below the CPI
+estimator's calibrated false-positive floor** (+0.0007, the score of a placebo feature that is a deterministic
+function of geometry) — whereas the *two-pass* mixed derivative does not reduce: per interface position it adds
++0.0048, ~7× the floor (CI disjoint from every scalar's, robust to a nonlinear geometry control), and on SKEMPI at the mutation level CPI +0.059
 with Spearman −0.30 against experimental ΔΔG, robustly. The model knows binding on natural complexes; the knowledge
 was invisible to every scalar readout the field has used. → leverage_decomposition.csv, nugget_cpi.csv.
 
@@ -186,9 +187,11 @@ same diagonal §3 finds conditionally independent):
 
 | feature (all functionals of the same distribution) | CPI beyond geometry |
 |---|---|
-| **confidence** — the diagonal | **+0.0002 [−0.0003, +0.0006]** — conditionally independent (CI spans 0) |
-| scalar KL — a contraction of L | +0.0009 [+0.0003, +0.0016] |
-| **leverage L** — the mixed derivative | **+0.0048 [+0.0033, +0.0065]** — ~5× the best scalar (KL), where confidence adds nothing; survives dropping the 3 most influential complexes |
+| *placebo floor* — a deterministic function of geometry | *+0.0007* — the estimator's false-positive floor (pure noise ≈0) |
+| **confidence** — the diagonal | **+0.0002 [−0.0003, +0.0006]** — below the floor; conditionally independent |
+| negentropy — one-pass | +0.0009 [+0.0003, +0.0015] — at the floor |
+| scalar KL — a contraction of L | +0.0009 [+0.0003, +0.0016] — at the floor |
+| **leverage L** — the mixed derivative | **+0.0048 [+0.0033, +0.0065]** — ~7× the floor; CI disjoint from every scalar; robust to a nonlinear geometry control (+0.0047); survives dropping the 3 most influential complexes |
 
 On the identical 5,742-position sample §3's confidence test uses, the same ordering holds and sharpens —
 leverage +0.0092 [+0.0062, +0.0124], ~5× the scalar KL, while confidence stays conditionally independent (CI
@@ -202,7 +205,12 @@ earns its keep against the *standard* zero-shot readout — the one-pass complex
 (partial Spearman = **−0.147 [−0.190, −0.108]**, P<0=1.0); and the reverse holds too — the one-pass readout
 retains signal after controlling for leverage (−0.094 [−0.145, −0.054]). So the two passes are *not* redundant:
 each carries binding signal the other misses, and in particular the partner-ablation pass is not subsumed by
-the standard one-pass readout (we do not claim one dominates — the paired difference is not significant). This scopes the
+the standard one-pass readout (we do not claim one dominates — the paired difference is not significant). The
+two-pass *structure* is what carries the signal, and this is its cleanest statement: the monomer pass on its
+own is inert (Spearman(monomer log-odds, ΔΔG) = +0.02), and the one-pass and full leverage are genuinely
+distinct quantities (correlation +0.54, so the monomer term removes ~70% of the one-pass variance) — leverage
+works precisely because the second pass *corrects* the first for the fold-stability constraint that the
+one-pass score conflates with binding. This scopes the
 feature-class law precisely: it is about *position-level* scalars of P (recovery, confidence, entropy); a
 *per-substitution* one-pass readout legitimately carries constraint and substitution-similarity information,
 but the *binding-specific* increment requires the second pass. The direction is robust, not a residue-type
@@ -236,12 +244,16 @@ off an inverse-folding model as a functional `φ(P)` of the bound-conditioned di
 *alone* — sequence recovery (an argmax match), confidence (`log P(native)`), or entropy/perplexity. Binding
 leverage is a functional of the *pair* `(P, Q = p(·|X_monomer))`, and no functional of `P` alone can express it
 wherever `P` does not determine `Q` — which the distribution-matched pairs above show is generic. Empirically
-the tiers are distinct. Confidence — a scalar of the bound distribution alone — is conditionally independent of
-hotspot status (CPI **+0.0002**, CI spanning zero); the one-pass negentropy adds a real but marginal
-**+0.0008** (0.7% of the available log-loss); the *two-pass* mixed derivative L(→Ala) adds **+0.0048**, its CI
-disjoint from every scalar's; and even its own P-weighted contraction — the KL detector, algebraically
-`E_P[L] + const` and hence itself *two-pass* — recovers only **+0.0009**, so collapsing the leverage vector to
-any scalar discards ~80% of its conditional signal. (That confidence and sequence recovery track
+the tiers are distinct — and we read them against a *calibrated* floor. The CPI estimator has a non-zero
+false-positive floor: a placebo feature that is a deterministic function of the geometry controls, carrying no
+information beyond them, still scores **+0.0007** (a duplicate of ΔSASA; pure noise correctly scores ≈0). →
+w_placebo_ladder.csv. Against that floor the scalars of the bound distribution are indistinguishable from
+noise-beyond-geometry: confidence **+0.0002** (CI spans zero), one-pass negentropy **+0.0009**, and even
+leverage's own P-weighted contraction — the KL detector, algebraically `E_P[L] + const` — **+0.0009**, all at or
+below the floor. Only the *two-pass* mixed derivative L(→Ala) clears it decisively: **+0.0048**, ~7× the floor,
+CI disjoint from every scalar's, robust to a *nonlinear* (quadratic or cubic) geometry control (+0.0047), and
+surviving the drop of its 3 most influential complexes. So collapsing the leverage vector to any scalar of the
+bound distribution discards **essentially all** of its conditional signal. (That confidence and sequence recovery track
 burial is itself long known — Dauparas et al. 2022, Hsu et al. 2022; what is new here is the *formal*
 feature-class law, the conditional-independence control, and that the mixed derivative alone escapes it.) So any method that ranks interface positions by
 a scalar summary of the bound distribution is, on natural complexes, a geometry detector in disguise. This is

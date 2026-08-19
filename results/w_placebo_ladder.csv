@@ -1,0 +1,12 @@
+kind,feature,cpi,lo,hi,p_gt0
+placebo,duplicate of dSASA,0.00072,0.00034,0.00112,1.0
+placebo,duplicate of nbr,0.00023,8e-05,0.00042,0.999
+placebo,dSASA^2,0.00052,-5e-05,0.00101,0.968
+placebo,nbr * dSASA,-0.033,-0.10944,0.00571,0.37
+placebo,pure noise,-2e-05,-6e-05,2e-05,0.156
+real,confidence log p(native),0.00019,-0.00024,0.00061,0.815
+real,negentropy of P,0.00087,0.00025,0.00152,0.998
+real,scalar KL,0.00098,0.00033,0.0017,0.998
+real,leverage -L(->Ala),0.00485,0.00337,0.00647,1.0
+robust,leverage -L | QUADRATIC geometry,0.00466,0.00327,0.00623,1.0
+robust,leverage -L | CUBIC geometry,0.00463,0.00321,0.00621,1.0
