@@ -17,9 +17,20 @@ None of these is a science problem. All four are fixable by **reframing what we 
 
 ## The reframe (W1) — three moves
 
-**Move 1: retire "theorem", sell the *measured non-vacuity*.**
-Call it an **identifiability / no-go result**, and immediately show it is *not* definitional by measuring how
-much is left after the "trivial" part is removed:
+**Stance (the guiding principle): honest AND confident, never timid.** We are not framing-afraid. We steer the
+reviewer's attention to the strongest true claims and present them boldly; the honest hedges on the modest bits
+(epistasis sign) are *credibility signals* that make the bold claims land harder, not apologies. Confidence and
+honesty are not in tension — the most confident framing is the one that survives scrutiny, so we arm every claim
+with its measurement and lead with it. We control the light the paper is seen in; we do not dim it.
+
+**Move 1: keep the formal result, ARM it, present it confidently.**
+Do not hide the identifiability result out of fear a reviewer calls it "definitional" — that fear is the timid
+move. The confident move is to state it precisely as a **proof** ("confidence is blind to binding by
+construction") and inseparably pair it with the measurement that makes it non-trivial, so the "so what, it's a
+definition" attack is dead on arrival: we *measured* that it is not a definition. (Prefer "we prove" over the
+bare label "theorem" — not to soften, but because "we prove X, and here is the measurement showing X bites" is
+strictly more forceful than announcing a theorem and leaving it bare.) Show it is *not* definitional by
+measuring how much is left after the "trivial" part is removed:
 - The sharp, non-trivial statement (currently missing, and it is the whole point): **X_monomer is a
   deterministic function of X_complex, so leverage L *is* computable from the structure — it is simply not
   computable from P.** The field's scalar readouts factor through a lossy statistic of the same distribution;

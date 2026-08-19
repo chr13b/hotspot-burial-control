@@ -1,4 +1,4 @@
-# Confidence is not competence: interface-hotspot "blindness" in inverse folding is a conditioning-set artifact — and what the model knows about binding lives in its distribution, not its confidence
+# Confidence is not competence: inverse-folding models know binding in the mixed derivative, not the confidence
 
 *Working prose draft, 2026-08-14. Expands notes/PAPER_OUTLINE.md (Spine B). Every quantitative claim carries
 a `→ file.csv` trace to a committed result. Sections marked ⟨PENDING …⟩ await a running analysis.*
@@ -9,30 +9,34 @@ a `→ file.csv` trace to a committed result. Sections marked ⟨PENDING …⟩ 
 
 Staged binder design — generate a backbone, then inverse-fold a sequence — is believed to stumble at
 protein–protein interface *hotspots*, and a prominent report (ProBID-Net) quantifies this as inverse-folding
-recovery of 0.334 at hotspots versus 0.472 elsewhere, attributed to dynamics. We show the phenomenon is real
-but misread, and give the reason as a theorem. **Confidence and competence are two orthogonal derivatives of
-the same inverse-folding likelihood.** A model's per-residue *confidence* is the *diagonal* term — a scalar
-summary of one conditioning — and estimates fold-stability constraint; a residue's binding *leverage* is the
-*mixed second derivative*, the response to ablating the binding partner, `[log p(a|complex)−log p(wt|complex)]
-− [log p(a|monomer)−log p(wt|monomer)]`, which estimates the binding effect. Two positions can share an
-identical bound distribution — hence identical confidence — yet differ in leverage, so **confidence is blind
-to binding by construction, not by failure** (we verify: confidence-matched positions retain 30% of the
-leverage spread). Every readout the field has used — recovery, confidence, the complex-vs-monomer KL — is a
-*scalar* summary, and on natural complexes such summaries reduce to cheap geometry: across five architectures
-confidence ranks interface hotspots at chance and adds *zero* beyond geometry (conditional predictive impact
-0.000), and the KL detector is a *learned frustratometer* recapitulating partner-contact area. **The mixed
-derivative does not reduce to geometry.** On our main fixture (SKEMPI, natural complexes) it adds substantial
-binding information beyond geometry — mutation-level CPI +0.059, Spearman with experimental ΔΔG −0.30 —
-robustly; and per interface position, where confidence is conditionally independent (CPI +0.0002), the mixed derivative adds ~5× the best scalar. This is a *feature-class law*: scalar
-summaries are geometry; the mixed derivative is competence. It unifies the field's observations as corollaries
-— the published deficit is a burial confound (pre-registered matched design, five architectures plus
-ProBID-Net's own model); the blindness generalises from binding to *catalytic* residues (structure-conditioned
-confidence blind while sequence conservation predicts, triple-controlled); and the recipe generalises beyond
-inverse folding: to read un-trained function from any conditional generative model, ablate the conditioner and
-read the mixed derivative, not the confidence. The leverage operator itself is BA-Cycle (Jiao et al. 2024); our
-contribution is the decomposition, the blindness theorem, the (to our knowledge) first beyond-geometry control, and the
-feature-class law. Practically: rank interface positions by partner geometry, not confidence (below random),
-and read binding from the mixed derivative, not the scalar summaries.
+recovery of 0.334 at hotspots versus 0.472 elsewhere, attributed to dynamics. The phenomenon is real but
+misread: the model's binding knowledge was being read from the wrong place. **Confidence and competence are two
+different derivatives of the same inverse-folding likelihood.** A residue's *confidence* is the *diagonal* term
+— a scalar summary of the bound-conditioned distribution — and measures fold-stability constraint; its binding
+*leverage* is the *mixed second derivative*, the response to ablating the binding partner,
+`[log p(a|complex)−log p(wt|complex)] − [log p(a|monomer)−log p(wt|monomer)]`, and measures the binding effect.
+Because the partner-ablated structure is *determined* by the complex, leverage is computable from the structure
+but **not** from the bound distribution alone — so every scalar the field reads off the model (recovery,
+confidence, the complex-vs-monomer KL) is a lossy projection, blind to binding **by construction, not by
+failure**. This is no vacuous identity: holding the bound distribution fixed, 30–73% of the leverage spread
+survives (two model families). And the consequence is measurable and large. On our main fixture (SKEMPI natural
+complexes) confidence ranks hotspots at chance across five architectures and adds nothing beyond geometry
+(conditional predictive impact 0.000), while the mixed derivative adds binding information **beyond geometry,
+beyond the standard one-pass log-odds readout, beyond a second inverse-folding model family (ESM-IF1), and
+beyond evolutionary conservation** — the full feature set of published hotspot predictors (mutation-level CPI
++0.059; Spearman with experimental ΔΔG −0.30; per-position ~5× the best scalar, where confidence is
+conditionally independent). Three consequences follow. It is **actionable**: adding the mixed derivative to
+geometry is the best hotspot ranker (+0.013 AUROC, CI excludes zero). It is a **dose law** of backbone accuracy
+— the signal survives ≤0.5 Å of error and collapses by ~1 Å — a prediction that every method built on the same
+derivative (BA-Cycle, RedNet, StaB-ddG) inherits on predicted backbones. And it reaches the **second** mixed
+derivative: the model's partner-ablated pairwise couplings predict experimental binding *epistasis*. The
+published deficit is then a corollary — a burial confound, on five architectures plus ProBID-Net's own released
+model — and the blindness generalizes from binding to *catalytic* residues (confidence blind, sequence
+conservation predicts). The leverage operator is BA-Cycle (Jiao et al. 2024); our contribution is the
+decomposition, the identifiability result and its *measured* non-vacuity, the first beyond-geometry (and
+beyond-conservation) control on any inverse-folding binding signal, and the feature-class law. The recipe is
+general: to read un-trained function from a conditional generative model, ablate the conditioner and read the
+mixed derivative — not the confidence.
 
 ## 1. Introduction
 
