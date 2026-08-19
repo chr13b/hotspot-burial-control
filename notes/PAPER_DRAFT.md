@@ -288,8 +288,11 @@ complexes, not a frozen-model readout for arbitrary predicted backbones — whic
 backbone→sequence pipeline misses hotspots (the predicted backbone's interface error destroys the very signal
 that carries binding), and why binding-aware decoders retrain rather than read a frozen model. Because the collapse is driven by the
 *backbone the derivative is read from* — not by anything specific to ProteinMPNN — the same cliff is predicted
-for any method reading this mixed derivative off a generated backbone (BA-Cycle, RedNet, StaB-ddG all do). ⟨We
-further confirm the shape replicates under a second model family, ESM-IF1: RUNNING.⟩ →
+for any method reading this mixed derivative off a generated backbone (BA-Cycle, RedNet, StaB-ddG all do) —
+the sensitivity is a property of the *input backbone*, shared by any reader of the derivative. An empirical
+dose-ladder under a second model family (ESM-IF1) is GPU-scale — ESM-IF1's leverage reproduces at the crystal
+backbone, but a clean CPI dose curve needs ~100+ complexes at ~15× ProteinMPNN's cost — and is a direct
+follow-up (script: `leverage_noise_ladder_esmif.py`). →
 leverage_noise_ladder.csv, leverage_noise_ladder_075full.csv.
 
 **And the knowledge extends past single effects to their *couplings* — the second mixed derivative.** If
