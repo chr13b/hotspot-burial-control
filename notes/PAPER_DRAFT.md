@@ -217,13 +217,14 @@ but the *binding-specific* increment requires the second pass. The direction is 
 artifact — Spearman(L, ΔΔG) is negative in 62 of 72 complexes with ≥15 measured mutations and in 18 of 19
 wild-type residue types (n-weighted −0.26), and holds at −0.25 on alanine substitutions alone (n=2,327), so L
 is not a side-chain-volume or truncation proxy. → w2_onepass_control.csv. And the increment is not evolutionary
-conservation in disguise — the one control every *published* hotspot predictor uses: scoring each interface
-position's sequence conservation with a protein language model (ESM-2 negentropy) and adding it to the geometry
-control (on the same z-scored convention as the table above), leverage's contribution is *undiminished* —
-CPI(L | geometry) +0.0048 → CPI(L | geometry + conservation) **+0.0051 [+0.0031, +0.0076]**, surviving the drop
-of its 3 most influential complexes (+0.0036) and with no single complex dominating (the top three contribute
-27% of the estimate) — while conservation, itself a real predictor here (+0.0034 beyond geometry), adds beyond
-leverage in turn (+0.0041); the two are nearly orthogonal (Spearman = −0.14). And the *actionable* payoff
+conservation in disguise — the one control every *published* hotspot predictor uses. We score each interface
+position's sequence conservation with the **field-standard masked-marginal** ESM-2 estimator (mask the
+position, read the model's distribution) — itself the *stronger* baseline, adding **+0.0064 [+0.0028, +0.0113]**
+beyond geometry — and leverage's contribution is *undiminished*: CPI(L | geometry) +0.0048 → CPI(L | geometry +
+conservation) **+0.0059 [+0.0031, +0.0097]** (surviving the drop of its 3 most influential complexes, +0.0041,
+and with the top three complexes contributing only 27% of the estimate). The simpler unmasked estimator agrees
+(+0.0051; the two conservation estimators correlate at +0.71), and conservation adds beyond leverage in turn
+(+0.0083) — the two are nearly orthogonal (Spearman −0.08 masked, −0.14 unmasked). And the *actionable* payoff
 sharpens against this stronger baseline: adding the mixed derivative on top of geometry **and** conservation
 lifts hotspot AUROC by **+0.016 [+0.004, +0.029]** (both the |L|_rms and −L(→Ala) variants significant),
 larger than against geometry alone. So the mixed derivative adds beyond the **standard hotspot feature set** —

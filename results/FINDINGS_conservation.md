@@ -41,6 +41,16 @@ geometry+conservation 0.714 → **+|L|_rms 0.731 (Δ +0.0161 [+0.0042, +0.0290],
 a larger, more robust effect than against bare geometry (§8's +0.0125), and the direct answer to "you defended
 against a baseline the field does not use."
 
+**Field-standard MASKED-marginal estimator (#3 — the bulletproofing).** The unmasked negentropy above is a
+real but *attenuated* conservation proxy; the field standard is the masked marginal (mask the position, read
+the model's distribution). We ran it at all 13,160 interface positions (`src/skempi_conservation_masked.py`,
+`results/skempi_conservation_masked_cpi.csv`). It is the *stronger* baseline — CPI(masked | geometry) =
+**+0.00635 [+0.00281, +0.01132]** (vs unmasked +0.0034) — and **leverage still survives it, undiminished**:
+CPI(L | geometry + masked-conservation) = **+0.00585 [+0.00314, +0.00965]**, drop-3 **+0.00408 [+0.0028,
++0.0055] SURVIVES**. Masked and unmasked correlate at Spearman +0.71 (confirming the unmasked was a genuine
+proxy); masked-conservation and −L are Spearman −0.08 (even more orthogonal). This closes the sharpest
+available attack on the conservation control.
+
 **Robustness of the short-chain exclusion** (is it a cherry-picked cutoff, or does it distort?). The headline
 CPI(L | geometry+conservation) is *flat across the threshold*: chains ≥0 (include the outlier peptides)
 +0.0064, ≥10 +0.0052, ≥15 +0.0056, ≥20 +0.0058, ≥30 +0.0058 — all CI>0. So the conclusion is independent of
