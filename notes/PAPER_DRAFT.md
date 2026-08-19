@@ -18,9 +18,11 @@ different derivatives of the same inverse-folding likelihood.** A residue's *con
 Because the partner-ablated structure is *determined* by the complex, leverage is computable from the structure
 but **not** from the bound distribution alone — so every scalar the field reads off the model (recovery,
 confidence, the complex-vs-monomer KL) is a lossy projection, blind to binding **by construction, not by
-failure**. This is no vacuous identity: holding the bound distribution fixed, 30–73% of the leverage spread
-survives (two model families). And the consequence is measurable and large. On our main fixture (SKEMPI natural
-complexes) confidence ranks hotspots at chance across five architectures and adds nothing beyond geometry
+failure**. This is no vacuous identity: holding the bound distribution fixed, much of the leverage spread
+survives — for the headline model, matched positions are barely closer in leverage than random pairs (measured
+on two model families). ⟨PENDING precise fraction: recompute median|ΔL| matched vs random-pair, restate as the
+verified %.⟩ And the consequence is measurable and large. On our main fixture (SKEMPI natural complexes)
+confidence ranks hotspots at or barely above chance across five architectures and adds nothing beyond geometry
 (conditional predictive impact 0.000), while the mixed derivative adds binding information **beyond geometry,
 beyond the standard one-pass log-odds readout, beyond a second inverse-folding model family (ESM-IF1), and
 beyond evolutionary conservation** — the full feature set of published hotspot predictors (mutation-level CPI
@@ -197,8 +199,10 @@ the interface — contributes beyond burial and neighbour count (ΔSASA +0.0129;
 from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. Critically, the second pass
 earns its keep against the *standard* zero-shot readout — the one-pass complex log-odds
 `logP(mut|complex) − logP(wt|complex)`: controlling for it *and* geometry, leverage still tracks ΔΔG
-(partial Spearman = **−0.147 [−0.190, −0.108]**, P<0=1.0), while the reverse partial is only −0.094, so the
-partner-ablation pass carries ~1.6× the unique binding signal of the one-pass score. This scopes the
+(partial Spearman = **−0.147 [−0.190, −0.108]**, P<0=1.0); and the reverse holds too — the one-pass readout
+retains signal after controlling for leverage (−0.094 [−0.145, −0.054]). So the two passes are *not* redundant:
+each carries binding signal the other misses, and in particular the partner-ablation pass is not subsumed by
+the standard one-pass readout (we do not claim one dominates — the paired difference is not significant). This scopes the
 feature-class law precisely: it is about *position-level* scalars of P (recovery, confidence, entropy); a
 *per-substitution* one-pass readout legitimately carries constraint and substitution-similarity information,
 but the *binding-specific* increment requires the second pass. The direction is robust, not a residue-type
@@ -207,11 +211,15 @@ wild-type residue types (n-weighted −0.26), and holds at −0.25 on alanine su
 is not a side-chain-volume or truncation proxy. → w2_onepass_control.csv. And the increment is not evolutionary
 conservation in disguise — the one control every *published* hotspot predictor uses: scoring each interface
 position's sequence conservation with a protein language model (ESM-2 negentropy) and adding it to the geometry
-control, leverage still adds (CPI **+0.0063 [+0.0034, +0.0106]**, surviving the drop of its 3 most influential
-complexes), while conservation — itself a real predictor here (+0.0057 beyond geometry) — adds beyond leverage
-in turn (+0.0042); the two are nearly orthogonal (Spearman = −0.14). So the mixed derivative adds beyond the
-**standard hotspot feature set** — geometry *and* conservation — not merely cheap geometry. →
-skempi_conservation.csv, FINDINGS_conservation.md. To calibrate the effect
+control (on the same z-scored convention as the table above), leverage's contribution is *undiminished* —
+CPI(L | geometry) +0.0048 → CPI(L | geometry + conservation) **+0.0051 [+0.0031, +0.0076]**, surviving the drop
+of its 3 most influential complexes (+0.0036) and with no single complex dominating (the top three contribute
+27% of the estimate) — while conservation, itself a real predictor here (+0.0034 beyond geometry), adds beyond
+leverage in turn (+0.0041); the two are nearly orthogonal (Spearman = −0.14). And the *actionable* payoff
+sharpens against this stronger baseline: adding the mixed derivative on top of geometry **and** conservation
+lifts hotspot AUROC by **+0.016 [+0.004, +0.029]** (both the |L|_rms and −L(→Ala) variants significant),
+larger than against geometry alone. So the mixed derivative adds beyond the **standard hotspot feature set** —
+geometry *and* conservation — not merely cheap geometry. → skempi_conservation.csv, FINDINGS_conservation.md. To calibrate the effect
 size: L is a *zero-shot* readout of a model never trained on binding, yet it adds **+0.030 interface AUROC**
 (0.700→0.730) beyond a *supervised* geometry+substitution baseline fit directly on the binding labels, and on
 its own reaches AUROC 0.647 — near that supervised baseline. → leverage_effect_size.csv. **This is not a

@@ -1,6 +1,8 @@
 test,stat,lo,hi,p_gt0,n,n_complex
-CPI(conservation | geometry),0.00574,0.00159,0.01233,1.0,13160,343
-CPI(leverage -L | geometry),0.00718,0.00371,0.01261,1.0,13160,343
-CPI(leverage -L | geometry + conservation),0.00633,0.00337,0.0106,1.0,13160,343
-CPI(conservation | geometry + leverage),0.00421,0.00128,0.0087,1.0,13160,343
-CPI(leverage -L | geometry + conservation) drop-3,0.00398,0.00254,0.00549,1.0,12996,340
+CPI(conservation | geometry),0.00338,0.00177,0.00514,1.0,13160,343
+CPI(leverage -L | geometry),0.00484,0.00328,0.00657,1.0,13160,343
+CPI(leverage -L | geometry + conservation),0.0051,0.00309,0.00756,1.0,13160,343
+CPI(conservation | geometry + leverage),0.00412,0.00144,0.00803,1.0,13160,343
+CPI(leverage -L | geometry + conservation) drop-3,0.00362,0.00226,0.00505,1.0,12996,340
+ranker geom+conservation +|L|_rms vs geom+conservation,0.0161,0.0042,0.029,0.996,13160,343
+ranker geom+conservation +(-L_ala) vs geom+conservation,0.022,0.0051,0.0393,0.997,13160,343

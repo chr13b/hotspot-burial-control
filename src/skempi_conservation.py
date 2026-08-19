@@ -32,7 +32,7 @@ def stage_score(a):
     bc = alphabet.get_batch_converter(); aa_idx = [alphabet.get_idx(x) for x in AA20]
     print("loaded ESM-2 (150M)", flush=True)
 
-    cids = sorted(pd.read_csv("results/leverage_pq_skempi.csv", usecols=["complex_id"]).complex_id.unique())
+    cids = sorted(pd.read_csv(POS, usecols=["complex_id"]).complex_id.unique())   # committed (pq is gitignored)
     if a.limit: cids = cids[:a.limit]
     done = set()
     if os.path.exists(a.out) and not a.overwrite:
@@ -49,7 +49,7 @@ def stage_score(a):
         try:
             for chain in sorted(set(g1 + g2)):
                 cx = fc.load_complex(path, pdb, chain, "", require_both=False)
-                if cx is None or cx.n < 10 or cx.n > 1022:      # ESM-2 context limit
+                if cx is None or cx.n < 4 or cx.n > 1022:       # recover short peptides (MHC/inhibitors); ESM-2 context limit
                     nskip += 1; continue
                 negent, lpn = esm2_entropy(model_e, alphabet, bc, "".join(cx.seq), aa_idx)
                 for i in range(cx.n):
@@ -76,9 +76,10 @@ def stage_analyse(a):
           f"{int(d.is_hot.sum())} hotspots")
     rng = np.random.default_rng(SEED)
     y = d.is_hot.astype(int).to_numpy(); g = d.complex_id.to_numpy()
-    GEO = d[["burial", "nbr", "drsasa"]].to_numpy(float)
-    cons_x = d.esm_negent.to_numpy(float)
-    L_x = (-d.L_ala).to_numpy(float)                              # -L(->Ala): higher = more hotspot-like
+    def zc(v): v = np.asarray(v, float); return (v - np.nanmean(v)) / (np.nanstd(v) + 1e-9)
+    GEO = np.column_stack([zc(d.burial), zc(d.nbr), zc(d.drsasa)])   # z-scored to match position_level_cpi (cpi() is not scale-invariant)
+    cons_x = zc(d.esm_negent)
+    L_x = zc(-d.L_ala)                                            # -L(->Ala): higher = more hotspot-like
     rows = []
     def run(name, Z, X):
         c, lo, hi, p, _, _ = LD.cpi(y, g, Z, X.copy(), rng)
@@ -104,6 +105,40 @@ def stage_analyse(a):
     from scipy import stats as st
     print(f"  Spearman(conservation, -L) = {st.spearmanr(cons_x, L_x).correlation:+.3f} "
           f"(are they measuring the same thing?)")
+    # concentration disclosure (audit G): how much of the headline rests on a few complexes?
+    tot = contrib.sum()
+    print(f"  [concentration] headline CPI: top-1 complex = {100*contrib.iloc[0]/tot:.0f}%, "
+          f"top-3 = {100*contrib.iloc[:3].sum()/tot:.0f}%, top-10 = {100*contrib.iloc[:10].sum()/tot:.0f}% "
+          f"({int((contrib<0).sum())}/{len(contrib)} complexes contribute negatively)")
+
+    # ACTIONABLE ranker (audit fruit #1): does |L| add on top of geometry + CONSERVATION (the standard set)?
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.model_selection import GroupKFold
+    def oof(X):
+        eta = np.zeros(len(y)); nf = int(min(5, len(np.unique(g))))
+        for tr, te in GroupKFold(nf).split(X, y, g):
+            m = LogisticRegression(max_iter=2000).fit(X[tr], y[tr]); eta[te] = X[te] @ m.coef_[0] + m.intercept_[0]
+        return eta
+    def auroc(s, yy):
+        r = st.rankdata(s); n1 = yy.sum(); n0 = len(yy) - n1
+        return (r[yy == 1].sum() - n1 * (n1 + 1) / 2) / (n1 * n0)
+    Lrms = zc(d.L_rms)
+    base = np.column_stack([GEO, cons_x])                        # geometry + conservation = the standard feature set
+    ids = np.unique(g); by = {k: np.where(g == k)[0] for k in ids}
+    sb = oof(base); print(f"  [ranker] geometry+conservation AUROC = {auroc(sb, y):.4f}")
+    for lab, add in [("+|L|_rms", Lrms), ("+(-L_ala)", L_x)]:
+        s = oof(np.column_stack([base, add])); dpt = auroc(s, y) - auroc(sb, y)
+        boot = []
+        for _ in range(3000):
+            ix = np.concatenate([by[c] for c in rng.choice(ids, len(ids), True)])
+            boot.append(auroc(s[ix], y[ix]) - auroc(sb[ix], y[ix]))
+        boot = np.array(boot)
+        lo3, hi3, p3 = np.percentile(boot, 2.5), np.percentile(boot, 97.5), float(np.mean(boot > 0))
+        print(f"  [ranker] geometry+conservation {lab}: AUROC={auroc(s, y):.4f}  Δ={dpt:+.4f} [{lo3:+.4f},{hi3:+.4f}] P(>0)={p3:.3f}")
+        rows.append(dict(test=f"ranker geom+conservation {lab} vs geom+conservation", stat=round(dpt, 4),
+                         lo=round(lo3, 4), hi=round(hi3, 4), p_gt0=round(p3, 3), n=len(y),
+                         n_complex=int(d.complex_id.nunique())))
+
     pd.DataFrame(rows).to_csv(a.out.replace("_positions", ""), index=False)
     print(f"[analyse] wrote {a.out.replace('_positions','')}")
 
