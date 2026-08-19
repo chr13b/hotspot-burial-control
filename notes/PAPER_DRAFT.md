@@ -29,7 +29,8 @@ beyond evolutionary conservation** — the full feature set of published hotspot
 +0.059; Spearman with experimental ΔΔG −0.30; per-position ~5× the best scalar, where confidence is
 conditionally independent). Three consequences follow. It is **actionable**: adding the mixed derivative to
 geometry is the best hotspot ranker (+0.013 AUROC, CI excludes zero). It is a **dose law** of backbone accuracy
-— the signal survives ≤0.5 Å of error and collapses by ~1 Å — a prediction that every method built on the same
+— the signal survives ≤0.5 Å of error and collapses by ~1 Å — and because the sensitivity is to the *backbone
+the derivative is read from*, not to the network, it is a prediction every method built on the same mixed
 derivative (BA-Cycle, RedNet, StaB-ddG) inherits on predicted backbones. And it reaches the **second** mixed
 derivative: the model's partner-ablated pairwise couplings predict experimental binding *epistasis*. The
 published deficit is then a corollary — a burial confound, on five architectures plus ProBID-Net's own released
@@ -285,8 +286,11 @@ on the design-time damage: our own predicted-backbone experiment (§6) shows ind
 *harder* than distance-matched noise. So the leverage is a diagnostic on natural and accurately-reconstructed
 complexes, not a frozen-model readout for arbitrary predicted backbones — which is precisely *why* the staged
 backbone→sequence pipeline misses hotspots (the predicted backbone's interface error destroys the very signal
-that carries binding), and why binding-aware decoders retrain rather than read a frozen model. →
-leverage_noise_ladder.csv.
+that carries binding), and why binding-aware decoders retrain rather than read a frozen model. Because the collapse is driven by the
+*backbone the derivative is read from* — not by anything specific to ProteinMPNN — the same cliff is predicted
+for any method reading this mixed derivative off a generated backbone (BA-Cycle, RedNet, StaB-ddG all do). ⟨We
+further confirm the shape replicates under a second model family, ESM-IF1: RUNNING.⟩ →
+leverage_noise_ladder.csv, leverage_noise_ladder_075full.csv.
 
 **And the knowledge extends past single effects to their *couplings* — the second mixed derivative.** If
 the single-mutant leverage is the model's first mixed derivative (partner ablation × one mutation), the
