@@ -72,8 +72,17 @@ def stage_analyse(a):
                   on=["complex_id", "chain", "resnum", "icode"], how="inner")
     d = d[d.is_interface == True].copy()                          # noqa: E712
     d = d[d.esm_negent.notna() & d.L_ala.notna()]
+    # Exclude positions on chains too short for a meaningful PLM conservation estimate (MHC peptides, short
+    # inhibitors: their ESM-2 negentropy is a systematic outlier, mean -1.64 vs -0.85, because the model has
+    # no context to use). This is a PRE-OUTCOME structural exclusion (chain length); those positions keep
+    # valid ProteinMPNN leverage, reported separately below so the conservation conclusion is not sensitive to it.
+    clen = cons.groupby(["complex_id", "chain"]).size().rename("clen").reset_index()
+    d = d.merge(clen, on=["complex_id", "chain"], how="left")
+    short = d[d.clen < 10]
+    d = d[d.clen >= 10].copy()
     print(f"[analyse] {len(d)} interface positions matched, {d.complex_id.nunique()} complexes, "
-          f"{int(d.is_hot.sum())} hotspots")
+          f"{int(d.is_hot.sum())} hotspots  (excluded {len(short)} positions / {int(short.is_hot.sum())} "
+          f"hotspots on <10-res chains from the conservation set)")
     rng = np.random.default_rng(SEED)
     y = d.is_hot.astype(int).to_numpy(); g = d.complex_id.to_numpy()
     def zc(v): v = np.asarray(v, float); return (v - np.nanmean(v)) / (np.nanstd(v) + 1e-9)
