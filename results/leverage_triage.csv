@@ -14,11 +14,11 @@ capture_at_3,ΔSASA,0.2379,,,,,108.0,20260803,position-level hotspot triage incl
 capture_at_3,burial,0.2105,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
 capture_at_3,KL,0.2238,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
 capture_at_3,confidence,0.0641,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
-capture_at_3,random,0.1514,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
+capture_at_3,random,0.0856,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
 capture_at_5,leverage |L|_rms,0.3411,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
 capture_at_5,leverage -L(->Ala),0.4052,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
 capture_at_5,ΔSASA,0.3445,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
 capture_at_5,burial,0.2963,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
 capture_at_5,KL,0.3223,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
 capture_at_5,confidence,0.1258,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
-capture_at_5,random,0.1167,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py
+capture_at_5,random,0.1409,,,,,108.0,20260803,position-level hotspot triage incl. leverage (audit's headline test); complex-clustered boot,python3 src/leverage_triage.py

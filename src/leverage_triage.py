@@ -33,7 +33,10 @@ def capture_at(df, col, k, rng=None):
             continue
         n = len(g); kk = min(k, n)
         if col == "random":
-            idx = rng.permutation(n)[:kk]; caps.append(g.is_hot.to_numpy()[idx].sum()/nh)
+            # average over 200 draws so the random baseline is low-variance and monotone in k
+            # (a single permutation gave the non-monotone capture@3 > capture@5 bug)
+            hh = g.is_hot.to_numpy()
+            caps.append(float(np.mean([hh[rng.permutation(n)[:kk]].sum()/nh for _ in range(200)])))
         else:
             order = np.argsort(-g[col].to_numpy(), kind="stable")[:kk]
             caps.append(g.is_hot.to_numpy()[order].sum()/nh)

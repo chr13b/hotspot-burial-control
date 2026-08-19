@@ -75,7 +75,7 @@ was invisible to every scalar readout the field has used. → leverage_decomposi
 **(ii) Confidence is not competence — a property of inverse folding, with a practical consequence.** The
 diagonal is blind across five architectures (interface-hotspot AUROC 0.50–0.54; conditionally independent of
 hotspot-ness given geometry, CPI 0.000). This measures the field's implicit BindCraft interface-freeze: ranking
-interface positions by confidence captures *fewer* hotspots than random (capture@3 0.064 vs 0.089, overlapping intervals; a trend, not yet significant), while free
+interface positions by confidence captures *fewer* hotspots than random (capture@3 0.064 vs 0.084, overlapping intervals; a trend, not yet significant), while free
 ΔSASA captures ~3× more (0.233) — so rank by geometry, not confidence. De-novo designs corroborate the positive
 of (i) with even the scalar distribution: it beats substitution baselines (0.615), dissociates stability from
 binding, and adds +0.018 beyond an all-atom rotamer-repacked occlusion baseline, reproduced by a non-parent
@@ -490,7 +490,7 @@ benchmark. The most telling piece of related practice is **BindCraft**, whose on
 hard-codes a 4 Å interface freeze that forbids inverse folding at the interface — the field's implicit
 admission of our thesis, to which we give a measurement and a principled improvement. Ranking interface
 positions for hotspot triage at a matched budget, IF **confidence is at chance** (position-level AUROC 0.51;
-capture@3 0.064 vs 0.089 random, overlapping intervals) — which *justifies* freezing the interface rather than
+capture@3 0.064 vs 0.084 random, overlapping intervals) — which *justifies* freezing the interface rather than
 trusting IF confidence there. But the model's binding knowledge *is* actionable if read from the right place:
 on crystal backbones, **adding the mixed derivative to geometry sharpens hotspot ranking**. Leverage |L| on its
 own reaches position-level AUROC 0.694 — on par with free ΔSASA (0.664; paired +0.030 [−0.001, +0.061], a trend,

@@ -29,8 +29,8 @@ def capture_at(df, col, k_or_frac, frac=False, rng=None):
         n = len(g)
         k = max(1, int(np.ceil(k_or_frac * n))) if frac else min(k_or_frac, n)
         if col == "random":
-            idx = rng.permutation(n)[:k]
-            cap = g.is_hot.to_numpy()[idx].sum() / nh
+            hh = g.is_hot.to_numpy()                          # average 200 draws (single-draw was noisy)
+            cap = float(np.mean([hh[rng.permutation(n)[:k]].sum() / nh for _ in range(200)]))
         else:
             order = np.argsort(-g[col].to_numpy(), kind="stable")[:k]
             cap = g.is_hot.to_numpy()[order].sum() / nh
