@@ -41,6 +41,13 @@ geometry+conservation 0.714 → **+|L|_rms 0.731 (Δ +0.0161 [+0.0042, +0.0290],
 a larger, more robust effect than against bare geometry (§8's +0.0125), and the direct answer to "you defended
 against a baseline the field does not use."
 
+**Robustness of the short-chain exclusion** (is it a cherry-picked cutoff, or does it distort?). The headline
+CPI(L | geometry+conservation) is *flat across the threshold*: chains ≥0 (include the outlier peptides)
++0.0064, ≥10 +0.0052, ≥15 +0.0056, ≥20 +0.0058, ≥30 +0.0058 — all CI>0. So the conclusion is independent of
+the cutoff; excluding the short chains removes a known PLM artifact but does not create the result. And the
+excluded positions keep valid leverage — on them −L(→Ala) ranks hotspots at AUROC 0.68 — so nothing is hidden.
+(Reproduce: the threshold loop over `results/skempi_conservation_positions.csv` + `leverage_skempi_positions.csv`.)
+
 **Interpretation.**
 1. **Conservation genuinely predicts hotspots** beyond geometry (+0.0034, CI>0) — so the control is
    non-trivial, exactly the baseline a reviewer would insist on.
