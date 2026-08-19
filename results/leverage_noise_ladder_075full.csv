@@ -1,0 +1,2 @@
+sigma_A,approx_iRMSD_A,n_mut,cpi_L_geom,lo,hi,p_gt0,spearman_L_ddG,seed,note,command
+0.75,0.75,2949,0.03205,0.02121,0.0424,1.0,-0.1949,20260803,W2 backbone-noise dose law: does leverage survive off-crystal backbones. sigma=0 is the crystal positive control (~+0.059). Noised crystals are a LOWER BOUND on damage (expC2).,python3 src/leverage_noise_ladder.py --sigmas 0.75

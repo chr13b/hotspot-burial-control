@@ -276,10 +276,10 @@ interface-size multiplier and is not evidence of reciprocity.) → leverage_reci
 **But this knowledge is fragile to backbone error — a dose law.** The mixed derivative is read off a backbone,
 and it does not survive a large perturbation of one. Jittering the crystal backbone to a target interface RMSD
 and re-scoring (the monomer inheriting the *same* jitter, so the partner ablation stays clean; σ=0 reproduces
-the crystal value exactly, a positive control), CPI(L | geometry) holds — +0.059 at 0.25 Å, +0.047 at 0.5 Å,
-+0.038 at 0.75 Å — then collapses to +0.002 by 1.0 Å, and Spearman(L, ΔΔG) stays −0.29 through 0.5 Å before
-falling to −0.08. A re-drawn noise realization at 1 Å reproduces the collapse, so it is not a single-sample
-artifact. The
+the crystal value exactly, a positive control), CPI(L | geometry) holds — +0.058 at 0.0 Å, +0.059 at 0.25 Å,
++0.047 at 0.5 Å, +0.032 at 0.75 Å — then collapses to +0.002 by 1.0 Å and −0.001 by 1.5 Å (all on the same
+2,949-mutation sample), and Spearman(L, ΔΔG) tracks it down (−0.30, −0.29, −0.29, −0.19, −0.08, −0.06). A
+re-drawn noise realization at 1 Å reproduces the collapse, so it is not a single-sample artifact. The
 binding signal is robust to *accurate* reconstruction and lost under an inaccurate one. This is a **lower bound**
 on the design-time damage: our own predicted-backbone experiment (§6) shows independent reconstructions collapse
 *harder* than distance-matched noise. So the leverage is a diagnostic on natural and accurately-reconstructed
