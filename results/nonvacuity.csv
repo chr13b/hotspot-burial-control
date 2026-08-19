@@ -1,0 +1,3 @@
+model,matched_median_dL,random_median_dL,survives_frac
+ProteinMPNN,0.2818,0.6404,0.44
+ESM-IF1,1.2719,1.0547,1.206

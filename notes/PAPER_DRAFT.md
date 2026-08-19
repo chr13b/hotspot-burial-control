@@ -19,9 +19,9 @@ Because the partner-ablated structure is *determined* by the complex, leverage i
 but **not** from the bound distribution alone — so every scalar the field reads off the model (recovery,
 confidence, the complex-vs-monomer KL) is a lossy projection, blind to binding **by construction, not by
 failure**. This is no vacuous identity: holding the bound distribution fixed, much of the leverage spread
-survives — for the headline model, matched positions are barely closer in leverage than random pairs (measured
-on two model families). ⟨PENDING precise fraction: recompute median|ΔL| matched vs random-pair, restate as the
-verified %.⟩ And the consequence is measurable and large. On our main fixture (SKEMPI natural complexes)
+survives — measured against random position pairs, distribution-matched positions retain **44%** of the
+leverage-magnitude spread for ProteinMPNN, and for ESM-IF1 they are *no more similar in leverage than random
+pairs at all*. And the consequence is measurable and large. On our main fixture (SKEMPI natural complexes)
 confidence ranks hotspots at or barely above chance across five architectures and adds nothing beyond geometry
 (conditional predictive impact 0.000), while the mixed derivative adds binding information **beyond geometry,
 beyond the standard one-pass log-odds readout, beyond a second inverse-folding model family (ESM-IF1), and
@@ -66,7 +66,8 @@ term of the inverse-folding log-likelihood — a scalar functional of one condit
 fold-stability constraint; a residue's binding *leverage* is the *mixed second derivative*, the per-substitution
 response to ablating the partner (the BA-Cycle operator of Jiao et al. 2024). Confidence is blind to leverage
 *by construction* — an identical bound distribution yields identical confidence but arbitrary leverage; we
-verify this is non-vacuous (confidence-matched interface positions retain ≈30% of the leverage spread). This
+verify this is non-vacuous: against random position pairs, distribution-matched interface positions retain 44%
+of the leverage-magnitude spread (ProteinMPNN) and are no more similar than random for ESM-IF1 (→ nonvacuity.csv). This
 yields a **feature-class law**: on natural complexes a scalar read off the bound distribution *alone* recovers
 little beyond cheap geometry — confidence, negentropy, and the scalar KL all sit **at or below the CPI
 estimator's calibrated false-positive floor** (+0.0007, the score of a placebo feature that is a deterministic
@@ -177,8 +178,10 @@ contraction of this vector: `KL(P‖Q) = E_{a∼P}[L(a)] + const` (verified to 1
 also motivates L: the per-position softmax normaliser `log Z_i` contaminates confidence but *cancels* in L
 (each bracket is within-conditioning), so L is better-posed. **Confidence is blind to leverage by
 construction:** two positions with an identical bound distribution have identical confidence yet can differ
-arbitrarily in L — and this is not hypothetical, since matching interface positions on the *full* bound
-distribution still leaves ≈30% of the leverage spread free.
+arbitrarily in L — and this is not hypothetical. Matching interface positions on the *full* bound distribution
+(total-variation < 0.02) leaves a median |ΔL| that is **44%** of the random-pair median for ProteinMPNN, and
+for ESM-IF1 is as large as random pairs (121%) — i.e. holding the distribution fixed barely constrains
+leverage. → nonvacuity.csv.
 
 **The feature-class law (on the main fixture, natural complexes).** On SKEMPI, the mixed derivative adds
 binding information beyond cheap geometry where every scalar summary does not. Per interface position
