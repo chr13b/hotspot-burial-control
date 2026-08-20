@@ -19,9 +19,9 @@ Because the partner-ablated structure is *determined* by the complex, leverage i
 but **not** from the bound distribution alone — so every scalar the field reads off the model (recovery,
 confidence, the complex-vs-monomer KL) is a lossy projection, blind to binding **by construction, not by
 failure**. This is no vacuous identity: holding the bound distribution fixed, much of the leverage spread
-survives — measured against random position pairs, distribution-matched positions retain **44%** of the
-leverage-magnitude spread for ProteinMPNN, and for ESM-IF1 they are *no more similar in leverage than random
-pairs at all*. And the consequence is measurable and large. On our main fixture (SKEMPI natural complexes)
+survives — against a same-population baseline, distribution-matched positions still retain **47%** (ProteinMPNN)
+and **79%** (ESM-IF1) of the leverage-magnitude spread, so holding the bound distribution fixed removes at most
+about half of the binding leverage. And the consequence is measurable and large. On our main fixture (SKEMPI natural complexes)
 confidence ranks hotspots at or barely above chance across five architectures and adds nothing beyond geometry
 (conditional predictive impact 0.000), while the mixed derivative adds binding information **beyond geometry,
 beyond the standard one-pass log-odds readout, beyond a second inverse-folding model family (ESM-IF1), and
@@ -69,8 +69,8 @@ term of the inverse-folding log-likelihood — a scalar functional of one condit
 fold-stability constraint; a residue's binding *leverage* is the *mixed second derivative*, the per-substitution
 response to ablating the partner (the BA-Cycle operator of Jiao et al. 2024). Confidence is blind to leverage
 *by construction* — an identical bound distribution yields identical confidence but arbitrary leverage; we
-verify this is non-vacuous: against random position pairs, distribution-matched interface positions retain 44%
-of the leverage-magnitude spread (ProteinMPNN) and are no more similar than random for ESM-IF1 (→ nonvacuity.csv). This
+verify this is non-vacuous: against a same-population baseline, distribution-matched interface positions still
+retain 47% (ProteinMPNN) and 79% (ESM-IF1) of the leverage-magnitude spread (→ nonvacuity.csv). This
 yields a **feature-class law**: on natural complexes a scalar read off the bound distribution *alone* recovers
 little beyond cheap geometry — confidence, negentropy, and the scalar KL all sit **at or below the CPI
 estimator's calibrated false-positive floor** (+0.0007, the score of a placebo feature that is a deterministic
@@ -177,15 +177,18 @@ a scalar functional of the single bound-conditioned distribution `p(·|X_complex
 and estimates positional fold-stability constraint. **Leverage** is the *mixed second difference*, the
 per-substitution response to *ablating the partner*:
 `L_i(a) = [log p(a|X_complex) − log p(wt|X_complex)] − [log p(a|X_monomer) − log p(wt|X_monomer)]`,
-which by the thermodynamic cycle estimates −ΔΔG_bind (up to an unknown temperature). The scalar KL is one
-contraction of this vector: `KL(P‖Q) = E_{a∼P}[L(a)] + const` (verified to 1e-6). A methodological aside that
+which by the standard binding thermodynamic cycle estimates −ΔΔG_bind up to a single unknown positive scale
+(the model's effective inverse temperature). The scalar KL is one contraction of this vector:
+`KL(P‖Q) = E_{a∼P}[L(a)] + [log P(wt) − log Q(wt)]` (identity verified to 1e-6) — the offset is
+*position-dependent*, so the scalar detector is a lossy, position-shifted summary of `L`, not a rescaling of it. A methodological aside that
 also motivates L: the per-position softmax normaliser `log Z_i` contaminates confidence but *cancels* in L
 (each bracket is within-conditioning), so L is better-posed. **Confidence is blind to leverage by
 construction:** two positions with an identical bound distribution have identical confidence yet can differ
-arbitrarily in L — and this is not hypothetical. Matching interface positions on the *full* bound distribution
-(total-variation < 0.02) leaves a median |ΔL| that is **44%** of the random-pair median for ProteinMPNN, and
-for ESM-IF1 is as large as random pairs (121%) — i.e. holding the distribution fixed barely constrains
-leverage. → nonvacuity.csv.
+arbitrarily in L — and this is not hypothetical. On interface positions matched to near-identical bound
+distributions (total-variation < 0.02), the leverage magnitude still varies: against a same-population,
+complex-clustered baseline, holding the distribution fixed removes only about **half** of the
+leverage-magnitude spread for ProteinMPNN (matched-pair median |ΔL| **47%** [37%, 61%] of the random baseline)
+and only about **a fifth** for ESM-IF1 (**79%** [74%, 86%] retained). → nonvacuity.csv.
 
 We state the decomposition as a proposition; it is short, and it is what turns the corrections above into a
 theorem rather than a list.
@@ -197,25 +200,33 @@ theorem rather than a list.
 >   `1[argmax P_i = wt]`, log-likelihood `log P_i(wt)`, negentropy `−H(P_i)`);
 > - *leverage* `L_i(a) = [log P_i(a) − log P_i(wt)] − [log Q_i(a) − log Q_i(wt)]`.
 >
-> Then **(i) [cycle]** `L_i(a)` estimates `−ΔΔG_bind(i, wt→a)/kT` up to an `i`-independent constant, via the
-> thermodynamic double-mutant cycle; **(ii) [non-identifiability]** whenever two positions share a bound
-> distribution, `P_i = P_j`, every confidence functional agrees — `φ(P_i) = φ(P_j)` for all `φ` — yet their
-> leverages can differ, `L_i ≠ L_j`; hence no estimator measurable with respect to `P` alone can order
-> positions by `ΔΔG_bind` beyond what `P` already encodes; **(iii) [computability]** `X_monomer` is a
-> deterministic function of `X_complex` (delete the partner's atoms), so `L` is computable from structure —
-> but by (ii) it is *not* recoverable from `P`. The staged pipeline's blindness is therefore
-> **computational, not informational**: the binding information is present in the model, in a term no scalar
-> of the bound distribution reads.
+> For position-level statements the 20-vector `L_i` is reduced to a scalar by a declared map (`L_rms`, or the
+> alanine leverage `L_i(→A)`). Then **(i) [cycle]** `L_i(a)` estimates `−ΔΔG_bind(i, wt→a)` up to a single
+> unknown positive scale — a *monotone surrogate*, not a calibrated kcal/mol reading — via the binding
+> thermodynamic cycle; **(ii) [non-identifiability]** `L` is not a function of `P`: `Var(L_i | P_i) > 0`, so two
+> positions with the same bound distribution `P_i = P_j` have identical confidence `φ(P_i) = φ(P_j)` for
+> **every** functional `φ`, yet differ in leverage. Hence for any `P`-only estimator, `inf_φ E[(ΔΔG_bind −
+> φ(P))²] ≥ E[Var(ΔΔG_bind | P)] > 0` — an error floor only a `(P,Q)`-measurable estimator can beat;
+> **(iii) [readout, not model]** `X_monomer` is a deterministic function of `X_complex` (delete the partner's
+> atoms), so `L` is computable — by a second, partner-ablated forward pass — yet by (ii) is **not a function of
+> `P`**. The blindness is a property of the *readout*, not the model: the binding term is in the weights,
+> reachable only by re-querying on `X_monomer`, and no transform of the bound distribution recovers it.
 
-*Proof.* (i) The double-mutant cycle equates the bound-minus-unbound difference of the `wt→a` log-odds with
-`log(K_a^{a}/K_a^{wt}) = −ΔΔG_bind/kT` under the model's Boltzmann reading of `log p`; the per-position
-normaliser `log Z_i` cancels because each bracket lies within a single conditioning. (ii) is immediate —
-`C_i` is a function of `P_i`, so `P_i = P_j ⇒ C_i = C_j`, while `L` depends on `Q` and `P` does not determine
-`Q`. The antecedent is not vacuous: it holds *generically*, not merely in principle. Matching interface
-positions on the full bound distribution (`TV(P_i, P_j) < 0.02`) leaves a median `|ΔL|` equal to **44%**
-(ProteinMPNN) / **121%** (ESM-IF1) of the random-pair median (`nonvacuity.csv`) — holding `P` fixed barely
-constrains `L`. (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
-model(X_monomer)` then costs a second forward pass, which (ii) shows cannot be recovered from `P`. ∎
+*Proof.* (i) Under the model's Boltzmann reading of `log p`, the bound-minus-unbound difference of the `wt→a`
+log-odds identifies with `log(K_a^{a}/K_a^{wt}) = −ΔΔG_bind/kT_model`; the per-position normaliser `log Z_i`
+cancels because each bracket lies within a single conditioning. It is an *estimate*, not an equality — our
+measured Spearman(`L`, experimental ΔΔG_bind) = −0.30 is what makes "estimates" the honest verb — and it
+carries three assumptions we state rather than hide: `kT_model` is taken *position-independent* (needed for `L`
+to *order* positions; an assumption we flag, testable as per-burial-stratum calibration slopes); the readout is
+the *sequence-free marginal* `p(·|X)`, a mean-field approximation that buys decoding-order invariance; and
+`X_monomer` is the *bound* backbone with the partner deleted, so `L` estimates the **interaction component** of
+ΔΔG_bind — not monomer refolding or conformational relaxation. (ii) The equality `φ(P_i)=φ(P_j)` is
+definitional; the content is that `P` does **not** determine `Q`, which would hold iff the map `X ↦ P` were
+injective — and it is not. Distribution-matched pairs establish `Var(L|P) > 0` empirically: at `TV(P_i,P_j) <
+0.02`, the matched-pair median `|ΔL|` retains **47%** [37%, 61%] (ProteinMPNN) and **79%** [74%, 86%] (ESM-IF1)
+of a same-population, complex-clustered random baseline (`nonvacuity.csv`; the within-pool and anchor-matched
+constructions agree). (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
+model(X_monomer)` costs a second forward pass, which by (ii) no function of `P` reproduces. ∎
 
 The empirical sections instantiate the proposition. The feature-class law below is (ii) measured on natural
 complexes; the no-go for scalar readouts is its immediate corollary; and §5 (ProBID-Net), §8 (BindCraft) and
