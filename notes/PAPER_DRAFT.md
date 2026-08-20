@@ -27,8 +27,10 @@ confidence ranks hotspots at or barely above chance across five architectures an
 beyond the standard one-pass log-odds readout, beyond a second inverse-folding model family (ESM-IF1), and
 beyond evolutionary conservation** — the full feature set of published hotspot predictors (mutation-level CPI
 +0.059; Spearman with experimental ΔΔG −0.30; per-position ~5× the best scalar, where confidence is
-conditionally independent). Three consequences follow. It is **actionable**: adding the mixed derivative to
-geometry is the best hotspot ranker (+0.013 AUROC, CI excludes zero). It is a **dose law** of backbone accuracy
+conditionally independent). Three consequences follow. It is **actionable**: the mixed derivative is the strongest single feature
+for ranking interface hotspots (AUROC 0.69, above geometry's 0.66 and confidence's 0.51), and adds
+**+0.016 AUROC [+0.004, +0.029]** on top of the full feature set published predictors already use —
+geometry *and* conservation. It is a **dose law** of backbone accuracy
 — the signal survives ≤0.5 Å of error and collapses by ~1 Å — and because the sensitivity is to the *backbone
 the derivative is read from*, not to the network, it is a prediction every method built on the same mixed
 derivative (BA-Cycle, RedNet, StaB-ddG) inherits on predicted backbones. And it reaches the **second** mixed
@@ -81,7 +83,8 @@ was invisible to every scalar readout the field has used. → leverage_decomposi
 diagonal is blind across five architectures (interface-hotspot AUROC 0.50–0.54; conditionally independent of
 hotspot-ness given geometry, CPI 0.000). This measures the field's implicit BindCraft interface-freeze: ranking
 interface positions by confidence captures *fewer* hotspots than random (capture@3 0.064 vs 0.084, overlapping intervals; a trend, not yet significant), while free
-ΔSASA captures ~3× more (0.233) — so rank by geometry, not confidence. De-novo designs corroborate the positive
+ΔSASA captures ~3× more (0.233) — so rank by geometry — or, better, by the mixed derivative itself, the
+strongest single feature for interface triage (AUROC 0.69 vs confidence's 0.51; §4) — not by confidence. De-novo designs corroborate the positive
 of (i) with even the scalar distribution: it beats substitution baselines (0.615), dissociates stability from
 binding, and adds +0.018 beyond an all-atom rotamer-repacked occlusion baseline, reproduced by a non-parent
 scorer. → xmodel_confidence.csv, baseline_audit.csv, bindcraft_triage.csv, bennett_occlusion_allatom.csv, bennett_nonparent.csv.
@@ -184,6 +187,40 @@ arbitrarily in L — and this is not hypothetical. Matching interface positions 
 for ESM-IF1 is as large as random pairs (121%) — i.e. holding the distribution fixed barely constrains
 leverage. → nonvacuity.csv.
 
+We state the decomposition as a proposition; it is short, and it is what turns the corrections above into a
+theorem rather than a list.
+
+> **Proposition 1 (Confidence is blind to leverage).** Fix an inverse-folding model and an interface
+> position `i`. Let `P_i = p(·|X_complex)` and `Q_i = p(·|X_monomer)` be its bound- and partner-ablated
+> per-position distributions, and define
+> - *confidence* `C_i = φ(P_i)` — **any** scalar functional of the bound distribution alone (recovery
+>   `1[argmax P_i = wt]`, log-likelihood `log P_i(wt)`, negentropy `−H(P_i)`);
+> - *leverage* `L_i(a) = [log P_i(a) − log P_i(wt)] − [log Q_i(a) − log Q_i(wt)]`.
+>
+> Then **(i) [cycle]** `L_i(a)` estimates `−ΔΔG_bind(i, wt→a)/kT` up to an `i`-independent constant, via the
+> thermodynamic double-mutant cycle; **(ii) [non-identifiability]** whenever two positions share a bound
+> distribution, `P_i = P_j`, every confidence functional agrees — `φ(P_i) = φ(P_j)` for all `φ` — yet their
+> leverages can differ, `L_i ≠ L_j`; hence no estimator measurable with respect to `P` alone can order
+> positions by `ΔΔG_bind` beyond what `P` already encodes; **(iii) [computability]** `X_monomer` is a
+> deterministic function of `X_complex` (delete the partner's atoms), so `L` is computable from structure —
+> but by (ii) it is *not* recoverable from `P`. The staged pipeline's blindness is therefore
+> **computational, not informational**: the binding information is present in the model, in a term no scalar
+> of the bound distribution reads.
+
+*Proof.* (i) The double-mutant cycle equates the bound-minus-unbound difference of the `wt→a` log-odds with
+`log(K_a^{a}/K_a^{wt}) = −ΔΔG_bind/kT` under the model's Boltzmann reading of `log p`; the per-position
+normaliser `log Z_i` cancels because each bracket lies within a single conditioning. (ii) is immediate —
+`C_i` is a function of `P_i`, so `P_i = P_j ⇒ C_i = C_j`, while `L` depends on `Q` and `P` does not determine
+`Q`. The antecedent is not vacuous: it holds *generically*, not merely in principle. Matching interface
+positions on the full bound distribution (`TV(P_i, P_j) < 0.02`) leaves a median `|ΔL|` equal to **44%**
+(ProteinMPNN) / **121%** (ESM-IF1) of the random-pair median (`nonvacuity.csv`) — holding `P` fixed barely
+constrains `L`. (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
+model(X_monomer)` then costs a second forward pass, which (ii) shows cannot be recovered from `P`. ∎
+
+The empirical sections instantiate the proposition. The feature-class law below is (ii) measured on natural
+complexes; the no-go for scalar readouts is its immediate corollary; and §5 (ProBID-Net), §8 (BindCraft) and
+the KL detector are three scalars-of-`P` the field met separately, each blind for exactly this reason.
+
 **The feature-class law (on the main fixture, natural complexes).** On SKEMPI, the mixed derivative adds
 binding information beyond cheap geometry where every scalar summary does not. Per interface position
 (conditional predictive impact over burial+neighbours+ΔSASA, 13,401 interface positions; confidence here is the
@@ -244,7 +281,7 @@ know binding on natural complexes — the knowledge was invisible to every scala
 not about a *regime* but a *feature class*: on natural complexes scalar summaries reduce to geometry
 (confidence exactly, KL nearly); the mixed derivative does not.
 
-**A no-go for scalar readouts.** The blindness is not special to confidence. Write any scalar the field reads
+**Corollary 1 (no-go for scalar readouts).** This is Proposition 1(ii) made empirical. The blindness is not special to confidence. Write any scalar the field reads
 off an inverse-folding model as a functional `φ(P)` of the bound-conditioned distribution `P = p(·|X_complex)`
 *alone* — sequence recovery (an argmax match), confidence (`log P(native)`), or entropy/perplexity. Binding
 leverage is a functional of the *pair* `(P, Q = p(·|X_monomer))`, and no functional of `P` alone can express it
@@ -575,6 +612,26 @@ underpowered by design; the verdict rests on higher-powered tiers declared in ad
 survive its control — a within-natural confidence-decay gradient (null) — which we report rather than bury; the
 generalisation to catalytic residues, by contrast, *does* survive its composition, burial, and chain-truncation
 controls (§4).
+
+## Appendix A. Pre-registered false-positive modes and their controls
+
+Six ways to get a false positive were named in the pre-registration *before* any number was computed. We
+list each with the control that addresses it and where the result appears, so a reviewer can check the
+armor against the threat it was built for rather than reconstruct the mapping. One (assay heterogeneity) is
+controlled only in part; we say so rather than overstate it.
+
+| # | Pre-registered false-positive mode | How it would fake — or hide — the effect | Control | Result / where |
+|---|---|---|---|---|
+| 1 | **Burial** | Buried positions are where inverse folding is *most* confident, so an uncontrolled hotspot-vs-rest comparison **hides** the effect (the confound cuts against us, not for us) | within-complex matched pairs (rSASA ±0.05, secondary-structure class, neighbour count ±1); and CPI over burial + neighbours + ΔSASA at *every* downstream step | deficit vanishes unmatched→matched across 5 architectures + ProBID-Net (§5); leverage CPI **+0.0048** survives full geometry (§4) |
+| 2 | **Native amino-acid identity** (Trp/Arg/Tyr are hotspot-enriched with distinctive priors) | the model's per-type prior, not binding, drives the score | per-wt-type breakdown; alanine-only subset; substitution-similarity (BLOSUM, side-chain volume, hydropathy) partialled out | Spearman(L, ΔΔG) negative in **18/19** wt-types and **−0.25 on Ala-only** (n=2,327); survives similarity controls (§4) |
+| 3 | **PDB training leakage** | the model has seen these complexes | *none needed* — leakage makes a positive **conservative** (the model is scored on structures it memorised, which can only *help* recovery/confidence, i.e. work against our deficit) | stated as such; every positive here is a lower bound (§1, §9) |
+| 4 | **Assay heterogeneity** (SKEMPI pools ITC, SPR, fluorescence) | a hotspot threshold or condition artifact masquerades as signal | strict (>2 kcal/mol, ProBID-Net's threshold) **and** loose (>1) hotspot definitions, both reported | conclusions hold under both thresholds (§2). **Partial:** we do *not* stratify by temperature/pH for the headline — disclosed as a limitation, not claimed as a control (§9) |
+| 5 | **Positional independence** (additivity is false) | an additive model of hotspot effects is wrong, so any independence assumption inflates confidence | not assumed — we **measure** the second mixed derivative directly (partner-ablated pairwise coupling) | model couplings track experimental binding epistasis, Spearman(C, g) **−0.14**, cycle-predicted sign (§4, couplings) |
+| 6 | **Decoding-order variance** (ProteinMPNN's autoregressive order changes conditional probabilities) | a result could live entirely inside order noise | sequence-free marginals where possible; elsewhere symmetrise over ≥8 orders and read disjoint order subsets | disjoint-order subsets agree Spearman **+0.61**; the oracle decoding order is inert (difference-in-differences −0.002) (§4, §7) |
+
+The pattern worth noting is #1 and #3: the two largest confounds both run *against* the hypothesis, so the
+burden of proof is on us to show the effect *despite* them, not because of them — which is why the
+matched-pair design, not the raw deficit, is the experiment.
 
 ## Reproducibility and LLM-usage disclosure
 
