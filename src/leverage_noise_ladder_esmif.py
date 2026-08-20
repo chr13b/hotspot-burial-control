@@ -5,7 +5,7 @@ a GVP-transformer. Same jitter + CPI machinery as leverage_noise_ladder, ESM-IF1
 
   python3 src/leverage_noise_ladder_esmif.py --sigmas 0.0,0.5,1.0 --limit 60 --out results/leverage_noise_ladder_esmif.csv
 """
-import argparse, os, sys
+import argparse, os, sys, time
 import numpy as np, pandas as pd
 from scipy import stats
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "models"))
@@ -17,14 +17,15 @@ from leverage_esmif import esmif_lp
 SEED = LD.SEED; DATA = LD.DATA; IDX = LD.IDX
 
 
-def score_L_esmif(model, alphabet, path, pdb, g1, g2, muts, sd, rng, max_residues=1000):
+def score_L_esmif(model, alphabet, path, pdb, g1, g2, muts, sd, rng, max_residues=1000,
+                  device="cpu"):
     cx = fc.load_complex(path, pdb, g1, g2)
     if cx is None or (max_residues and cx.n > max_residues):
         return {}
     if sd > 0:
         NL.jitter_inplace(cx, sd, rng)
     cxmap = {(cx.chains[j], int(cx.resnums[j]), cx.icodes[j]): j for j in range(cx.n)}
-    lP = LD.logdists(esmif_lp(model, alphabet, cx))
+    lP = LD.logdists(esmif_lp(model, alphabet, cx, device))
     lQ = np.full_like(lP, np.nan)
     for chains in (g1, g2):
         if not chains:
@@ -41,7 +42,7 @@ def score_L_esmif(model, alphabet, path, pdb, g1, g2, muts, sd, rng, max_residue
                     ac, am = getattr(cx, attr, None), getattr(mono, attr, None)
                     if ac is not None and am is not None:
                         np.asarray(am)[k] = np.asarray(ac)[j]
-        lQm = LD.logdists(esmif_lp(model, alphabet, mono))
+        lQm = LD.logdists(esmif_lp(model, alphabet, mono, device))
         im = {(c, int(r), i): k for k, (c, r, i) in enumerate(zip(mono.chains, mono.resnums, mono.icodes))}
         for j in range(cx.n):
             k = im.get((cx.chains[j], int(cx.resnums[j]), cx.icodes[j]))
@@ -65,9 +66,12 @@ def main():
     ap.add_argument("--limit", type=int, default=60)
     ap.add_argument("--threads", type=int, default=4)
     ap.add_argument("--max-residues", dest="max_residues", type=int, default=1000)
+    ap.add_argument("--device", default="cpu", help="'cpu' (committed path) or 'cuda'")
     ap.add_argument("--out", default="results/leverage_noise_ladder_esmif.csv")
     a = ap.parse_args()
     import torch; torch.set_num_threads(a.threads)
+    if a.device.startswith("cuda") and not torch.cuda.is_available():
+        raise SystemExit("--device cuda requested but torch.cuda.is_available() is False")
     mut = pd.read_csv("results/leverage_skempi_mutations.csv", low_memory=False)
     if "is_interface" in mut.columns:
         mut = mut[mut.is_interface == 1]
@@ -76,14 +80,20 @@ def main():
     mut["destab"] = (mut.ddG >= LD.HOT_DDG).astype(int)
     cids = sorted(mut.complex_id.unique())[: a.limit or None]
     mut = mut[mut.complex_id.isin(cids)].copy()
-    print(f"[esmif-ladder] {len(mut)} interface mutations, {len(cids)} complexes", flush=True)
-    model, alphabet = fe.load_esmif(device="cpu")
+    print(f"[esmif-ladder] {len(mut)} interface mutations, {len(cids)} complexes "
+          f"[device={a.device}]", flush=True)
+    model, alphabet = fe.load_esmif(device=a.device)
+    # alphabet positive control (rule 6): an ESM->MPNN column slip silently drops recovery to ~0.05
+    back = "".join(alphabet.get_tok(int(i)) for i in fe.build_alphabet_map(alphabet))
+    assert back == fc.MPNN_ALPHABET, f"ALPHABET SLIP: {back!r}"
+    print(f"[+control] ESM-IF1 alphabet map round-trips to {back!r}", flush=True)
     rows = []
     for sigma in [float(s) for s in a.sigmas.split(",")]:
         sd = sigma / np.sqrt(3.0)
         rng = np.random.default_rng(SEED + int(round(sigma * 100)))
         Lv = {}
-        for cid in cids:
+        t0 = time.time()
+        for ci, cid in enumerate(cids):
             pdb, g1, g2 = cid.split("_"); path = f"{DATA}/PDBs/{pdb}.pdb"
             if not os.path.exists(path):
                 continue
@@ -91,10 +101,15 @@ def main():
             for r in g.itertuples():
                 muts.setdefault((r.chain, int(r.resnum), r.icode), []).append((r.wt, r.mut))
             try:
-                for k4, L in score_L_esmif(model, alphabet, path, pdb, g1, g2, muts, sd, rng, a.max_residues).items():
+                for k4, L in score_L_esmif(model, alphabet, path, pdb, g1, g2, muts, sd, rng,
+                                           a.max_residues, a.device).items():
                     Lv[(cid,) + k4] = L
             except Exception as e:
                 print(f"  skip {cid}: {type(e).__name__}: {e}", flush=True)
+            if (ci + 1) % 25 == 0:
+                dt = time.time() - t0
+                print(f"  [sigma={sigma:.2f}] {ci+1}/{len(cids)} complexes, {dt:.0f}s "
+                      f"({dt/(ci+1):.1f}s/cx), {len(Lv)} L values", flush=True)
         mut["Ln"] = [Lv.get((r.complex_id, r.chain, int(r.resnum), r.icode, r.mut), np.nan) for r in mut.itertuples()]
         d = mut.dropna(subset=["Ln"]).reset_index(drop=True)
         y = d.destab.to_numpy().astype(float); grp = d.complex_id.to_numpy()
@@ -108,7 +123,8 @@ def main():
         rows.append(dict(sigma_A=sigma, n_mut=len(d), cpi_L_geom=round(cpi_v, 5), lo=round(lo, 5),
                          hi=round(hi, 5), p_gt0=round(p, 3), spearman_L_ddG=round(float(sp), 4)))
     out = pd.DataFrame(rows); out["seed"] = SEED; out["model"] = "ESM-IF1"
-    out["command"] = f"python3 src/leverage_noise_ladder_esmif.py --sigmas {a.sigmas} --limit {a.limit}"
+    out["command"] = (f"python3 src/leverage_noise_ladder_esmif.py --sigmas {a.sigmas} "
+                      f"--limit {a.limit} --max-residues {a.max_residues} --device {a.device}")
     out.to_csv(a.out, index=False); print(f"[done] wrote {a.out}")
 
 

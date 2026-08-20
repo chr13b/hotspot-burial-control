@@ -21,12 +21,16 @@ Important semantic differences from ProteinMPNN, stated up front:
     `whole_complex_logprobs` below gives the partner-sequence-context variant.
 """
 
+import os
+
 import numpy as np
 import torch
 import torch.nn.functional as F
 
 MPNN_ALPHABET = "ACDEFGHIKLMNPQRSTVWYX"
-DEFAULT_CKPT = "/home/chris/ftax/models/esm_if1_slim.pt"
+# Slimmed checkpoint location. Overridable so the same code runs on the laptop and on Sherlock
+# (where it lives under $SCRATCH); the laptop path stays the default so nothing silently changes.
+DEFAULT_CKPT = os.environ.get("FTAX_ESMIF_CKPT", "/home/chris/ftax/models/esm_if1_slim.pt")
 
 
 # ------------------------------------------------------------------ loading
@@ -197,7 +201,7 @@ def whole_complex_logprobs(model, alphabet, cx, chain_order=None, device="cpu",
     with torch.no_grad():
         logits, _ = model.forward(coords, padding_mask, confidence, tokens[:, :-1])
     lsm = F.log_softmax(logits.float(), dim=1)[0].transpose(0, 1)
-    sub = lsm[:, torch.as_tensor(aamap)]
+    sub = lsm[:, torch.as_tensor(aamap, device=lsm.device)]     # index tensor must follow the logits
     if renormalise:
         sub = sub - torch.logsumexp(sub, dim=1, keepdim=True)
     sub = sub.cpu().numpy()

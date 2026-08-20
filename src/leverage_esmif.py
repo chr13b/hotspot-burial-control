@@ -55,13 +55,18 @@ IDX = LD.IDX
 PQ_ESMIF = "results/leverage_pq_skempi_esmif.csv"
 
 
-def esmif_lp(model, alphabet, cx):
-    """[cx.n, 21] ESM-IF1 log-probs (MPNN alphabet), averaged over the non-target-chain orders."""
-    lp = fe.esmif_conditional_logprobs(model, alphabet, cx, seeds=(0,), device="cpu")  # [1,L,21]
+def esmif_lp(model, alphabet, cx, device="cpu"):
+    """[cx.n, 21] ESM-IF1 log-probs (MPNN alphabet), averaged over the non-target-chain orders.
+
+    `device` must match the device `model` was loaded on: the batch converter builds the coord /
+    token tensors itself, so a model moved to CUDA with device left at "cpu" fails on a device
+    mismatch rather than silently falling back.
+    """
+    lp = fe.esmif_conditional_logprobs(model, alphabet, cx, seeds=(0,), device=device)  # [1,L,21]
     return lp.mean(axis=0)
 
 
-def _score_one(model, alphabet, path, pdb, g1, g2, keep, max_residues=0):
+def _score_one(model, alphabet, path, pdb, g1, g2, keep, max_residues=0, device="cpu"):
     """Mirror of LD._score_one but with the ESM-IF1 scorer. -> list of dict rows.
 
     Returns ([], ("TOOLARGE", n)) for complexes above max_residues so the caller can drop-and-log
@@ -73,7 +78,7 @@ def _score_one(model, alphabet, path, pdb, g1, g2, keep, max_residues=0):
         return [], None
     if max_residues and cx.n > max_residues:
         return [], ("TOOLARGE", int(cx.n))
-    lP = LD.logdists(esmif_lp(model, alphabet, cx))                 # [L,20] renorm over 20
+    lP = LD.logdists(esmif_lp(model, alphabet, cx, device))         # [L,20] renorm over 20
     # native top-1 recovery on the complex (a positive control on the scorer + alphabet map)
     rec = float((lP.argmax(1) == np.array([IDX.get(s, -1) for s in cx.seq])).mean())
     lQ = np.full_like(lP, np.nan)
@@ -83,7 +88,7 @@ def _score_one(model, alphabet, path, pdb, g1, g2, keep, max_residues=0):
         mono = fc.load_complex(path, pdb, chains, "", require_both=False)
         if mono is None or mono.n < 5:
             continue
-        lQm = LD.logdists(esmif_lp(model, alphabet, mono))
+        lQm = LD.logdists(esmif_lp(model, alphabet, mono, device))
         im = {(c, int(r), i): k for k, (c, r, i)
               in enumerate(zip(mono.chains, mono.resnums, mono.icodes))}
         for j in range(cx.n):
@@ -150,7 +155,7 @@ def stage_score(a):
     if a.skip_file and os.path.exists(a.skip_file):
         skip = {ln.strip() for ln in open(a.skip_file) if ln.strip()}
         print(f"[score] skip-list ({len(skip)} OOM/oversized): {sorted(skip)}", flush=True)
-    model, alphabet = fe.load_esmif(device="cpu")
+    model, alphabet = fe.load_esmif(device=a.device)
     # alphabet positive control -- an ESM->MPNN column slip silently drops recovery to ~0.05
     amap = fe.build_alphabet_map(alphabet)
     back = "".join(alphabet.get_tok(int(i)) for i in amap)
@@ -170,7 +175,8 @@ def stage_score(a):
         if a.inflight_file:                       # marker so the wrapper can blame an OOM on this cid
             open(a.inflight_file, "w").write(cid)
         try:
-            rows, rec = _score_one(model, alphabet, path, pdb, g1, g2, keep[cid], a.max_residues)
+            rows, rec = _score_one(model, alphabet, path, pdb, g1, g2, keep[cid], a.max_residues,
+                                   a.device)
         except Exception as e:
             skipped.append((cid, f"{type(e).__name__}: {e}"))
             print(f"  skip {cid}: {type(e).__name__}: {e}", flush=True)
@@ -271,6 +277,7 @@ def main():
     ap.add_argument("--cache", default=PQ_ESMIF)
     ap.add_argument("--out", default="results/leverage_esmif.csv")
     ap.add_argument("--threads", type=int, default=4)
+    ap.add_argument("--device", default="cpu", help="'cpu' (committed path) or 'cuda'")
     ap.add_argument("--limit", type=int, default=0, help="score only the first N complexes (smoke test)")
     ap.add_argument("--max-residues", type=int, default=1200,
                     help="drop-and-log complexes larger than this (ESM-IF1 GVP OOM guard)")
