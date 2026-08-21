@@ -1,0 +1,6 @@
+sigma_A,n_mut,cpi_L_geom,lo,hi,p_gt0,spearman_L_ddG,seed,model,command
+0.0,2045,0.03298,0.02224,0.04288,1.0,-0.2371,20260803,ESM-IF1,"python3 src/leverage_noise_ladder_esmif.py --sigmas 0.0,0.25,0.5,0.75,1.0 --limit 200 --max-residues 1000 --device cuda"
+0.25,2045,0.0358,0.02297,0.04793,1.0,-0.1626,20260803,ESM-IF1,"python3 src/leverage_noise_ladder_esmif.py --sigmas 0.0,0.25,0.5,0.75,1.0 --limit 200 --max-residues 1000 --device cuda"
+0.5,2045,0.01964,0.00961,0.02859,1.0,-0.1585,20260803,ESM-IF1,"python3 src/leverage_noise_ladder_esmif.py --sigmas 0.0,0.25,0.5,0.75,1.0 --limit 200 --max-residues 1000 --device cuda"
+0.75,2045,0.00321,-0.003,0.00852,0.85,-0.0803,20260803,ESM-IF1,"python3 src/leverage_noise_ladder_esmif.py --sigmas 0.0,0.25,0.5,0.75,1.0 --limit 200 --max-residues 1000 --device cuda"
+1.0,2045,0.01138,0.00234,0.01865,0.992,-0.1336,20260803,ESM-IF1,"python3 src/leverage_noise_ladder_esmif.py --sigmas 0.0,0.25,0.5,0.75,1.0 --limit 200 --max-residues 1000 --device cuda"

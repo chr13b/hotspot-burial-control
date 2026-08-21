@@ -31,9 +31,10 @@ conditionally independent). Three consequences follow. It is **actionable**: the
 for ranking interface hotspots (AUROC 0.69, above geometry's 0.66 and confidence's 0.51), and adds
 **+0.016 AUROC [+0.004, +0.029]** on top of the full feature set published predictors already use —
 geometry *and* conservation. It is a **dose law** of backbone accuracy
-— the signal survives ≤0.5 Å of error and collapses by ~1 Å — and because the sensitivity is to the *backbone
-the derivative is read from*, not to the network, it is a prediction every method built on the same mixed
-derivative (BA-Cycle, RedNet, StaB-ddG) inherits on predicted backbones. And it reaches the **second** mixed
+— the signal survives ≤0.5 Å of error and then collapses, at ~1 Å for ProteinMPNN and ~1.5 Å for ESM-IF1 — and
+because the sensitivity is to the *backbone the derivative is read from*, not to the network, the fragility
+(though not its exact threshold, which we measure to be model-dependent) is a prediction every method built on
+the same mixed derivative (BA-Cycle, RedNet, StaB-ddG) inherits on predicted backbones. And it reaches the **second** mixed
 derivative: the model's partner-ablated pairwise couplings predict experimental binding *epistasis*. The
 published deficit is then a corollary — a burial confound, on five architectures plus ProBID-Net's own released
 model — and the blindness generalizes from binding to *catalytic* residues (confidence blind, sequence
@@ -337,11 +338,25 @@ backbone→sequence pipeline misses hotspots (the predicted backbone's interface
 that carries binding), and why binding-aware decoders retrain rather than read a frozen model. Because the collapse is driven by the
 *backbone the derivative is read from* — not by anything specific to ProteinMPNN — the same cliff is predicted
 for any method reading this mixed derivative off a generated backbone (BA-Cycle, RedNet, StaB-ddG all do) —
-the sensitivity is a property of the *input backbone*, shared by any reader of the derivative. An empirical
-dose-ladder under a second model family (ESM-IF1) is GPU-scale — ESM-IF1's leverage reproduces at the crystal
-backbone, but a clean CPI dose curve needs ~100+ complexes at ~15× ProteinMPNN's cost — and is a direct
-follow-up (script: `leverage_noise_ladder_esmif.py`). →
-leverage_noise_ladder.csv, leverage_noise_ladder_075full.csv.
+the sensitivity is a property of the *input backbone*, shared by any reader of the derivative. **That class
+prediction has now been run empirically under a second model family, and it half-holds — we state which half.**
+Repeating the identical ladder with ESM-IF1 (a 142M GVP-transformer with a native-teacher-forced conditional
+readout) over all 285 fixture complexes / 2,809 mutations, CPI(L | geometry) is **+0.0362 [+0.0273, +0.0452]**
+at 0.0 Å — 50× the placebo floor (+0.0007) — **+0.0350** at 0.25 Å and **+0.0266 [+0.0178, +0.0353]** at 0.5 Å,
+so *the sub-Ångström survival replicates cleanly in a second architecture*. It then decays — +0.0115 at 0.75 Å,
++0.0177 at 1.0 Å, +0.0020 [−0.0013, +0.0053] at 1.5 Å, +0.0011 at 2.0 Å — but **the collapse arrives later than
+ProteinMPNN's**: at 1.0 Å ProteinMPNN is already at the floor (+0.0024, CI touching zero) while ESM-IF1 still
+carries +0.0177 with the CI excluding zero, reaching the floor only by 1.5–2.0 Å. Three independent noise draws
+per magnitude (σ = 0.99/1.00/1.01, the seed being a function of σ) give +0.0114, +0.0019 and −0.0002 at ~1 Å —
+a draw-to-draw spread of ~0.012, the size of the estimates themselves, so the per-rung bootstrap CIs understate
+the uncertainty in the tail and the 0.75-vs-1.0 non-monotonicity is inside realization variance. **The honest
+class claim is therefore: the fragility to backbone error and the survival of accurate reconstruction are
+shared; the *threshold* is model-dependent (≈1.0 Å for ProteinMPNN, ≈1.5 Å for ESM-IF1) and must be quoted per
+model, not as a universal ~1 Å cliff.** (ESM-IF1's raw Spearman(L, ΔΔG) is markedly more jitter-robust than its
+CPI — −0.252 → −0.169 at 1.0 Å versus ProteinMPNN's −0.301 → −0.077 — plausibly because its readout is
+teacher-forced on native sequence context that jitter leaves intact; we flag this as an untested hypothesis.)
+→ leverage_noise_ladder.csv, leverage_noise_ladder_075full.csv, leverage_noise_ladder_esmif.csv,
+leverage_noise_ladder_esmif_{all285,redraw,tail}.csv, FINDINGS_esmif_dose_law.md.
 
 **And the knowledge extends past single effects to their *couplings* — the second mixed derivative.** If
 the single-mutant leverage is the model's first mixed derivative (partner ablation × one mutation), the

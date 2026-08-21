@@ -74,3 +74,12 @@ model family (ESM-IF1), and beyond evolutionary conservation** — the full stan
 set. This is the control that turns the decomposition from a control study into a result, and it lands in the
 strong direction (survives, not attenuates-to-null). → results/skempi_conservation.csv,
 skempi_conservation_positions.csv.
+
+**The ESM-IF1 leg is now an empirical dose curve, not a crystal-backbone point** (2026-08-20,
+`FINDINGS_esmif_dose_law.md`, `leverage_noise_ladder_esmif*.csv`). Over all 285 fixture complexes / 2,809
+mutations, ESM-IF1's CPI(L | geometry) is **+0.0362 [+0.0273, +0.0452]** at σ=0 (50× the +0.0007 placebo
+floor), **+0.0266 [+0.0178, +0.0353]** at σ=0.5 Å, then +0.0115 (0.75 Å), +0.0177 (1.0 Å), +0.0020
+[−0.0013, +0.0053] (1.5 Å), +0.0011 (2.0 Å). So the second-model-family result holds under sub-Ångström
+backbone error as pre-registered, but the collapse arrives **later** than ProteinMPNN's ~1 Å cliff — the
+threshold is model-dependent and is quoted per model, not as a universal number. Three noise draws per
+magnitude put the tail spread at ~0.012, so rungs at σ ≥ 0.75 Å are not separable from one another.
