@@ -23,9 +23,9 @@ survives — against a same-population baseline, distribution-matched positions 
 and **79%** (ESM-IF1) of the leverage-magnitude spread, so holding the bound distribution fixed removes at most
 about half of the binding leverage. And the consequence is measurable and large. On our main fixture (SKEMPI natural complexes)
 confidence ranks hotspots at or barely above chance across five architectures and adds nothing beyond geometry
-(conditional predictive impact 0.000), while the mixed derivative adds binding information **beyond geometry,
-beyond the standard one-pass log-odds readout, beyond a second inverse-folding model family (ESM-IF1), and
-beyond evolutionary conservation** — the full feature set of published hotspot predictors (mutation-level CPI
+(position-level conditional predictive impact 0.000), while the mixed derivative adds binding information **beyond
+geometry, beyond the standard one-pass log-odds readout, and beyond evolutionary conservation** — the full
+feature set of published hotspot predictors — and the whole result replicates in a second inverse-folding family (ESM-IF1) (mutation-level CPI
 +0.059; Spearman with experimental ΔΔG −0.30; per-position ~5× the best scalar, where confidence is
 conditionally independent). Three consequences follow. It is **actionable**: the mixed derivative is among the strongest single features
 for ranking interface hotspots (AUROC 0.69, on par with the learned KL detector at 0.68 and above geometry's
@@ -37,7 +37,7 @@ because the sensitivity is to the *backbone the derivative is read from*, not to
 (though not its exact threshold, which we measure to be model-dependent) is a prediction every method built on
 the same mixed derivative (BA-Cycle, RedNet, StaB-ddG) inherits on predicted backbones. And it reaches the **second** mixed
 derivative: the model's partner-ablated pairwise couplings predict experimental binding *epistasis*. The
-published deficit is then a corollary — a burial confound, on five architectures plus ProBID-Net's own released
+published deficit is then largely a corollary — mostly a burial confound that attenuates sharply under matching, across five architectures plus ProBID-Net's own released
 model — and the blindness generalizes from binding to *catalytic* residues (confidence blind, sequence
 conservation predicts). The leverage operator is BA-Cycle (Jiao et al. 2024); our contribution is the
 decomposition, the identifiability result and its *measured* non-vacuity, the first beyond-geometry (and
@@ -83,7 +83,8 @@ was invisible to every scalar readout the field has used. → leverage_decomposi
 
 **(ii) Confidence is not competence — a property of inverse folding, with a practical consequence.** The
 diagonal is blind across five architectures (interface-hotspot AUROC 0.50–0.54; conditionally independent of
-hotspot-ness given geometry, CPI 0.000). This measures the field's implicit BindCraft interface-freeze: ranking
+hotspot-ness given geometry, position-level CPI 0.000; the mutation-level confidence CPI is small but nonzero,
++0.010, so the blindness claim is specifically about *position-level* scalars). This measures the field's implicit BindCraft interface-freeze: ranking
 interface positions by confidence captures *fewer* hotspots than random (capture@3 0.064 vs 0.084, overlapping intervals; a trend, not yet significant), while free
 ΔSASA captures ~3× more (0.233) — so rank by geometry — or, better, by the mixed derivative itself, the
 among the strongest single features for interface triage (AUROC 0.69, level with the learned KL detector, vs confidence's 0.51; §4) — not by confidence. De-novo designs corroborate the positive
@@ -92,13 +93,14 @@ binding, and adds +0.018 beyond an all-atom rotamer-repacked occlusion baseline,
 scorer. → xmodel_confidence.csv, baseline_audit.csv, bindcraft_triage.csv, bennett_occlusion_allatom.csv, bennett_nonparent.csv.
 
 **(iii) The blindness generalises across function types.** On catalytic residues (M-CSA), structure-conditioned
-confidence is blind (within-amino-acid-type AUROC ≈ 0.50) while a sequence language model's conservation
+confidence is blind (within-amino-acid-type AUROC ≈ 0.44–0.50) while a sequence language model's conservation
 predicts them (0.77) — a dissociation surviving composition, burial, and chain-truncation controls.
 Inverse-folding confidence is blind to functional importance in general, not only binding. → catalytic_audit.csv.
 
-**(iv) The published deficit is a burial confound.** Under a pre-registered burial-matched matched-pair
+**(iv) The published deficit is largely a burial confound.** Under a pre-registered burial-matched matched-pair
 design (matching within-complex on relative SASA, secondary-structure class, and neighbour count), the
-crystal-backbone hotspot deficit vanishes across five inverse-folding architectures, and ProBID-Net's own
+crystal-backbone hotspot deficit attenuates sharply across five inverse-folding architectures — most of the gap
+is burial, though a residual persists for two of them (MIF, PiFold) on the strict tier — and ProBID-Net's own
 released voxel-CNN reproduces its published deficit and then dissolves it under joint burial-and-composition
 matching. We offer the matched-pair design as a reusable diagnostic *protocol*. → probid_gap_estimators.csv,
 composition_confound.csv.
@@ -384,7 +386,7 @@ the distance-controlled coupling is −0.13 [−0.25, −0.04], and the method-m
 (+0.007 [+0.000, +0.016]). It is not a sign-skew artifact — the distance-controlled partial ρ is negative in
 *both* sign strata (g < 0 and g > 0), whereas a magnitude-plus-skew artifact would flip the g > 0 stratum
 positive. Partner ablation is what surfaces it: for same-side pairs the *un-ablated* coupling
-is null (partial ρ = +0.01 [−0.15, +0.15]) and only the ablated one carries signal (−0.12) — subtracting the
+is null (partial ρ = +0.01 [−0.15, +0.15]) while the ablated one carries a weak same-direction signal (−0.12 [−0.25, +0.02], CI touching zero) — subtracting the
 intra-fold coupling exposes the binding coupling, exactly as for single mutations. Three positive controls
 hold: the coupling magnitude tracks the measured |g| even after controlling for distance (partial ρ = +0.21),
 the two decoding directions — read from *disjoint* order subsets — agree (Spearman = +0.61), and the signal is
@@ -458,11 +460,13 @@ low-confidence). Adjacent classes overlap in CI — a monotone trend with de-nov
 transient-recognition classes, not four pairwise-significant steps — but every natural class sits at or below
 chance and only de-novo clears it, yet the *mixed derivative* carries the binding signal in all of them. De-novo designs are simply where the signal is accessible to blunter probes
 as well: there, even the scalar complex-conditioned distribution adds +0.018 beyond an all-atom occlusion
-baseline. A methodological correction this forces: an earlier AB-Bind analysis reported the per-mutation
-distribution "adds nothing" on natural antibody–antigen ΔΔG (ΔAUROC +0.008), but under the correct conditional
-test on the same fixture it adds **CPI +0.042 [+0.022, +0.061]** — the ΔAUROC readout is the one with a −0.021
-noise floor (§3). AB-Bind's 27 complexes remain too few to be decisive either way; SKEMPI is where the question
-is settled. → abbind_bigidea1.csv, leverage_decomposition.csv.
+baseline. A methodological note this forces: an earlier AB-Bind analysis reported the per-mutation
+distribution "adds nothing" on natural antibody–antigen ΔΔG (ΔAUROC +0.008 over geometry + substitution), but
+under the conditional CPI test on the same baseline it adds **+0.031 [+0.015, +0.045]** (and +0.042 beyond
+geometry alone); the ΔAUROC readout's own fitted detection floor (≈−0.002) sits below the effect. The result is
+**fixture-fragile**, though — under a leaner control set the CPI is +0.009 and spans zero — and AB-Bind's 27
+complexes are too few to decide it either way; SKEMPI is where the question is settled. → abbind_bigidea1.csv,
+abbind_cpi.csv, leverage_decomposition.csv.
 
 **The blindness generalises beyond binding — to catalytic residues.** "Confidence is not competence" is not
 specific to binding hotspots. (The premise that a *functional*-site signal can be disentangled from a
@@ -470,7 +474,7 @@ specific to binding hotspots. (The premise that a *functional*-site signal can b
 biophysical stability model, not inverse folding; our distinct contribution is the
 inverse-folding-confidence-versus-PLM-conservation dissociation under a within-amino-acid-type control, and the
 finding that IF confidence is at chance.) On M-CSA catalytic residues, controlling for amino-acid composition by
-stratifying *within* amino-acid type, structure-conditioned confidence is blind (within-type AUROC 0.48–0.50,
+stratifying *within* amino-acid type, structure-conditioned confidence is blind (within-type AUROC 0.44–0.50 across strata, chance to weakly anti-predictive,
 chance) while a sequence language model's conservation predicts them (0.771 [0.723, 0.822]) — a dissociation
 of +0.288 [+0.237, +0.338] that survives on monomers alone (ruling out a partner-chain-truncation artifact:
 there MPNN is 0.516 [0.429, 0.604], chance) and under an additional within-amino-acid-type burial control (rSASA
@@ -506,9 +510,9 @@ not proven absence**, and the residual is architecture-dependent. → FINDINGS.m
 
 The strongest form of this test uses ProBID-Net's own released voxel-CNN. Run on our fixture, its port is
 faithful (overall interface recovery 0.472, matching its reported non-hotspot number), and its published
-hotspot deficit *does* reproduce — as a **dose-response in scan completeness**: the deficit deepens
-monotonically as more of a complex's interface is alanine-scanned (Spearman(n_hotspots, gap) = −0.20),
-reaching −0.113 [−0.208, −0.022] (p=0.007) in the comprehensively-scanned complexes (≥5 measured hotspots) —
+hotspot deficit *does* reproduce — but **only in comprehensively-scanned complexes**: pooled it is null
+(+0.014 [−0.052, +0.087]), and it appears at −0.113 [−0.208, −0.022] (p=0.007) only among the 18 complexes with
+≥5 measured hotspots (the intermediate scan-depth strata are non-monotone) —
 the pattern expected if the deficit is real and sparsely-scanned complexes merely lack the power to show it,
 not a cherry-picked subset. But it attenuates under confound-matching: matching residue type
 turns it positive (+0.120), matching burial gives −0.038, matching
@@ -553,8 +557,8 @@ because the barrier is the temperature exponent itself. The second is a *commitm
 autoregressive schedule might commit non-hotspot context first and paint hotspots into a corner. On
 ProteinMPNN, the oracle decoding order is inert (difference-in-differences −0.002, the decisive test); on
 MultiFlow, a coupled sequence-structure model, structure commits marginally before sequence and the
-unmasking-order knob has only a marginal effect (order-span 0.012, comparable to the seed-to-seed SD 0.011 —
-not the clean null an earlier miscomputed variance suggested; corrected). The schedule mechanism is thus ruled
+unmasking-order knob has only a marginal effect (order-span 0.012, far below the seed-to-seed SD of 0.065 —
+the knob is inert relative to seed noise). The schedule mechanism is thus ruled
 out decisively on the autoregressive model and shown marginal on the coupled one. → FINDINGS_expB.md. Neither
 competitor accounts for the effect; what remains is the conditioning-set signal of §6.
 
@@ -664,7 +668,7 @@ controlled only in part; we say so rather than overstate it.
 
 | # | Pre-registered false-positive mode | How it would fake — or hide — the effect | Control | Result / where |
 |---|---|---|---|---|
-| 1 | **Burial** | Buried positions are where inverse folding is *most* confident, so an uncontrolled hotspot-vs-rest comparison **hides** the effect (the confound cuts against us, not for us) | within-complex matched pairs (rSASA ±0.05, secondary-structure class, neighbour count ±1); and CPI over burial + neighbours + ΔSASA at *every* downstream step | deficit vanishes unmatched→matched across 5 architectures + ProBID-Net (§5); leverage CPI **+0.0048** survives full geometry (§4) |
+| 1 | **Burial** | Buried positions are where inverse folding is *most* confident, so an uncontrolled hotspot-vs-rest comparison **hides** the effect (the confound cuts against us, not for us) | within-complex matched pairs (rSASA ±0.05, secondary-structure class, neighbour count ±1); and CPI over burial + neighbours + ΔSASA at *every* downstream step | deficit largely attenuates unmatched→matched across 5 architectures + ProBID-Net (residual for 2/5 on the strict tier; §5); leverage CPI **+0.0048** survives full geometry (§4) |
 | 2 | **Native amino-acid identity** (Trp/Arg/Tyr are hotspot-enriched with distinctive priors) | the model's per-type prior, not binding, drives the score | per-wt-type breakdown; alanine-only subset; substitution-similarity (BLOSUM, side-chain volume, hydropathy) partialled out | Spearman(L, ΔΔG) negative in **18/19** wt-types and **−0.25 on Ala-only** (n=2,327); survives similarity controls (§4) |
 | 3 | **PDB training leakage** | the model has seen these complexes | *none needed* — leakage makes a positive **conservative** (the model is scored on structures it memorised, which can only *help* recovery/confidence, i.e. work against our deficit) | stated as such; every positive here is a lower bound (§1, §9) |
 | 4 | **Assay heterogeneity** (SKEMPI pools ITC, SPR, fluorescence) | a hotspot threshold or condition artifact masquerades as signal | strict (>2 kcal/mol, ProBID-Net's threshold) **and** loose (>1) hotspot definitions, both reported | conclusions hold under both thresholds (§2). **Partial:** we do *not* stratify by temperature/pH for the headline — disclosed as a limitation, not claimed as a control (§9) |
