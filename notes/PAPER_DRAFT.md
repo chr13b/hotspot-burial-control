@@ -120,7 +120,7 @@ hotspot as an alanine-scan ΔΔG_bind > 1 kcal/mol (and a strict variant > 2, Pr
 null set of |ΔΔG| < 0.25. Because SKEMPI complexes are crystal structures of *natural* complexes, we add two
 independent fixtures of different character: **Bennett-2023 de-novo designed binders**, which carry
 experimental site-saturation binding measurements over four targets and constitute a true design-regime test;
-and **AB-Bind**, antibody–antigen ΔΔG over 32 complexes, a second SKEMPI-class fixture with distinct
+and **AB-Bind**, antibody–antigen ΔΔG over 27 analysed complexes, a second SKEMPI-class fixture with distinct
 biophysics.
 
 **The matched-pair protocol.** The core of the burial analysis is a within-complex optimal 1:1 matching of
