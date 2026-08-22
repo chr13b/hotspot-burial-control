@@ -345,11 +345,13 @@ readout) over all 285 fixture complexes / 2,809 mutations, CPI(L | geometry) is 
 at 0.0 Å — 50× the placebo floor (+0.0007) — **+0.0350** at 0.25 Å and **+0.0266 [+0.0178, +0.0353]** at 0.5 Å,
 so *the sub-Ångström survival replicates cleanly in a second architecture*. It then decays — +0.0115 at 0.75 Å,
 +0.0177 at 1.0 Å, +0.0020 [−0.0013, +0.0053] at 1.5 Å, +0.0011 at 2.0 Å — but **the collapse arrives later than
-ProteinMPNN's**: at 1.0 Å ProteinMPNN is already at the floor (+0.0024, CI touching zero) while ESM-IF1 still
-carries +0.0177 with the CI excluding zero, reaching the floor only by 1.5–2.0 Å. Three independent noise draws
-per magnitude (σ = 0.99/1.00/1.01, the seed being a function of σ) give +0.0114, +0.0019 and −0.0002 at ~1 Å —
-a draw-to-draw spread of ~0.012, the size of the estimates themselves, so the per-rung bootstrap CIs understate
-the uncertainty in the tail and the 0.75-vs-1.0 non-monotonicity is inside realization variance. **The honest
+ProteinMPNN's**: at 1.0 Å ProteinMPNN is already at the floor (+0.0024, CI touching zero) while ESM-IF1 decays
+more slowly, reaching the floor only by 1.5–2.0 Å (+0.0020 [−0.0013, +0.0053] at 1.5 Å). The 1.0 Å rung itself
+is unstable across noise realizations and should be read as *straddling* the floor, not as retained signal:
+three independent jitter draws on the 200-complex subsample (σ = 0.99/1.00/1.01, the seed being a function of σ)
+give +0.0114, +0.0019 and −0.0002 — a draw-to-draw spread (~0.012) the size of the estimates themselves, so the
+per-rung bootstrap CIs understate the tail uncertainty and the 0.75-vs-1.0 non-monotonicity is inside
+realization variance. **The honest
 class claim is therefore: the fragility to backbone error and the survival of accurate reconstruction are
 shared; the *threshold* is model-dependent (≈1.0 Å for ProteinMPNN, ≈1.5 Å for ESM-IF1) and must be quoted per
 model, not as a universal ~1 Å cliff.** (ESM-IF1's raw Spearman(L, ΔΔG) is markedly more jitter-robust than its
