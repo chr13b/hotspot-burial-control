@@ -27,8 +27,9 @@ confidence ranks hotspots at or barely above chance across five architectures an
 beyond the standard one-pass log-odds readout, beyond a second inverse-folding model family (ESM-IF1), and
 beyond evolutionary conservation** — the full feature set of published hotspot predictors (mutation-level CPI
 +0.059; Spearman with experimental ΔΔG −0.30; per-position ~5× the best scalar, where confidence is
-conditionally independent). Three consequences follow. It is **actionable**: the mixed derivative is the strongest single feature
-for ranking interface hotspots (AUROC 0.69, above geometry's 0.66 and confidence's 0.51), and adds
+conditionally independent). Three consequences follow. It is **actionable**: the mixed derivative is among the strongest single features
+for ranking interface hotspots (AUROC 0.69, on par with the learned KL detector at 0.68 and above geometry's
+0.66 and confidence's 0.51), and adds
 **+0.016 AUROC [+0.004, +0.029]** on top of the full feature set published predictors already use —
 geometry *and* conservation. It is a **dose law** of backbone accuracy
 — the signal survives ≤0.5 Å of error and then collapses, at ~1 Å for ProteinMPNN and ~1.5 Å for ESM-IF1 — and
@@ -85,7 +86,7 @@ diagonal is blind across five architectures (interface-hotspot AUROC 0.50–0.54
 hotspot-ness given geometry, CPI 0.000). This measures the field's implicit BindCraft interface-freeze: ranking
 interface positions by confidence captures *fewer* hotspots than random (capture@3 0.064 vs 0.084, overlapping intervals; a trend, not yet significant), while free
 ΔSASA captures ~3× more (0.233) — so rank by geometry — or, better, by the mixed derivative itself, the
-strongest single feature for interface triage (AUROC 0.69 vs confidence's 0.51; §4) — not by confidence. De-novo designs corroborate the positive
+among the strongest single features for interface triage (AUROC 0.69, level with the learned KL detector, vs confidence's 0.51; §4) — not by confidence. De-novo designs corroborate the positive
 of (i) with even the scalar distribution: it beats substitution baselines (0.615), dissociates stability from
 binding, and adds +0.018 beyond an all-atom rotamer-repacked occlusion baseline, reproduced by a non-parent
 scorer. → xmodel_confidence.csv, baseline_audit.csv, bindcraft_triage.csv, bennett_occlusion_allatom.csv, bennett_nonparent.csv.
@@ -260,10 +261,11 @@ retains signal after controlling for leverage (−0.094 [−0.145, −0.054]). S
 each carries binding signal the other misses, and in particular the partner-ablation pass is not subsumed by
 the standard one-pass readout (we do not claim one dominates — the paired difference is not significant). The
 two-pass *structure* is what carries the signal, and this is its cleanest statement: the monomer pass on its
-own is inert (Spearman(monomer log-odds, ΔΔG) = +0.02), and the one-pass and full leverage are genuinely
-distinct quantities (correlation +0.54, so the monomer term removes ~70% of the one-pass variance) — leverage
+own is inert (Spearman(monomer log-odds, ΔΔG) = **+0.04**), and the one-pass and full leverage, while
+correlated (Pearson **+0.64**), are genuinely distinct — yet subtracting the individually-inert monomer pass
+*improves* the tracking of ΔΔG (one-pass Spearman −0.26 → leverage −0.30 on this sample). Leverage
 works precisely because the second pass *corrects* the first for the fold-stability constraint that the
-one-pass score conflates with binding. This scopes the
+one-pass score conflates with binding. → w2_monomer_inert.csv. This scopes the
 feature-class law precisely: it is about *position-level* scalars of P (recovery, confidence, entropy); a
 *per-substitution* one-pass readout legitimately carries constraint and substitution-similarity information,
 but the *binding-specific* increment requires the second pass. The direction is robust, not a residue-type
@@ -278,9 +280,10 @@ conservation) **+0.0059 [+0.0031, +0.0097]** (surviving the drop of its 3 most i
 and with the top three complexes contributing only 27% of the estimate). The simpler unmasked estimator agrees
 (+0.0051; the two conservation estimators correlate at +0.71), and conservation adds beyond leverage in turn
 (+0.0083) — the two are nearly orthogonal (Spearman −0.08 masked, −0.14 unmasked). And the *actionable* payoff
-sharpens against this stronger baseline: adding the mixed derivative on top of geometry **and** conservation
-lifts hotspot AUROC by **+0.016 [+0.004, +0.029]** (both the |L|_rms and −L(→Ala) variants significant),
-larger than against geometry alone. So the mixed derivative adds beyond the **standard hotspot feature set** —
+sharpens against the conservation baseline: adding the mixed derivative on top of geometry **and** conservation
+(the unmasked-negentropy estimator, for which we ran the hotspot ranker) lifts hotspot AUROC by
+**+0.016 [+0.004, +0.029]** (both the |L|_rms and −L(→Ala) variants significant), larger than against geometry
+alone. So the mixed derivative adds beyond the **standard hotspot feature set** —
 geometry *and* conservation — not merely cheap geometry. → skempi_conservation.csv, FINDINGS_conservation.md. To calibrate the effect
 size: L is a *zero-shot* readout of a model never trained on binding, yet it adds **+0.030 interface AUROC**
 (0.700→0.730) beyond a *supervised* geometry+substitution baseline fit directly on the binding labels, and on
@@ -342,7 +345,7 @@ the sensitivity is a property of the *input backbone*, shared by any reader of t
 prediction has now been run empirically under a second model family, and it half-holds — we state which half.**
 Repeating the identical ladder with ESM-IF1 (a 142M GVP-transformer with a native-teacher-forced conditional
 readout) over all 285 fixture complexes / 2,809 mutations, CPI(L | geometry) is **+0.0362 [+0.0273, +0.0452]**
-at 0.0 Å — 50× the placebo floor (+0.0007) — **+0.0350** at 0.25 Å and **+0.0266 [+0.0178, +0.0353]** at 0.5 Å,
+at 0.0 Å (CI excluding zero), **+0.0350** at 0.25 Å and **+0.0266 [+0.0178, +0.0353]** at 0.5 Å,
 so *the sub-Ångström survival replicates cleanly in a second architecture*. It then decays — +0.0115 at 0.75 Å,
 +0.0177 at 1.0 Å, +0.0020 [−0.0013, +0.0053] at 1.5 Å, +0.0011 at 2.0 Å — but **the collapse arrives later than
 ProteinMPNN's**: at 1.0 Å ProteinMPNN is already at the floor (+0.0024, CI touching zero) while ESM-IF1 decays
@@ -444,9 +447,16 @@ reproduces every component: interface AUROC 0.625, partner-gain +0.079, and the 
 binding signal is accessible only where selection is binding-dominated (de-novo), reducing to geometry on
 natural complexes. Our own main fixture refutes it: the mixed derivative adds +0.059 on SKEMPI (above). What is
 true is the *feature-class* distinction: on natural complexes the binding signal is invisible to *scalar*
-summaries — confidence is at chance and adds zero beyond geometry (§3), and while a scalar confidence readout
-rises to 0.60 on de-novo interfaces it stays at chance on natural SKEMPI (0.538) → bennett_conf_fork.csv — yet
-the *mixed derivative* carries it. De-novo designs are simply where the signal is accessible to blunter probes
+summaries — confidence is at chance and adds zero beyond geometry (§3), and the scalar confidence readout
+traces a **monotone gradient** set by how fold-coupled the interface is. Within one pipeline, across SKEMPI's
+own interface classes, hotspot confidence-AUROC rises in the *pre-registered* order — TCR/pMHC 0.430
+[0.355, 0.508] → antibody–antigen 0.457 [0.383, 0.518] → protease–inhibitor 0.554 [0.465, 0.615] — and reaches
+0.596 [0.567, 0.624] on de-novo binders (Spearman(transience-rank, AUROC) = +1.0; → threepoint_law.csv,
+bennett_conf_fork.csv). It is not a burial effect: the order survives burial-residualization (0.413 → 0.426 →
+0.551) and runs *opposite* to the per-class burial-AUROC (antibody–antigen is the most buried class yet
+low-confidence). Adjacent classes overlap in CI — a monotone trend with de-novo significantly above the two
+transient-recognition classes, not four pairwise-significant steps — but every natural class sits at or below
+chance and only de-novo clears it, yet the *mixed derivative* carries the binding signal in all of them. De-novo designs are simply where the signal is accessible to blunter probes
 as well: there, even the scalar complex-conditioned distribution adds +0.018 beyond an all-atom occlusion
 baseline. A methodological correction this forces: an earlier AB-Bind analysis reported the per-mutation
 distribution "adds nothing" on natural antibody–antigen ΔΔG (ΔAUROC +0.008), but under the correct conditional
@@ -487,9 +497,12 @@ confound is visible directly: as hotspot strength increases, both sequence recov
 lockstep (recovery 0.347→0.529, relative SASA 0.218→0.080). Under the pre-registered matched-pair design —
 pairing each hotspot to a null residue in the same complex at matched relative SASA, secondary-structure
 class, and neighbour count — the deficit attenuates to statistical indistinguishability: the matched estimate
-is −0.042 [−0.222, +0.129] and a higher-powered regression estimator is +0.059 [−0.051, +0.167], every
-architecture's primary interval containing zero (a two-one-sided-tests check does not certify equivalence at
-the ±0.115-nat margin — attenuation, not proven absence). → FINDINGS.md.
+is −0.042 [−0.222, +0.129] and a higher-powered regression estimator is +0.059 [−0.051, +0.167] — the deficit
+attenuating sharply from its unmatched value. We do not claim it vanishes everywhere: on the strict
+matched-pair PRIMARY tier (47 pairs) MIF and PiFold retain a residual recovery deficit whose CI excludes zero
+(MIF +0.277 [+0.098, +0.465]; PiFold +0.191 [+0.022, +0.359]), and a two-one-sided-tests check does not certify
+equivalence at the ±0.115-nat margin. The honest claim is **strong attenuation — most of the gap is burial —
+not proven absence**, and the residual is architecture-dependent. → FINDINGS.md, panel_summary.csv.
 
 The strongest form of this test uses ProBID-Net's own released voxel-CNN. Run on our fixture, its port is
 faithful (overall interface recovery 0.472, matching its reported non-hotspot number), and its published
@@ -614,7 +627,8 @@ AB-Bind's 27 complexes are indeterminate for the leverage test.
 **Caveats specific to the decomposition.** (a) *Orthogonal is not independent*: confidence cannot *express*
 leverage, but the two are weakly-to-moderately correlated and the correlation is model-dependent
 (Spearman(confidence, |L|) = +0.075 for ProteinMPNN, +0.31 for ESM-IF1); we claim blindness by construction
-(a confidence-matched pair still spans most of the leverage range — 73% of SD for ESM-IF1), not statistical
+(distribution-matched positions still retain 47% (ProteinMPNN) / 79% (ESM-IF1) of the leverage spread against a
+same-population baseline, → nonvacuity.csv), not statistical
 independence. (b) The leverage operator L *is* BA-Cycle (Jiao et al. 2024); we
 credit the score and claim the decomposition, the beyond-geometry control, and the feature-class law. (c) L
 estimates −ΔΔG_bind only up to an unknown temperature — no calibrated kcal/mol reading; all our readouts are

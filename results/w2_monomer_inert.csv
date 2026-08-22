@@ -1,0 +1,6 @@
+stat,value,n,seed,command
+spearman_monomer_om_vs_ddG,0.0369,2949,20260803,python3 src/w2_monomer_inert.py
+spearman_onepass_oc_vs_ddG,-0.2592,2949,20260803,python3 src/w2_monomer_inert.py
+spearman_leverage_L_vs_ddG,-0.301,2949,20260803,python3 src/w2_monomer_inert.py
+pearson_corr_onepass_leverage,0.6358,2949,20260803,python3 src/w2_monomer_inert.py
+frac_onepass_variance_removed_by_monomer,0.2669,2949,20260803,python3 src/w2_monomer_inert.py
