@@ -210,7 +210,7 @@ theorem rather than a list.
 > thermodynamic cycle; **(ii) [non-identifiability]** `L` is not a function of `P`: `Var(L_i | P_i) > 0`, so two
 > positions with the same bound distribution `P_i = P_j` have identical confidence `φ(P_i) = φ(P_j)` for
 > **every** functional `φ`, yet differ in leverage. Hence for any `P`-only estimator, `inf_φ E[(ΔΔG_bind −
-> φ(P))²] ≥ E[Var(ΔΔG_bind | P)] > 0` — an error floor only a `(P,Q)`-measurable estimator can beat;
+> φ(P))²] ≥ E[Var(ΔΔG_bind | P)] > 0` — an error floor that any estimator using information beyond `P` (the mixed derivative among them) can beat;
 > **(iii) [readout, not model]** `X_monomer` is a deterministic function of `X_complex` (delete the partner's
 > atoms), so `L` is computable — by a second, partner-ablated forward pass — yet by (ii) is **not a function of
 > `P`**. The blindness is a property of the *readout*, not the model: the binding term is in the weights,
