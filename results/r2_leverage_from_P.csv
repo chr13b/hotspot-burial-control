@@ -1,0 +1,9 @@
+model,target,learner,r2_L_given_Pfull,lo,hi,irreducible_frac,n,n_complexes,seed,command
+ProteinMPNN,L_rms,gbm_flexible,0.3018,0.2757,0.3268,0.6982,14503,344,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_rms,ridge_linear,0.1541,0.1402,0.1675,0.8459,14503,344,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_ala,gbm_flexible,0.2688,0.2449,0.2917,0.7312,13833,344,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_ala,ridge_linear,0.1328,0.1208,0.1439,0.8672,13833,344,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_rms,gbm_flexible,0.3127,0.2898,0.3351,0.6873,14118,337,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_rms,ridge_linear,0.1686,0.1476,0.187,0.8314,14118,337,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_ala,gbm_flexible,0.2412,0.2134,0.2665,0.7588,13465,337,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_ala,ridge_linear,0.1178,0.1016,0.132,0.8822,13465,337,20260803,python3 src/r2_leverage_from_P.py
