@@ -1,5 +1,5 @@
-stratum,transience_rank,n_complexes,n_interface,n_hot,conf_auroc,lo,hi,burial_auroc,conf_resid_burial_auroc,pipeline,underpowered,note,seed,command
-TCR/pMHC,1,36.0,1581.0,34.0,0.4298,0.3551,0.5083,0.606,0.4129,SKEMPI/leverage_positions,False,,20260803,python3 src/p_3point_law.py
-AB/AG,2,52.0,1913.0,68.0,0.4566,0.3826,0.5181,0.7497,0.426,SKEMPI/leverage_positions,False,,20260803,python3 src/p_3point_law.py
-Pr/PI,3,60.0,1898.0,26.0,0.5541,0.4653,0.6154,0.4808,0.5506,SKEMPI/leverage_positions,False,,20260803,python3 src/p_3point_law.py
-"de-novo (Bennett, ANCHOR)",4,,,,,,,,,bennett_conf_fork.csv,,different pipeline/labels; see CSV printed above,20260803,python3 src/p_3point_law.py
+stratum,transience_rank,n_complexes,n_interface,n_hot,conf_auroc,lo,hi,leverage_auroc_Lrms,lev_lo,lev_hi,leverage_auroc_negLala,burial_auroc,conf_resid_burial_auroc,pipeline,underpowered,note,seed,command
+TCR/pMHC,1,36.0,1581.0,34.0,0.4298,0.3551,0.5083,0.6414,0.5392,0.7651,0.6255,0.606,0.4129,SKEMPI/leverage_positions,False,,20260803,python3 src/p_3point_law.py
+AB/AG,2,52.0,1913.0,68.0,0.4566,0.3826,0.5181,0.6276,0.5439,0.7162,0.5576,0.7497,0.426,SKEMPI/leverage_positions,False,,20260803,python3 src/p_3point_law.py
+Pr/PI,3,60.0,1898.0,26.0,0.5541,0.4653,0.6154,0.7007,0.5986,0.8115,0.7477,0.4808,0.5506,SKEMPI/leverage_positions,False,,20260803,python3 src/p_3point_law.py
+"de-novo (Bennett, ANCHOR)",4,,,,,,,,,,,,,bennett_conf_fork.csv,,different pipeline/labels; see CSV printed above,20260803,python3 src/p_3point_law.py

@@ -1,0 +1,4 @@
+stat,value,lo,hi,n,n_complexes,seed,command
+within_decile_IQR_over_overall_IQR,1.0873,1.0572,1.1268,13401,343.0,20260803,python3 src/conf_decile_leverage.py
+overall_IQR_Lrms,0.9684,,,13401,,20260803,python3 src/conf_decile_leverage.py
+spearman_conf_vs_Lrms,0.0746,,,13401,,20260803,python3 src/conf_decile_leverage.py

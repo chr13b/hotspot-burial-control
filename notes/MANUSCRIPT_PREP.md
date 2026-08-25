@@ -60,8 +60,12 @@ scalarizations, ≥4 architectures, lead with **conservation** (the real feature
 predicted-backbones **folded in** (NOT appendix — it's the answer to "does this matter in the design regime").
 (4) triage with enrichment@k. (5) coupling, ONE paragraph.
 **Appendix:** ProBID §5 (compressed to a corollary + full ladder table); §7 mechanisms; catalytic; Bennett
-occlusion; the **constraint gradient (demoted** — n=34/68/26, p≈1/24, overlapping CIs; two sentences + n's, per
-the user's steer); reciprocity; effect-size-vs-supervised.
+occlusion; reciprocity; effect-size-vs-supervised.
+- **RECONSIDER the constraint-gradient demotion.** Adding per-class **leverage**-AUROC (now in
+  `threepoint_law.csv`: 0.641/0.628/0.701, flat+high, all clear chance) upgrades it from a caveated 4-point
+  confidence trend to a *divergence of the two feature classes across a controlled axis* — the designer flags
+  this as the highest-ROI number in the set and "roughly level with Fig 4". Recommendation: **KEEP** it (as
+  upgraded Fig 5 + a short main-text paragraph), rather than demote. Await user confirmation.
 - [ ] Correct `FRAMING_PLAN.md`: it sends §6 to appendix — DON'T; merge §6 into the dose law.
 
 ## PHASE D — release hygiene / de-identification (reviewer sees a clean repo)

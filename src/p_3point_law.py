@@ -58,23 +58,30 @@ def main():
     d["is_hot"] = d.is_hot.astype(float)
     d = d.dropna(subset=["conf", "burial", "cls"])
     d["conf_resid"] = resid_on_burial(d.conf.to_numpy(), d.burial.to_numpy())
+    d["negL_ala"] = -d.L_ala                              # higher = more destabilising on ->Ala = hotspot-like
 
     rows = []
-    print(f"{'stratum':12s} {'n_cx':>5s} {'n_hot':>6s} {'conf-AUROC':>22s} {'burial-AUROC':>12s} {'conf|burial':>12s}")
+    print(f"{'stratum':12s} {'n_cx':>5s} {'n_hot':>6s} {'conf-AUROC':>22s} {'LEV-AUROC(|L|rms)':>22s} "
+          f"{'burial-AUROC':>12s} {'conf|burial':>12s}")
     for name in ["TCR/pMHC", "AB/AG", "Pr/PI"]:
         g = d[d.cls == name]
         if not len(g):
             continue
         rng = np.random.default_rng(SEED)
         ca = auroc(g.is_hot, g.conf); lo, hi = clustered_ci(g, "conf", rng)
+        la = auroc(g.is_hot, g.L_rms); llo, lhi = clustered_ci(g, "L_rms", rng)   # leverage-AUROC (the class cue)
+        la_ala = auroc(g.is_hot, g.negL_ala)
         ba = auroc(g.is_hot, g.burial)
         cra = auroc(g.is_hot, g.conf_resid)
         nhot = int(g.is_hot.sum()); ncx = g.complex_id.nunique()
         flag = " UNDERPOWERED" if (ncx < 5 or nhot < 15) else ""
-        print(f"{name:12s} {ncx:5d} {nhot:6d}   {ca:.3f} [{lo:.3f},{hi:.3f}]   {ba:>10.3f}   {cra:>10.3f}{flag}")
+        print(f"{name:12s} {ncx:5d} {nhot:6d}   {ca:.3f} [{lo:.3f},{hi:.3f}]   {la:.3f} [{llo:.3f},{lhi:.3f}]"
+              f"   {ba:>10.3f}   {cra:>10.3f}{flag}")
         rows.append(dict(stratum=name, transience_rank=RANK[name], n_complexes=ncx,
                          n_interface=len(g), n_hot=nhot, conf_auroc=round(ca, 4),
-                         lo=round(lo, 4), hi=round(hi, 4), burial_auroc=round(ba, 4),
+                         lo=round(lo, 4), hi=round(hi, 4),
+                         leverage_auroc_Lrms=round(la, 4), lev_lo=round(llo, 4), lev_hi=round(lhi, 4),
+                         leverage_auroc_negLala=round(la_ala, 4), burial_auroc=round(ba, 4),
                          conf_resid_burial_auroc=round(cra, 4), pipeline="SKEMPI/leverage_positions",
                          underpowered=bool(ncx < 5 or nhot < 15)))
 

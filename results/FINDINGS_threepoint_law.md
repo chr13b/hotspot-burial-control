@@ -47,6 +47,23 @@ protease–inhibitor complexes confidence weakly sees them, and in de-novo binde
   *new* within-pipeline result is the three-class SKEMPI gradient.
 - Pr/PI has the fewest hotspots (n_hot=26) — its wider CI reflects that.
 
+## The upgrade — leverage-AUROC per class (the two feature classes diverge)
+The decisive addition: compute the **leverage**-AUROC in the same strata. It is **flat and high across every
+natural class**, while confidence climbs the gradient beneath it:
+
+| class | confidence-AUROC | **leverage-AUROC (\|L\|_rms)** |
+|---|---|---|
+| TCR/pMHC | 0.430 [0.355, 0.508] | **0.641 [0.539, 0.765]** |
+| AB/AG | 0.457 [0.383, 0.518] | **0.628 [0.544, 0.716]** |
+| Pr/PI | 0.554 [0.465, 0.615] | **0.701 [0.599, 0.811]** |
+
+Leverage clears chance (all lower CIs > 0.5) and beats confidence in every class (non-overlapping in TCR/pMHC:
+conf hi 0.508 < lev lo 0.539). So this is not merely "confidence declines toward transient interfaces" — it is
+the **feature-class law demonstrated across a controlled biological axis**: the scalar of `P` is regime-dependent
+and blind, the mixed derivative is regime-independent and sighted. This is a cleaner statement of the thesis
+than any single-fixture panel, and it upgrades the section from a caveated 4-point trend to a divergence. →
+threepoint_law.csv (`leverage_auroc_Lrms`).
+
 ## Bottom line
 The 2-point "suggestive comparison" is now a **four-point monotone law**, pre-registered, with the ordering
 confirmed exactly and shown to be orthogonal to burial. Confidence sees binding-hotspots in proportion to how

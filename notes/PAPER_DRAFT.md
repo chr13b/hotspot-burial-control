@@ -458,7 +458,11 @@ bennett_conf_fork.csv). It is not a burial effect: the order survives burial-res
 0.551) and runs *opposite* to the per-class burial-AUROC (antibody–antigen is the most buried class yet
 low-confidence). Adjacent classes overlap in CI — a monotone trend with de-novo significantly above the two
 transient-recognition classes, not four pairwise-significant steps — but every natural class sits at or below
-chance and only de-novo clears it, yet the *mixed derivative* carries the binding signal in all of them. De-novo designs are simply where the signal is accessible to blunter probes
+chance and only de-novo clears it, yet the *mixed derivative* carries the binding signal in all of them: the
+leverage-AUROC stays **flat and high across every natural class** — 0.641 [0.539, 0.765] (TCR/pMHC), 0.628
+[0.544, 0.716] (AB/AG), 0.701 [0.599, 0.811] (protease–inhibitor), each clearing chance — while confidence
+climbs the fold-coupling gradient beneath it. The two feature classes *diverge across a controlled biological
+axis*: the scalar is regime-dependent and blind, the derivative is regime-independent and sighted. De-novo designs are simply where the signal is accessible to blunter probes
 as well: there, even the scalar complex-conditioned distribution adds +0.018 beyond an all-atom occlusion
 baseline. A methodological note this forces: an earlier AB-Bind analysis reported the per-mutation
 distribution "adds nothing" on natural antibody–antigen ΔΔG (ΔAUROC +0.008 over geometry + substitution), but
