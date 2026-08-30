@@ -47,6 +47,27 @@ Odds context: ~0.85+ *once R1/R2 closed and the scope trim + figures land*. Curr
       [−0.142,−0.047]); coupling sign-accuracy overclaim (`p3_sign_verify.csv`: |C|>p75 model 0.65 > majority
       0.621 — it *does* beat on that subset).
 
+## CEILING-RAISER (the connective result — surfaced by the weaknesses re-check)
+**Steer with the CFG direction.** We now *name* L as the classifier-free-guidance direction but never guide with
+it. The obvious reviewer question: "you named the direction — did you use it?" `src/decoding/mpnn_steer.py`
+already exists. A small in-silico demonstration — tilt ProteinMPNN sampling by `+α·L` at interface positions and
+show it raises predicted binding (leverage-Ala / a ΔΔG proxy) without wrecking recovery, a clean α-sweep with a
+control — turns the CFG framing from an analogy into an *operationalized* result and connects §4 (the operator)
+to the design regime R2 targets. Highest-value optional add for a borderline reviewer. CPU-feasible (ProteinMPNN
+sampling). Pre-register the α-sweep + the "recovery not wrecked" guardrail before running.
+
+## Should-fix carried from the weaknesses re-check (verified vs CSVs)
+- [ ] **§3 vs Corollary 1 disagree on scalar KL** (+0.002 "genuine signal" on the 5,742 nugget sample vs +0.0009
+      "at the floor" on 13,401 — and the placebo floor only exists on 13,401). Fix: run `w_placebo_ladder` on the
+      nugget 5,742 sample so KL has a floor to be read against; reconcile in one clause.
+- [ ] **Close Prop 1(ii) exactly**: `r2_leverage_from_P.py` measures Var(L|P); swap the target to ΔΔG on the
+      2,949 mutations to measure Var(ΔΔG|P) directly (turns "measured by proxy via cycle (i)" into "measured").
+- [ ] **Coupling limitation is contradicted by its own CSV**: §4 says "does not beat majority on large-|g| or
+      high-|C|" but `p3_sign_verify.csv` |C|>p75 model 0.650 > majority 0.621 (it beats there; only |g|>1 and
+      |C|>p90 don't). Promote from LOW — a reviewer checking honesty claims checks exactly this.
+- [ ] **Conservation drop-3 masked/unmasked mix**: §4 "+0.0059 (drop-3 +0.0041)" — verify +0.0041 is the masked
+      drop-3 (FINDINGS says +0.00408) vs the geom+conservation +0.0036 the reviewer cites; the "27%" is unmasked.
+
 ## PHASE B — figures (start now, before cutting text)
 Fable-5 figure-design plan pending (see when it lands). Target: 4–5 main-text figures, ICLR-quality
 (print-safe + colorblind-safe palette, publication typography, no chartjunk). Render in matplotlib → PDF.
