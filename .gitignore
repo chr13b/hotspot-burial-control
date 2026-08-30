@@ -11,3 +11,6 @@ results/leverage_bennett_pairs.csv
 results/leverage_pq_*.csv
 # predicted-backbone leverage PQ caches (derivable; re-score with leverage_predicted.py --stage score)
 results/leverage_pq_predicted_*.csv
+# predicted-backbone per-source frames (derivable via leverage_predicted.py --stage analyse); headline numbers live in leverage_predicted.csv + _ranker.csv
+results/leverage_predicted_*_mutations.csv
+results/leverage_predicted_*_positions.csv

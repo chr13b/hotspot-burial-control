@@ -113,8 +113,12 @@ from two architecturally-independent structure predictors — a burial-matched d
 predictors' per-complex deficits agree (ρ = 0.57): the *same* complexes are hard under both. This agreement
 survives residualising on interface burial (partial ρ = 0.53), so it is not a recursive burial effect, and it
 is absent on noised-crystal backbones at matched distance — it tracks *independent reconstruction*, not
-distance-from-native. → deficit_burial_residualize.csv. Two competing mechanisms — a low-temperature
-constellation cost and a commitment-ordering schedule — are separately measured and refuted.
+distance-from-native. → deficit_burial_residualize.csv. And on those same predicted backbones the *mixed
+derivative itself* survives: recomputed on the OpenFold3/AF2 structures with geometry taken from the predicted
+backbone, CPI(L | geometry) is +0.039/+0.032 (69–84% of the matched crystal value, CI>0), so the binding signal
+is design-time-usable, not a crystal artifact — while the confidence readout on the same backbones degrades into
+the deficit, exactly as the decomposition predicts. → FINDINGS_leverage_predicted.md. Two competing mechanisms —
+a low-temperature constellation cost and a commitment-ordering schedule — are separately measured and refuted.
 
 ## 2. Setup and pre-registration
 
@@ -362,12 +366,18 @@ the crystal value exactly, a positive control), CPI(L | geometry) holds — +0.0
 +0.047 at 0.5 Å, +0.032 at 0.75 Å — then collapses to +0.002 by 1.0 Å and −0.001 by 1.5 Å (all on the same
 2,949-mutation sample), and Spearman(L, ΔΔG) tracks it down (−0.30, −0.29, −0.29, −0.19, −0.08, −0.06). A
 re-drawn noise realization at 1 Å reproduces the collapse, so it is not a single-sample artifact. The
-binding signal is robust to *accurate* reconstruction and lost under an inaccurate one. This is a **lower bound**
-on the design-time damage: our own predicted-backbone experiment (§6) shows independent reconstructions collapse
-*harder* than distance-matched noise. So the leverage is a diagnostic on natural and accurately-reconstructed
-complexes, not a frozen-model readout for arbitrary predicted backbones — which is precisely *why* the staged
-backbone→sequence pipeline misses hotspots (the predicted backbone's interface error destroys the very signal
-that carries binding), and why binding-aware decoders retrain rather than read a frozen model. Because the collapse is driven by the
+binding signal is robust to *accurate* reconstruction and lost under an inaccurate one. **The decisive test is
+whether real predicted backbones fall on the surviving or the collapsed part of this curve, and they fall on
+the surviving part** (§6, measured directly): on OpenFold3 and AF2-multimer backbones for 140 shared complexes,
+CPI(L | geometry) is **+0.039 [+0.027, +0.050]** and **+0.032 [+0.023, +0.041]** — 69–84% of the matched
+crystal value, CI clearing the placebo floor, drop-3 robust — i.e. the ~0.5–0.75 Å rung of this ladder, not the
+cliff. So leverage is a design-time-usable readout on the accurate predictors designers actually use, and the
+earlier inference that it would collapse on predicted backbones (extrapolated from this jitter ladder before the
+direct experiment) was too pessimistic and is corrected by measurement. What the staged backbone→sequence
+pipeline still misses at hotspots is not this signal but the *confidence* one it actually reads: on the same
+predicted backbones the confidence-type recovery readout degrades into a burial-matched deficit (§6, −0.19/−0.23)
+while the mixed derivative survives — the two readouts diverge exactly where the decomposition says they must.
+Because the jitter collapse is driven by the
 *backbone the derivative is read from* — not by anything specific to ProteinMPNN — the same cliff is predicted
 for any method reading this mixed derivative off a generated backbone (BA-Cycle, RedNet, StaB-ddG all do) —
 the sensitivity is a property of the *input backbone*, shared by any reader of the derivative. **That class
@@ -575,6 +585,25 @@ far: on partial-diffusion backbones that are noised crystals at the same interfa
 absent. It is a property of *independent reconstruction* — the small, systematic errors a predictor makes at
 an interface it must build without seeing the side chains — precisely the regime a de-novo design occupies. →
 FINDINGS_expC2.md.
+
+**And the binding signal designers would actually read off these backbones survives them.** The deficit above
+is the *confidence*-type readout degrading; the complementary question is whether the *mixed derivative* — the
+object this paper says carries binding — still works when computed on a predicted rather than a crystal
+backbone. It does. Re-running the identical leverage scorer on the OpenFold3 and AF2-multimer backbones for the
+140 complexes shared with the SKEMPI fixture, with geometry recomputed from the predicted structure (the honest
+baseline a designer has, not the crystal), CPI(L | burial+nbr+ΔSASA) is **+0.039 [+0.027, +0.050]** on OpenFold3
+and **+0.032 [+0.023, +0.041]** on AF2-multimer (pooled +0.036 [+0.026, +0.048]), P(>0)=1.000, each surviving
+removal of its three most influential complexes, against a matched crystal-on-140 value of +0.046 — a 69–84%
+retention, and L still adds beyond confidence on the predicted backbone (+0.046/+0.036, CI>0). The positive
+control gates it: the same pipeline on crystal backbones reproduces the committed leverage to 1×10⁻⁵. Two honest
+limits. First, at the position level the signal attenuates more (CPI(L→Ala | geom) +0.007/+0.002, still CI>0),
+and the *ranking* gain from adding |L| to geometry, which is significant on crystals (ΔAUROC +0.014 [+0.004,
++0.025]), becomes marginal on predicted backbones (+0.007 [−0.001, +0.015] OpenFold3, +0.005 [−0.002, +0.012]
+AF2): the mixed derivative is the right thing to *read binding from* at design time, but as a plug-in ranking
+feature its crystal-grade lift does not fully transfer. Second, OpenFold3 retains more than AF2 (84% vs 69%),
+the same ordering the deficit gives — the more interface-native predictor loses less signal, as the mechanism
+predicts. Pre-registered before any number (PREREG_leverage_predicted.md); → FINDINGS_leverage_predicted.md,
+leverage_predicted.csv, leverage_predicted_ranker.csv.
 
 ## 7. Ruling out competing mechanisms
 
