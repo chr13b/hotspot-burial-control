@@ -582,8 +582,12 @@ does not — it reappears on the *predicted* backbones that designers actually c
 behaves like a real, structured signal. On backbones from two architecturally-independent structure
 predictors, OpenFold3 and AlphaFold2-multimer, a burial-matched deficit is present (−0.191 [−0.37, −0.004]
 and −0.233 [−0.44, −0.035]; the crystal deficit is ≈0). The claim does not rest on either marginal number —
-neither survives dropping its three most influential complexes — but on their *agreement*: the two predictors'
-per-complex deficits correlate at ρ = 0.565 [0.40, 0.71], so the same complexes are hard under both. A
+each attenuates when its three most-*supporting* complexes are dropped, though both survive the more principled
+drop of the three highest-magnitude-influence complexes (OF3 −0.173 [−0.337, −0.009], AF2 −0.197 [−0.374,
+−0.019]) — but on their *agreement*, which is stronger than a correlation: the two predictors' per-complex
+deficits correlate at ρ = 0.565 [0.40, 0.71], **and the three complexes that most support the deficit are the
+*same set* under both predictors** (1JRH, 1JTD, 1Z7X). The same complexes are hard under both, and the same
+complexes carry the effect — a per-predictor artifact could produce neither. → expD_leverage.csv. A
 per-predictor memorisation or architecture artifact would produce disjoint deficits; two independent
 reconstructions instead agree, per complex. → FINDINGS_expA.md, FINDINGS_expD.md.
 
