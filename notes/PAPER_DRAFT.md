@@ -209,9 +209,9 @@ arbitrarily in L — and this is not hypothetical. We measure how much of the mi
 trained on the full 20-vector `P` recovers **only ~37%** of the leverage — R²(L_rms | P) = 0.37 [0.34, 0.40]
 (ProteinMPNN), 0.36 [0.34, 0.39] (ESM-IF1) — so **~63% is irreducible from `P`** in both families (~62% even
 when wt identity is added, the fair `φ(P, wt)` class since confidence itself uses `log P(wt)`); a *linear*
-readout recovers less than half, R² ≈ 0.15. The recoverable part is the one-pass complex log-odds *vector* — the
-*scalar* one-pass magnitude alone recovers only R² ≈ 0.08–0.16 — and the irreducible majority is the
-partner-ablation term that lives in `Q`. → r2_leverage_from_P.csv.
+readout recovers less than half, R² ≈ 0.15. The recoverable part is the one-pass complex log-odds *vector*; the
+*scalar* one-pass magnitude alone recovers far less, and the irreducible majority is the partner-ablation term
+that lives in `Q`. → r2_leverage_from_P.csv.
 
 We state the decomposition as a proposition; it is short, and it is what turns the corrections above into a
 theorem rather than a list.
@@ -502,7 +502,12 @@ leverage-AUROC **clears chance in every natural class and beats confidence in ea
 climbs the fold-coupling gradient beneath it. The two feature classes *diverge across a controlled biological
 axis*: the scalar is regime-dependent and blind, the derivative clears chance regardless of interface type. De-novo designs are simply where the signal is accessible to blunter probes
 as well: there, even the scalar complex-conditioned distribution adds +0.018 beyond an all-atom occlusion
-baseline. A methodological note this forces: an earlier AB-Bind analysis reported the per-mutation
+baseline — and the *mixed derivative* itself adds in this genuine de-novo regime, CPI(L | geometry) =
+**+0.011 [+0.008, +0.014]** on 73 de-novo binders with wet-lab site-saturation labels, precisely where the
+scalar KL is at the floor (+0.0003, CI spans zero). This is design-regime evidence for the *two-pass* signal on
+*actual* de-novo binders — complementing R2's predicted-backbone result (§6) on natural complexes, and showing
+the same feature-class ordering (mixed derivative adds, its scalar contraction does not) holds in the regime the
+paper targets. → leverage_bennett_denovo.csv. A methodological note this forces: an earlier AB-Bind analysis reported the per-mutation
 distribution "adds nothing" on natural antibody–antigen ΔΔG (ΔAUROC +0.008 over geometry + substitution), but
 under the conditional CPI test on the same baseline it adds **+0.031 [+0.015, +0.045]** (and +0.042 beyond
 geometry alone); the ΔAUROC readout's own fitted detection floor (≈−0.002) sits below the effect. The result is
@@ -544,7 +549,11 @@ lockstep (recovery 0.347→0.529, relative SASA 0.218→0.080). Under the pre-re
 pairing each hotspot to a null residue in the same complex at matched relative SASA, secondary-structure
 class, and neighbour count — the deficit attenuates to statistical indistinguishability: the matched estimate
 is −0.042 [−0.222, +0.129] and a higher-powered regression estimator is +0.059 [−0.051, +0.167] — the deficit
-attenuating sharply from its unmatched value. We do not claim it vanishes everywhere: on the strict
+attenuating sharply from its unmatched value. The matching controls relative SASA, secondary structure and
+neighbour count but not partner-contact area (ΔSASA) — the cheap feature that carries the most hotspot
+information — so we check the residual directly: the SECONDARY-B pairs do carry a ΔSASA imbalance (+0.072
+[+0.045, +0.100]), yet adjusting the deficit for it moves it essentially nowhere (−0.042 → −0.028), so the
+attenuation is not a residual-ΔSASA artifact. → dsasa_matched_sens.csv. We do not claim it vanishes everywhere: on the strict
 matched-pair PRIMARY tier (47 pairs) MIF and PiFold retain a residual recovery deficit whose CI excludes zero
 (MIF +0.277 [+0.098, +0.465]; PiFold +0.191 [+0.022, +0.359]), and a two-one-sided-tests check does not certify
 equivalence at the ±0.115-nat margin. The honest claim is **strong attenuation — most of the gap is burial —
