@@ -54,6 +54,6 @@ section); update `verdict-state.md`. `git push` to main. Do NOT touch Phase 2 (M
 
 ## PASTE TO HERE
 
-**For Chris (not the agent):** this is the last reject-level item (R2). With R1 already killed (R²(L|P)=~70%
-irreducible) and this closed, both of the weaknesses-audit's reject-level objections are answered. See
-`notes/MANUSCRIPT_PREP.md` Phase A.
+**For Chris (not the agent):** this is the last reject-level item (R2). With R1 already killed (R²(L|P) ≈ 0.37,
+so ~63% of leverage irreducible from the bound distribution) and this closed, both of the weaknesses-audit's
+reject-level objections are answered. See `notes/MANUSCRIPT_PREP.md` Phase A.
