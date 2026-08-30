@@ -41,6 +41,20 @@ def main():
         rows.append(dict(feature=name, cpi_over_geom=round(v, 5), lo=round(lo, 5), hi=round(hi, 5),
                          p_gt0=round(p, 3), spearman_vs_ddG=round(float(sp), 4) if np.isfinite(sp) else None,
                          n_mut=len(d), n_designs=int(len(np.unique(grp))), n_destab=int(y.sum())))
+    # two-pass SPECIFICITY (the honest claim): does L add beyond the ONE-PASS complex log-odds logP_mut,
+    # not merely beyond position-level geometry? The one-pass readout is P-only (no monomer pass).
+    if "logP_mut" in d.columns:
+        d["logP_mutz"] = LD.zs(d.logP_mut)
+        Z2 = d[["burialz", "nbrz", "drsasaz", "logP_mutz"]].to_numpy()
+        vo, loo, hio, _, _, _ = LD.cpi(y, grp, Z, d.logP_mutz.to_numpy().copy(), rng)
+        v2, lo2, hi2, p2, _, _ = LD.cpi(y, grp, Z2, d.Lz.to_numpy().copy(), rng)
+        print(f"  CPI(one-pass logP(mut|cx) | geometry)    = {vo:+.5f} [{loo:+.5f}, {hio:+.5f}]")
+        print(f"  CPI(leverage L | geometry + one-pass)    = {v2:+.5f} [{lo2:+.5f}, {hi2:+.5f}]  <- TWO-PASS increment")
+        rows.append(dict(feature="one-pass logP(mut|complex)", cpi_over_geom=round(vo, 5), lo=round(loo, 5),
+                         hi=round(hio, 5), p_gt0=1.0, n_mut=len(d), n_designs=int(len(np.unique(grp))), n_destab=int(y.sum())))
+        rows.append(dict(feature="leverage L | geometry + one-pass (two-pass increment)", cpi_over_geom=round(v2, 5),
+                         lo=round(lo2, 5), hi=round(hi2, 5), p_gt0=round(p2, 3), n_mut=len(d),
+                         n_designs=int(len(np.unique(grp))), n_destab=int(y.sum())))
     pd.DataFrame(rows).assign(seed=SEED, fixture="Bennett de-novo binders",
                               command="python3 src/leverage_bennett_denovo.py").to_csv(a.out, index=False)
     print(f"[wrote] {a.out}")
