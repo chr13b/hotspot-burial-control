@@ -9,3 +9,5 @@ results/p0_dssp_positions.csv
 results/leverage_pq_skempi.csv
 results/leverage_bennett_pairs.csv
 results/leverage_pq_*.csv
+# predicted-backbone leverage PQ caches (derivable; re-score with leverage_predicted.py --stage score)
+results/leverage_pq_predicted_*.csv
