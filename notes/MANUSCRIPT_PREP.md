@@ -15,11 +15,13 @@ Odds context: ~0.85+ *once R1/R2 closed and the scope trim + figures land*. Curr
       §5 deficits → connects §4 and §5.
 
 **Free writing fixes:**
-- [ ] **CFG reframe (highest-leverage, free).** Name L as the classifier-free-guidance / contrastive-decoding
-      direction (`logit_bound + α(logit_bound − logit_apo)`), conditioner = binding partner; confidence = the
-      conditional marginal. State the general principle in the abstract + intro. Cite CFG (Ho & Salimans),
-      contrastive decoding (Li et al.), expert-minus-amateur decoding. One line: `L_i(a)` is a difference of
-      pointwise mutual informations between residue identity and partner presence.
+- [x] **CFG reframe (highest-leverage, free).** DONE — L named as the classifier-free-guidance / contrastive-
+      decoding direction in the abstract recipe + §4 decomposition; PMI reading added. **STILL TODO: add + verify
+      the citations** (classifier-free guidance = Ho & Salimans 2022; contrastive decoding = Li et al. 2023;
+      DExperts / expert-minus-amateur decoding) via the `verify-references` skill — named as concepts in-text,
+      NOT yet formally cited (citation discipline: no fabricated DOIs).
+- [x] **Entropy-normalized effect sizes.** DONE — `effect_size_normalized.csv`; base rate 2.4% now in §2;
+      leverage = 4.2% of label entropy stated in §4.
 - [ ] **Entropy-normalized effect sizes.** Position-level hotspot base rate 2.44% → label entropy 0.1147 nats.
       Report the normalized column (leverage +0.0048 = **4.2%** of label entropy, ~40% of ΔSASA's 11.2%).
       State the base rate in §2 (currently absent). Stop juxtaposing position-level CPI (2.4% base rate) with
