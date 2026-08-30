@@ -18,17 +18,21 @@ irreducible from `P`. Ridge is included as the linear reference. Targets: `L_rms
 (leverage of →Ala). Pre-registered falsifier (committed before running): `R²(L_rms|P) > 0.7` for either model
 would mean leverage is largely a function of `P` and the non-vacuity is weak.
 
-## Result — ~70% of the mixed derivative is irreducible from the bound distribution
-| model | target | flexible (GBM) R²(L\|P) | irreducible | linear (Ridge) R² | linear irreducible |
+## Result — ~63% of the mixed derivative is irreducible from the bound distribution
+**We report the MAX OOS R² over a learner family (gradient boosting + random forest), not a single learner** —
+an adversarial verification found the original single GBM was undertuned (it read 0.30; a stock RandomForest
+reaches 0.37, CIs non-overlapping). Reporting the family max pre-empts the reviewer who runs their own RF.
+
+| model | target | max-flexible R²(L\|P) | irreducible | +wt identity R² | linear (Ridge) R² |
 |---|---|---|---|---|---|
-| ProteinMPNN | L_rms | **0.302 [0.276, 0.327]** | **70%** | 0.154 | 85% |
-| ESM-IF1 | L_rms | **0.313 [0.290, 0.335]** | **69%** | 0.169 | 83% |
-| ProteinMPNN | L_ala | 0.269 [0.245, 0.292] | 73% | 0.133 | 87% |
-| ESM-IF1 | L_ala | 0.241 [0.213, 0.266] | 76% | 0.118 | 88% |
+| ProteinMPNN | L_rms | **0.369 [0.338, 0.399]** | **63%** | 0.378 | 0.154 |
+| ESM-IF1 | L_rms | **0.363 [0.339, 0.386]** | **64%** | 0.367 | 0.169 |
+| ProteinMPNN | L_ala | 0.342 [0.313, 0.371] | 66% | 0.389 | 0.133 |
+| ESM-IF1 | L_ala | 0.288 [0.256, 0.319] | 71% | 0.303 | 0.118 |
 
 ## Interpretation
 1. **The Proposition is now measured, not definitional.** Even a flexible learner given the *whole* bound
-   distribution recovers ≤31% of `L`; **~70% requires the partner-ablated second pass** and is provably not a
+   distribution recovers ~37% of `L`; **~63% requires the partner-ablated second pass** and is provably not a
    function of `P`. This answers R1 on its own terms.
 2. **The recoverable ~30% is the one-pass / complex-gradient component.** `L = oc − om` where the complex
    one-pass `oc(a) = logP(a) − logP(wt)` *is* a function of `P`; the learner recovers it, and the paper's own
@@ -44,6 +48,6 @@ would mean leverage is largely a function of `P` and the non-vacuity is weak.
    and the matching constrains almost nothing. `R²(L|P)` has no threshold and is immune to this.
 
 ## Bottom line
-The mixed derivative is **~70% irreducible from the bound distribution, measured with a flexible learner over
+The mixed derivative is **~63% irreducible from the bound distribution, measured with a flexible learner over
 all of `P`, in both inverse-folding families** — the strongest and cleanest statement of the Proposition's
 non-vacuity, and the one to lead with. → r2_leverage_from_P.csv.

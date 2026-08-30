@@ -5,7 +5,9 @@ Odds context: ~0.85+ *once R1/R2 closed and the scope trim + figures land*. Curr
 
 ## PHASE A — remaining Tier-1 fixes (do before restructure)
 **Experiments (CPU, inputs in hand):**
-- [x] **R1** — R²(L|P_full) flexible learner → ~70% irreducible (`r2_leverage_from_P.csv`). DONE, threaded in.
+- [x] **R1** — R²(L|P_full) max-flexible learner (GBM+RF) → ~63% irreducible (`r2_leverage_from_P.csv`). DONE,
+      threaded in. (Corrected from an undertuned single-GBM 0.30/70% after adversarial verification — a stock RF
+      reaches 0.37; the family max pre-empts an RF-running reviewer.)
 - [ ] **R2** — run `CPI(L | geometry)` + geometry+|L| ranker on the OpenFold3 / AF2-multimer predicted
       backbones we already have for the 127 shared complexes (`expA_gap_summary.csv`, `expD_gap_summary.csv`).
       Closes "L never computed on a real predicted backbone". Either outcome strengthens the paper.

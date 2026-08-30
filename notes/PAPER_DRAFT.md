@@ -19,8 +19,9 @@ Because the partner-ablated structure is *determined* by the complex, leverage i
 but **not** from the bound distribution alone — so every scalar the field reads off the model (recovery,
 confidence, the complex-vs-monomer KL) is a lossy projection, blind to binding **by construction, not by
 failure**. This is no vacuous identity: holding the bound distribution fixed, much of the leverage spread
-survives — a flexible learner (gradient boosting) trained on the *entire* bound distribution recovers only
-~30% of the leverage, so **~70% is irreducible from the bound distribution** in both inverse-folding families;
+survives — a flexible learner (the best of gradient boosting and random forests) trained on the *entire* bound
+distribution recovers only ~37% of the leverage, so **~63% is irreducible from the bound distribution** in both
+inverse-folding families (~62% even when wt identity is added);
 the binding-specific component provably requires the partner-ablated second pass. And the consequence is measurable and large. On our main fixture (SKEMPI natural complexes)
 confidence ranks hotspots at or barely above chance across five architectures and adds nothing beyond geometry
 (position-level conditional predictive impact 0.000), while the mixed derivative adds binding information **beyond
@@ -74,7 +75,7 @@ fold-stability constraint; a residue's binding *leverage* is the *mixed second d
 response to ablating the partner (the BA-Cycle operator of Jiao et al. 2024). Confidence is blind to leverage
 *by construction* — an identical bound distribution yields identical confidence but arbitrary leverage; we
 verify this is non-vacuous *and measured*: a flexible learner over the entire bound distribution recovers only
-~30% of the leverage, leaving **~70% irreducible from `P`** in both families (→ r2_leverage_from_P.csv). This
+~37% of the leverage, leaving **~63% irreducible from `P`** in both families (→ r2_leverage_from_P.csv). This
 yields a **feature-class law**: on natural complexes a scalar read off the bound distribution *alone* recovers
 little beyond cheap geometry — confidence, negentropy, and the scalar KL all sit **at or below the CPI
 estimator's calibrated false-positive floor** (+0.0007, the score of a placebo feature that is a deterministic
@@ -200,10 +201,12 @@ also motivates L: the per-position softmax normaliser `log Z_i` contaminates con
 (each bracket is within-conditioning), so L is better-posed. **Confidence is blind to leverage by
 construction:** two positions with an identical bound distribution have identical confidence yet can differ
 arbitrarily in L — and this is not hypothetical. We measure how much of the mixed derivative the *whole* bound distribution can determine: a flexible learner
-(gradient boosting, out-of-sample under complex-clustered cross-validation) trained on the full 20-vector `P`
-recovers **only ~30%** of the leverage — R²(L_rms | P) = 0.30 [0.28, 0.33] (ProteinMPNN), 0.31 [0.29, 0.34]
-(ESM-IF1) — so **~70% is irreducible from `P`** in both families, and a *linear* readout recovers only half
-that (R² ≈ 0.15). The recoverable part is the one-pass complex gradient; the irreducible majority is the
+(the max over gradient boosting and random forests, out-of-sample under complex-clustered cross-validation)
+trained on the full 20-vector `P` recovers **only ~37%** of the leverage — R²(L_rms | P) = 0.37 [0.34, 0.40]
+(ProteinMPNN), 0.36 [0.34, 0.39] (ESM-IF1) — so **~63% is irreducible from `P`** in both families (~62% even
+when wt identity is added, the fair `φ(P, wt)` class since confidence itself uses `log P(wt)`); a *linear*
+readout recovers less than half, R² ≈ 0.15. The recoverable part is the one-pass complex log-odds *vector* — the
+*scalar* one-pass magnitude alone recovers only R² ≈ 0.08–0.16 — and the irreducible majority is the
 partner-ablation term that lives in `Q`. → r2_leverage_from_P.csv.
 
 We state the decomposition as a proposition; it is short, and it is what turns the corrections above into a
@@ -239,8 +242,9 @@ the *sequence-free marginal* `p(·|X)`, a mean-field approximation that buys dec
 ΔΔG_bind — not monomer refolding or conformational relaxation. (ii) The equality `φ(P_i)=φ(P_j)` is
 definitional; the content is that `P` does **not** determine `Q`, which would hold iff the map `X ↦ P` were
 injective — and it is not. That `Var(L|P) > 0` is measured directly: a flexible learner (gradient boosting) trained on the full 20-vector
-`P` recovers only R²(L|P) ≈ **0.30** out-of-sample in both families, so **~70% of the mixed derivative is
-irreducible from `P`** even under a nonlinear readout, and only ~15% under a linear one (`r2_leverage_from_P.csv`). (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
+`P` recovers only R²(L|P) ≈ **0.37** out-of-sample in both families (max over gradient boosting and random
+forests), so **~63% of the mixed derivative is irreducible from `P`** even under a nonlinear readout, and only
+~15% under a linear one (`r2_leverage_from_P.csv`). (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
 model(X_monomer)` costs a second forward pass, which by (ii) no function of `P` reproduces. ∎
 
 The empirical sections instantiate the proposition. The feature-class law below is (ii) measured on natural
@@ -658,7 +662,7 @@ AB-Bind's 27 complexes are indeterminate for the leverage test.
 **Caveats specific to the decomposition.** (a) *Orthogonal is not independent*: confidence cannot *express*
 leverage, but the two are weakly-to-moderately correlated and the correlation is model-dependent
 (Spearman(confidence, |L|) = +0.075 for ProteinMPNN, +0.31 for ESM-IF1); we claim blindness by construction
-(a flexible learner over the full bound distribution recovers only ~30% of the leverage — ~70% is irreducible
+(a flexible learner over the full bound distribution recovers only ~37% of the leverage — ~63% is irreducible
 from `P` in both families, → r2_leverage_from_P.csv), not statistical
 independence. (b) The leverage operator L *is* BA-Cycle (Jiao et al. 2024); we
 credit the score and claim the decomposition, the beyond-geometry control, and the feature-class law. (c) L

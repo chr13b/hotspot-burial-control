@@ -1,9 +1,21 @@
-model,target,learner,r2_L_given_Pfull,lo,hi,irreducible_frac,n,n_complexes,seed,command
-ProteinMPNN,L_rms,gbm_flexible,0.3018,0.2757,0.3268,0.6982,14503,344,20260803,python3 src/r2_leverage_from_P.py
-ProteinMPNN,L_rms,ridge_linear,0.1541,0.1402,0.1675,0.8459,14503,344,20260803,python3 src/r2_leverage_from_P.py
-ProteinMPNN,L_ala,gbm_flexible,0.2688,0.2449,0.2917,0.7312,13833,344,20260803,python3 src/r2_leverage_from_P.py
-ProteinMPNN,L_ala,ridge_linear,0.1328,0.1208,0.1439,0.8672,13833,344,20260803,python3 src/r2_leverage_from_P.py
-ESM-IF1,L_rms,gbm_flexible,0.3127,0.2898,0.3351,0.6873,14118,337,20260803,python3 src/r2_leverage_from_P.py
-ESM-IF1,L_rms,ridge_linear,0.1686,0.1476,0.187,0.8314,14118,337,20260803,python3 src/r2_leverage_from_P.py
-ESM-IF1,L_ala,gbm_flexible,0.2412,0.2134,0.2665,0.7588,13465,337,20260803,python3 src/r2_leverage_from_P.py
-ESM-IF1,L_ala,ridge_linear,0.1178,0.1016,0.132,0.8822,13465,337,20260803,python3 src/r2_leverage_from_P.py
+model,target,features,learner,r2,lo,hi,n,n_complexes,irreducible_frac,seed,command
+ProteinMPNN,L_rms,P(20),gbm,0.3041,0.2774,0.3296,14503,344,,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_rms,P(20),rf,0.3688,0.3383,0.3991,14503,344,,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_rms,P(20),ridge_linear,0.1541,0.1402,0.1675,14503,344,0.8459,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_rms,P+wt(40),rf,0.3783,0.348,0.408,14503,344,0.6217,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_rms,P(20),MAX_FLEXIBLE,0.3688,0.3383,0.3991,14503,344,0.6312,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_ala,P(20),gbm,0.2767,0.2517,0.3009,13833,344,,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_ala,P(20),rf,0.3422,0.3129,0.3714,13833,344,,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_ala,P(20),ridge_linear,0.1328,0.1208,0.1439,13833,344,0.8672,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_ala,P+wt(40),rf,0.3891,0.3607,0.4173,13833,344,0.6109,20260803,python3 src/r2_leverage_from_P.py
+ProteinMPNN,L_ala,P(20),MAX_FLEXIBLE,0.3422,0.3129,0.3714,13833,344,0.6578,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_rms,P(20),gbm,0.3148,0.2916,0.3369,14118,337,,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_rms,P(20),rf,0.3631,0.3389,0.3865,14118,337,,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_rms,P(20),ridge_linear,0.1686,0.1476,0.187,14118,337,0.8314,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_rms,P+wt(40),rf,0.3668,0.3431,0.3904,14118,337,0.6332,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_rms,P(20),MAX_FLEXIBLE,0.3631,0.3389,0.3865,14118,337,0.6369,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_ala,P(20),gbm,0.2443,0.2163,0.27,13465,337,,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_ala,P(20),rf,0.2878,0.2564,0.3189,13465,337,,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_ala,P(20),ridge_linear,0.1178,0.1016,0.132,13465,337,0.8822,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_ala,P+wt(40),rf,0.3028,0.2716,0.3332,13465,337,0.6972,20260803,python3 src/r2_leverage_from_P.py
+ESM-IF1,L_ala,P(20),MAX_FLEXIBLE,0.2878,0.2564,0.3189,13465,337,0.7122,20260803,python3 src/r2_leverage_from_P.py
