@@ -191,8 +191,11 @@ def sample_ptemp(model, X, randn, S_true, chain_mask, chain_encoding_all, residu
 # ------------------------------------------------------------------ driver
 
 def draw(model, cx, K, batch, order=None, temperature=0.1, seed=0, use_patch=False,
-         featurize=None):
-    """K samples. `order`: None (MPNN default random) or [L] / [B,L] permutation."""
+         featurize=None, bias_by_res=None):
+    """K samples. `order`: None (MPNN default random) or [L] / [B,L] permutation.
+
+    `bias_by_res`: None (unbiased, default) or a [L,21] / [B,L,21] tensor added to the per-position logits
+    before the softmax (this is how the CFG tilt +alpha*L is injected). Backward-compatible."""
     X, S, mask, residue_idx, chain_enc = featurize(cx)
     L = cx.n
     ALPHA = "ACDEFGHIKLMNPQRSTVWYX"
@@ -210,6 +213,11 @@ def draw(model, cx, K, batch, order=None, temperature=0.1, seed=0, use_patch=Fal
                 o = torch.as_tensor(order, dtype=torch.long)
                 o = o[None].repeat(b, 1) if o.dim() == 1 else o[:b]
                 rnd = order_to_randn(o, cm)
+            if bias_by_res is None:
+                bbr = torch.zeros(b, L, 21)
+            else:
+                _t = torch.as_tensor(bias_by_res, dtype=torch.float32)
+                bbr = _t[None].expand(b, -1, -1).contiguous() if _t.dim() == 2 else _t[:b]
             kw = dict(X=X.repeat(b, 1, 1, 1), randn=rnd, S_true=S.repeat(b, 1),
                       chain_mask=cm, chain_encoding_all=chain_enc.repeat(b, 1),
                       residue_idx=residue_idx.repeat(b, 1), mask=mask.repeat(b, 1),
@@ -217,7 +225,7 @@ def draw(model, cx, K, batch, order=None, temperature=0.1, seed=0, use_patch=Fal
                       chain_M_pos=torch.ones(b, L), omit_AA_mask=None, pssm_coef=None,
                       pssm_bias=None, pssm_multi=0.0, pssm_log_odds_flag=False,
                       pssm_log_odds_mask=None, pssm_bias_flag=False,
-                      bias_by_res=torch.zeros(b, L, 21))
+                      bias_by_res=bbr)
             d = sample_ptemp(model, **kw) if use_patch else model.sample(**kw)
             out.append(d["S"].cpu().numpy())
             orders.append(d["decoding_order"].cpu().numpy())
