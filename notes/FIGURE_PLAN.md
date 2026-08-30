@@ -47,7 +47,7 @@ INK="#1A1A1A"; RULE="#4D4D4D"; MUTED="#6B7379"
 CONF="#9AA3AA"; NEGENT="#7E888F"; KL="#636D74"          # scalars-of-P ladder (greyer = more inert = the thesis)
 LEVERAGE="#0B6FA4"                                       # mixed derivative; also = ProteinMPNN
 ESMIF="#C0561F"                                          # ESM-IF1 / 2nd model
-GEOM="#1C7C68"; CONSERV="#6D4E9C"                        # baselines
+GEOM="#1B9E77"; CONSERV="#6D4E9C"                        # baselines
 FLOOR_FILL="#E4E7E9"; FLOOR_EDGE="#B4BBC0"; GHOST="#C8CDD1"; PANEL_TINT="#F4F6F7"
 RAMP_MPNN =["#D6E7F0","#A9CBDF","#7BAECC","#4B90B9","#0B6FA4","#08526F"]           # σ=0,.25,.5,.75,1,1.5
 RAMP_ESMIF=["#F6DFD1","#EDBFA3","#E19E77","#D47C4A","#C0561F","#96411A","#6E2F12"] # +2.0
