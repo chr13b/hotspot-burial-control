@@ -42,8 +42,10 @@ model — and the blindness generalizes from binding to *catalytic* residues (co
 conservation predicts). The leverage operator is BA-Cycle (Jiao et al. 2024); our contribution is the
 decomposition, the identifiability result and its *measured* non-vacuity, the first beyond-geometry (and
 beyond-conservation) control on any inverse-folding binding signal, and the feature-class law. The recipe is
-general: to read un-trained function from a conditional generative model, ablate the conditioner and read the
-mixed derivative — not the confidence.
+general and already familiar: the mixed derivative is the model's **classifier-free-guidance direction** (the
+binding partner as conditioner), and to read an un-trained quantity off a conditional generative model one
+ablates the conditioner and reads that direction — not the conditional marginal the field has been mistaking
+for competence.
 
 ## 1. Introduction
 
@@ -117,7 +119,8 @@ constellation cost and a commitment-ordering schedule — are separately measure
 
 **Fixtures.** Our primary fixture is SKEMPI 2.0, from which we take single-mutation binding data and define a
 hotspot as an alanine-scan ΔΔG_bind > 1 kcal/mol (and a strict variant > 2, ProBID-Net's threshold), with a
-null set of |ΔΔG| < 0.25. Because SKEMPI complexes are crystal structures of *natural* complexes, we add two
+null set of |ΔΔG| < 0.25. Hotspots are rare — 2.4% of interface positions (327/13,401), label entropy 0.115
+nats — which sets the scale for the effect sizes below. Because SKEMPI complexes are crystal structures of *natural* complexes, we add two
 independent fixtures of different character: **Bennett-2023 de-novo designed binders**, which carry
 experimental site-saturation binding measurements over four targets and constitute a true design-regime test;
 and **AB-Bind**, antibody–antigen ΔΔG over 27 analysed complexes, a second SKEMPI-class fixture with distinct
@@ -182,7 +185,12 @@ and estimates positional fold-stability constraint. **Leverage** is the *mixed s
 per-substitution response to *ablating the partner*:
 `L_i(a) = [log p(a|X_complex) − log p(wt|X_complex)] − [log p(a|X_monomer) − log p(wt|X_monomer)]`,
 which by the standard binding thermodynamic cycle estimates −ΔΔG_bind up to a single unknown positive scale
-(the model's effective inverse temperature). The scalar KL is one contraction of this vector:
+(the model's effective inverse temperature). This is exactly the **classifier-free-guidance / contrastive-decoding**
+direction: writing a guided logit as `logit(·|X_complex) + α·[logit(·|X_complex) − logit(·|X_monomer)]`, the
+bracket *is* `L`, the binding partner is the conditioner, and confidence is the conditional marginal — so the
+general recipe for reading an *un-trained* quantity off a conditional generative model is to ablate the
+conditioner and take this mixed derivative, not the marginal. Read information-theoretically, `L_i(a)` is a
+difference of pointwise mutual informations between residue identity and partner presence. The scalar KL is one contraction of this vector:
 `KL(P‖Q) = E_{a∼P}[L(a)] + [log P(wt) − log Q(wt)]` (identity verified to 1e-6) — the offset is
 *position-dependent*, so the scalar detector is a lossy, position-shifted summary of `L`, not a rescaling of it. A methodological aside that
 also motivates L: the per-position softmax normaliser `log Z_i` contaminates confidence but *cancels* in L
@@ -253,7 +261,11 @@ On the identical 5,742-position sample §3's confidence test uses, the same orde
 leverage +0.0092 [+0.0062, +0.0124], ~5× the scalar KL, while confidence stays conditionally independent (CI
 spans 0). → leverage_nugget_match.csv. For an interpretable scale: on that same sample the zero-shot mixed
 derivative contributes **~71%** of what the partner-contact area (ΔSASA) — an explicit geometric measurement of
-the interface — contributes beyond burial and neighbour count (ΔSASA +0.0129; → nugget_cpi.csv). At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
+the interface — contributes beyond burial and neighbour count (ΔSASA +0.0129; → nugget_cpi.csv). And because
+the hotspot label is rare (base rate 2.4%, entropy 0.115 nats), these CPIs are small in absolute terms but not
+in relative: leverage's +0.0048 is **4.2%** of the label's entropy — against 0.2% for confidence, 0.8% for the
+scalar KL, and 11% for ΔSASA — so a zero-shot readout recovers ~40% of what an explicit interface-area
+measurement contributes. → effect_size_normalized.csv. At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
 = **+0.059 [+0.046, +0.073]**, surviving controls from substitution similarity (BLOSUM, volume, hydropathy) and
 from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. Critically, the second pass
 earns its keep against the *standard* zero-shot readout — the one-pass complex log-odds

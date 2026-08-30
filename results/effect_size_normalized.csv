@@ -1,0 +1,14 @@
+quantity,value,n,n_hot,normalized_pct_of_labelH,seed,command
+hotspot_base_rate,0.0244,13401,327.0,,20260803,python3 src/effect_size_normalized.py
+hotspot_label_entropy_nats,0.1147,13401,327.0,,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::duplicate of dsasa,0.00072,13401,,0.63,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::duplicate of nbr,0.00023,13401,,0.2,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::dsasa^2,0.00052,13401,,0.45,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::nbr * dsasa,-0.033,13401,,-28.77,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::pure noise,-2e-05,13401,,-0.02,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::confidence log p(native),0.00019,13401,,0.17,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::negentropy of p,0.00087,13401,,0.76,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::scalar kl,0.00098,13401,,0.85,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::leverage -l(->ala),0.00485,13401,,4.23,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::leverage -l | quadratic geometry,0.00466,13401,,4.06,20260803,python3 src/effect_size_normalized.py
+CPI_over_labelH::leverage -l | cubic geometry,0.00463,13401,,4.04,20260803,python3 src/effect_size_normalized.py
