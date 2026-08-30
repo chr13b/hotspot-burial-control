@@ -25,9 +25,9 @@ the binding-specific component provably requires the partner-ablated second pass
 confidence ranks hotspots at or barely above chance across five architectures and adds nothing beyond geometry
 (position-level conditional predictive impact 0.000), while the mixed derivative adds binding information **beyond
 geometry, beyond the standard one-pass log-odds readout, and beyond evolutionary conservation** — the full
-feature set of published hotspot predictors — and the whole result replicates in a second inverse-folding family (ESM-IF1) (mutation-level CPI
-+0.059; Spearman with experimental ΔΔG −0.30; per-position ~5× the best scalar, where confidence is
-conditionally independent). Three consequences follow. It is **actionable**: the mixed derivative is among the strongest single features
+feature set of published hotspot predictors (mutation-level CPI +0.059; Spearman with experimental ΔΔG −0.30;
+per-position ~5× the best scalar, where confidence is conditionally independent) — and the whole result
+replicates in a second inverse-folding family (ESM-IF1: CPI +0.035, Spearman −0.26). Three consequences follow. It is **actionable**: the mixed derivative is among the strongest single features
 for ranking interface hotspots (AUROC 0.69, on par with the learned KL detector at 0.68 and above geometry's
 0.66 and confidence's 0.51), and adds
 **+0.016 AUROC [+0.004, +0.029]** on top of the full feature set published predictors already use —
@@ -187,10 +187,13 @@ per-substitution response to *ablating the partner*:
 which by the standard binding thermodynamic cycle estimates −ΔΔG_bind up to a single unknown positive scale
 (the model's effective inverse temperature). This is exactly the **classifier-free-guidance / contrastive-decoding**
 direction: writing a guided logit as `logit(·|X_complex) + α·[logit(·|X_complex) − logit(·|X_monomer)]`, the
-bracket *is* `L`, the binding partner is the conditioner, and confidence is the conditional marginal — so the
-general recipe for reading an *un-trained* quantity off a conditional generative model is to ablate the
-conditioner and take this mixed derivative, not the marginal. Read information-theoretically, `L_i(a)` is a
-difference of pointwise mutual informations between residue identity and partner presence. The scalar KL is one contraction of this vector:
+bracket equals `L` up to a position-constant `wt`-reference shift that the softmax absorbs — the guided
+distribution is identical — whereas the KL contraction below is a shift the softmax does *not* kill. The binding
+partner is the conditioner and confidence is the conditional marginal, so the general recipe for reading an
+*un-trained* quantity off a conditional generative model is to ablate the conditioner and take this mixed
+derivative, not the marginal. Read information-theoretically, each bracket is a difference of pointwise mutual
+informations between residue identity and partner presence (against a common reference marginal, which cancels),
+and `L` contrasts that quantity at `a` against `wt`. The scalar KL is one contraction of this vector:
 `KL(P‖Q) = E_{a∼P}[L(a)] + [log P(wt) − log Q(wt)]` (identity verified to 1e-6) — the offset is
 *position-dependent*, so the scalar detector is a lossy, position-shifted summary of `L`, not a rescaling of it. A methodological aside that
 also motivates L: the per-position softmax normaliser `log Z_i` contaminates confidence but *cancels* in L
@@ -219,7 +222,7 @@ theorem rather than a list.
 > thermodynamic cycle; **(ii) [non-identifiability]** `L` is not a function of `P`: `Var(L_i | P_i) > 0`, so two
 > positions with the same bound distribution `P_i = P_j` have identical confidence `φ(P_i) = φ(P_j)` for
 > **every** functional `φ`, yet differ in leverage. Hence for any `P`-only estimator, `inf_φ E[(ΔΔG_bind −
-> φ(P))²] ≥ E[Var(ΔΔG_bind | P)] > 0` — an error floor that any estimator using information beyond `P` (the mixed derivative among them) can beat;
+> φ(P))²] ≥ E[Var(ΔΔG_bind | P)] > 0` — an error floor that `L`, which uses information beyond `P`, is not bound by;
 > **(iii) [readout, not model]** `X_monomer` is a deterministic function of `X_complex` (delete the partner's
 > atoms), so `L` is computable — by a second, partner-ablated forward pass — yet by (ii) is **not a function of
 > `P`**. The blindness is a property of the *readout*, not the model: the binding term is in the weights,
@@ -264,14 +267,14 @@ derivative contributes **~71%** of what the partner-contact area (ΔSASA) — an
 the interface — contributes beyond burial and neighbour count (ΔSASA +0.0129; → nugget_cpi.csv). And because
 the hotspot label is rare (base rate 2.4%, entropy 0.115 nats), these CPIs are small in absolute terms but not
 in relative: leverage's +0.0048 is **4.2%** of the label's entropy — against 0.2% for confidence, 0.8% for the
-scalar KL, and 11% for ΔSASA — so a zero-shot readout recovers ~40% of what an explicit interface-area
-measurement contributes. → effect_size_normalized.csv. At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
+scalar KL — an order of magnitude more than either scalar of the bound distribution (the comparison to ΔSASA,
+~71%, is given above on its own sample). → effect_size_normalized.csv. At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
 = **+0.059 [+0.046, +0.073]**, surviving controls from substitution similarity (BLOSUM, volume, hydropathy) and
 from L's own scalar components. → leverage_decomposition.csv, FINDINGS_leverage.md. Critically, the second pass
 earns its keep against the *standard* zero-shot readout — the one-pass complex log-odds
 `logP(mut|complex) − logP(wt|complex)`: controlling for it *and* geometry, leverage still tracks ΔΔG
 (partial Spearman = **−0.147 [−0.190, −0.108]**, P<0=1.0); and the reverse holds too — the one-pass readout
-retains signal after controlling for leverage (−0.094 [−0.145, −0.054]). So the two passes are *not* redundant:
+retains signal after controlling for leverage (−0.094 [−0.142, −0.047]). So the two passes are *not* redundant:
 each carries binding signal the other misses, and in particular the partner-ablation pass is not subsumed by
 the standard one-pass readout (we do not claim one dominates — the paired difference is not significant). The
 two-pass *structure* is what carries the signal, and this is its cleanest statement: the monomer pass on its
@@ -304,8 +307,12 @@ size: L is a *zero-shot* readout of a model never trained on binding, yet it add
 its own reaches AUROC 0.647 — near that supervised baseline. → leverage_effect_size.csv. **This is not a
 ProteinMPNN artifact:** it replicates under ESM-IF1 — a GVP-transformer with a native-conditioned (not sequence-free) readout
 — where confidence is again blind to hotspots and leverage again adds beyond geometry and beyond every scalar
-including confidence (337/344 complexes; mutation Spearman −0.26, CPI +0.035; position confidence CPI −0.0000),
-so the feature-class law is a property of the inverse-folding *class*. → leverage_esmif.csv. So the model *does*
+including confidence *at the position level* (337/344 complexes; mutation Spearman −0.26, CPI +0.035; position
+confidence CPI −0.0000). Honesty on the second family: at the *mutation* level ESM-IF1's confidence is less
+inert than ProteinMPNN's — it adds (confidence CPI +0.023 [+0.012, +0.033]) and absorbs about half of
+leverage's mutation-level increment (leverage +0.035 → +0.018 when confidence is controlled, vs ProteinMPNN's
++0.059 → +0.056); the *position-level* blindness the feature-class law is about holds for both. So the
+feature-class law is a property of the inverse-folding *class*. → leverage_esmif.csv. So the model *does*
 know binding on natural complexes — the knowledge was invisible to every scalar readout the field used. The law is
 not about a *regime* but a *feature class*: on natural complexes scalar summaries reduce to geometry
 (confidence exactly, KL nearly); the mixed derivative does not.
@@ -471,10 +478,10 @@ bennett_conf_fork.csv). It is not a burial effect: the order survives burial-res
 low-confidence). Adjacent classes overlap in CI — a monotone trend with de-novo significantly above the two
 transient-recognition classes, not four pairwise-significant steps — but every natural class sits at or below
 chance and only de-novo clears it, yet the *mixed derivative* carries the binding signal in all of them: the
-leverage-AUROC stays **flat and high across every natural class** — 0.641 [0.539, 0.765] (TCR/pMHC), 0.628
+leverage-AUROC **clears chance in every natural class and beats confidence in each** — 0.641 [0.539, 0.765] (TCR/pMHC), 0.628
 [0.544, 0.716] (AB/AG), 0.701 [0.599, 0.811] (protease–inhibitor), each clearing chance — while confidence
 climbs the fold-coupling gradient beneath it. The two feature classes *diverge across a controlled biological
-axis*: the scalar is regime-dependent and blind, the derivative is regime-independent and sighted. De-novo designs are simply where the signal is accessible to blunter probes
+axis*: the scalar is regime-dependent and blind, the derivative clears chance regardless of interface type. De-novo designs are simply where the signal is accessible to blunter probes
 as well: there, even the scalar complex-conditioned distribution adds +0.018 beyond an all-atom occlusion
 baseline. A methodological note this forces: an earlier AB-Bind analysis reported the per-mutation
 distribution "adds nothing" on natural antibody–antigen ΔΔG (ΔAUROC +0.008 over geometry + substitution), but
