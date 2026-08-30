@@ -28,7 +28,7 @@ confidence ranks hotspots at or barely above chance across five architectures an
 geometry, beyond the standard one-pass log-odds readout, and beyond evolutionary conservation** — the full
 feature set of published hotspot predictors (mutation-level CPI +0.059; Spearman with experimental ΔΔG −0.30;
 per-position ~5× the best scalar, where confidence is conditionally independent) — and the whole result
-replicates in two further inverse-folding families (ESM-IF1: CPI +0.035, Spearman −0.26; PiFold: +0.050, −0.33). Three consequences follow. It is **actionable**: the mixed derivative is among the strongest single features
+replicates in three further inverse-folding families (ESM-IF1: CPI +0.035, Spearman −0.26; PiFold: +0.050, −0.33; MIF: +0.058, −0.27). Three consequences follow. It is **actionable**: the mixed derivative is among the strongest single features
 for ranking interface hotspots (AUROC 0.69, on par with the learned KL detector at 0.68 and above geometry's
 0.66 and confidence's 0.51), and adds
 **+0.016 AUROC [+0.004, +0.029]** on top of the full feature set published predictors already use —
@@ -320,11 +320,12 @@ confidence CPI −0.0000). Honesty on the second family: at the *mutation* level
 inert than ProteinMPNN's — it adds (confidence CPI +0.023 [+0.012, +0.033]) and absorbs about half of
 leverage's mutation-level increment (leverage +0.035 → +0.018 when confidence is controlled, vs ProteinMPNN's
 +0.059 → +0.056); the *position-level* blindness the feature-class law is about holds for both. It replicates a
-**third** time under PiFold (a graph message-passing model): mutation Spearman(L, ΔΔG) = **−0.33 [−0.39, −0.26]**
-— the strongest of the three — and CPI(L | geometry) = **+0.050 [+0.039, +0.061]**, surviving substitution,
-confidence and scalar-KL controls (+0.048), with confidence again position-blind (CPI +0.0001). So the
-feature-class law is a property of the inverse-folding *class*, now across **three** architectures. →
-leverage_esmif.csv, leverage_pifold.csv. So the model *does*
+**third and fourth** time under PiFold (a graph message-passing model; mutation Spearman(L, ΔΔG) =
+**−0.33 [−0.39, −0.26]**, CPI(L | geometry) = **+0.050 [+0.039, +0.061]**) and MIF (a masked-inverse-folding
+model; Spearman **−0.27 [−0.36, −0.18]**, CPI **+0.058 [+0.045, +0.070]**), each surviving substitution,
+confidence and scalar-KL controls, with confidence again position-blind (CPI +0.0000). So the feature-class law
+is a property of the inverse-folding *class*, now across **four** architectures — the same panel on which
+confidence is blind at hotspots. → leverage_esmif.csv, leverage_pifold.csv, leverage_mif.csv. So the model *does*
 know binding on natural complexes — the knowledge was invisible to every scalar readout the field used. The law is
 not about a *regime* but a *feature class*: on natural complexes scalar summaries reduce to geometry
 (confidence exactly, KL nearly); the mixed derivative does not.
