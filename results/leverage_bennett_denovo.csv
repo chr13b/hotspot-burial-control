@@ -4,3 +4,5 @@ confidence,0.00538,0.00292,0.00795,1.0,,27170,73,14334,20260803,Bennett de-novo 
 scalar KL,0.00029,-0.00061,0.00111,0.732,,27170,73,14334,20260803,Bennett de-novo binders,python3 src/leverage_bennett_denovo.py
 one-pass logP(mut|complex),0.02287,0.01973,0.02607,1.0,,27170,73,14334,20260803,Bennett de-novo binders,python3 src/leverage_bennett_denovo.py
 leverage L | geometry + one-pass (two-pass increment),0.0032,0.00145,0.00483,0.999,,27170,73,14334,20260803,Bennett de-novo binders,python3 src/leverage_bennett_denovo.py
+leverage L | geom+subst + one-pass,0.00413,0.00229,0.00596,1.0,,27170,73,14334,20260803,Bennett de-novo binders,python3 src/leverage_bennett_denovo.py
+one-pass | geom+subst + L (reverse),0.00468,0.00331,0.0061,1.0,,27170,73,14334,20260803,Bennett de-novo binders,python3 src/leverage_bennett_denovo.py

@@ -504,11 +504,13 @@ axis*: the scalar is regime-dependent and blind, the derivative clears chance re
 as well: there, even the scalar complex-conditioned distribution adds +0.018 beyond an all-atom occlusion
 baseline — and the *mixed derivative* itself adds in this genuine de-novo regime, CPI(L | geometry) =
 **+0.011 [+0.008, +0.014]** on 73 de-novo binders with wet-lab site-saturation labels, where the scalar KL is
-at the floor (+0.0003, CI spans zero). Here the one-pass complex log-odds is itself a strong readout (+0.023),
-so the *two-pass-specific* increment is the honest number: controlling for it, leverage still adds
-**+0.0032 [+0.0015, +0.0048]** (≈30% of the raw; the rest shared with the one-pass) — so the partner-ablation
-pass carries design-regime signal on *actual* de-novo binders, complementing R2's predicted-backbone result
-(§6) on natural complexes, with the scalar contraction (KL) at the floor throughout. → leverage_bennett_denovo.csv. A methodological note this forces: an earlier AB-Bind analysis reported the per-mutation
+at the floor (+0.0003, CI spans zero). Here the one-pass complex readout log p(mut|complex) is itself strong
+(+0.023), so the *two-pass-specific* increment is the stricter claim: controlling for it, leverage still adds
+**+0.0032 [+0.0015, +0.0048]**, rising to **+0.0041 [+0.0023, +0.0060]** once substitution identity (BLOSUM,
+volume, hydropathy) is controlled — where, as on SKEMPI, the reverse also holds (+0.0047 [+0.0033, +0.0061]),
+so neither pass subsumes the other. The partner-ablation pass carries design-regime signal on *actual* de-novo
+binders, complementing R2's predicted-backbone result (§6) on natural complexes, with the scalar contraction
+(KL) at the floor throughout. → leverage_bennett_denovo.csv. A methodological note this forces: an earlier AB-Bind analysis reported the per-mutation
 distribution "adds nothing" on natural antibody–antigen ΔΔG (ΔAUROC +0.008 over geometry + substitution), but
 under the conditional CPI test on the same baseline it adds **+0.031 [+0.015, +0.045]** (and +0.042 beyond
 geometry alone); the ΔAUROC readout's own fitted detection floor (≈−0.002) sits below the effect. The result is

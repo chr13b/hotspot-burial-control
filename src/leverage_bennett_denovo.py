@@ -55,6 +55,21 @@ def main():
         rows.append(dict(feature="leverage L | geometry + one-pass (two-pass increment)", cpi_over_geom=round(v2, 5),
                          lo=round(lo2, 5), hi=round(hi2, 5), p_gt0=round(p2, 3), n_mut=len(d),
                          n_designs=int(len(np.unique(grp))), n_destab=int(y.sum())))
+        # apples-to-apples with §4's SKEMPI passage: control for substitution identity too (one-pass's de-novo
+        # strength is largely an amino-acid prior that collapses here, while L barely moves).
+        if all(c in d.columns for c in ["blosum", "dvol", "dhydro"]):
+            for c in ["blosum", "dvol", "dhydro"]:
+                d[c + "z"] = LD.zs(d[c])
+            base = d[["burialz", "nbrz", "drsasaz", "blosumz", "dvolz", "dhydroz", "logP_mutz"]].to_numpy()
+            v3, lo3, hi3, p3, _, _ = LD.cpi(y, grp, base, d.Lz.to_numpy().copy(), rng)
+            baseL = d[["burialz", "nbrz", "drsasaz", "blosumz", "dvolz", "dhydroz", "Lz"]].to_numpy()
+            vr, lor, hir, pr, _, _ = LD.cpi(y, grp, baseL, d.logP_mutz.to_numpy().copy(), rng)
+            print(f"  CPI(L | geom+subst + one-pass)           = {v3:+.5f} [{lo3:+.5f}, {hi3:+.5f}]  <- two-pass, subst-controlled")
+            print(f"  CPI(one-pass | geom+subst + L) [reverse] = {vr:+.5f} [{lor:+.5f}, {hir:+.5f}]  <- neither subsumes the other")
+            rows.append(dict(feature="leverage L | geom+subst + one-pass", cpi_over_geom=round(v3, 5), lo=round(lo3, 5),
+                             hi=round(hi3, 5), p_gt0=round(p3, 3), n_mut=len(d), n_designs=int(len(np.unique(grp))), n_destab=int(y.sum())))
+            rows.append(dict(feature="one-pass | geom+subst + L (reverse)", cpi_over_geom=round(vr, 5), lo=round(lor, 5),
+                             hi=round(hir, 5), p_gt0=round(pr, 3), n_mut=len(d), n_designs=int(len(np.unique(grp))), n_destab=int(y.sum())))
     pd.DataFrame(rows).assign(seed=SEED, fixture="Bennett de-novo binders",
                               command="python3 src/leverage_bennett_denovo.py").to_csv(a.out, index=False)
     print(f"[wrote] {a.out}")
