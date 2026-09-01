@@ -68,14 +68,28 @@ def assert_in_view(ax, xs, axis="x"):
     assert not bad, f"[figstyle] clipped {axis}-data {bad} outside {(round(lo,5), round(hi,5))}"
 
 
+PAD = 0.02
+
+
 def save(fig, stem):
+    """Write PDF + PNG at true final width. bbox_inches='tight' silently GROWS the saved file when
+    a title/note overhangs the axes, which is how a '5.5in' figure ships at 6.25in and gets scaled
+    down by \\includegraphics — the exact failure this house style exists to prevent. So measure the
+    tight bbox and refuse to write when it overflows: shorten the overhanging text instead."""
     import os
-    assert abs(fig.get_size_inches()[0] - FIG_W) < 0.02 or fig.get_size_inches()[0] < FIG_W, \
-        f"[figstyle] figure width {fig.get_size_inches()[0]:.2f} exceeds {FIG_W}in"
+    w = fig.get_size_inches()[0]
+    assert w <= FIG_W + 0.02, f"[figstyle] figure width {w:.2f}in exceeds {FIG_W}in"
+    fig.canvas.draw()
+    saved = fig.get_tightbbox(fig.canvas.get_renderer()).width + 2 * PAD
+    assert saved <= FIG_W + 0.01, (
+        f"[figstyle] saved width {saved:.3f}in overflows {FIG_W}in by {saved - FIG_W:+.3f}in — "
+        f"an in-plot title/note/label overhangs the figure. Shorten it or widen its panel; "
+        f"never render wide and scale down.")
     os.makedirs("results/figures", exist_ok=True)
-    fig.savefig(f"results/figures/{stem}.pdf", bbox_inches="tight", pad_inches=0.02)
-    fig.savefig(f"results/figures/{stem}.png", bbox_inches="tight", pad_inches=0.02, dpi=200)
-    print(f"wrote results/figures/{stem}.{{pdf,png}}")
+    fig.savefig(f"results/figures/{stem}.pdf", bbox_inches="tight", pad_inches=PAD)
+    fig.savefig(f"results/figures/{stem}.png", bbox_inches="tight", pad_inches=PAD, dpi=200)
+    print(f"wrote results/figures/{stem}.{{pdf,png}}  ({saved:.2f} × "
+          f"{fig.get_tightbbox(fig.canvas.get_renderer()).height + 2 * PAD:.2f} in)")
 
 
 rgba = to_rgba

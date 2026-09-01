@@ -40,7 +40,7 @@ n_rz = int(rz.n_mut.iloc[0])
 
 # ---------------------------------------------------------------- canvas
 fig = plt.figure(figsize=(5.5, 2.62))
-L0, R0, WR, WS = 0.098, 0.985, [1.95, 1.00, 0.92], 0.50
+L0, R0, WR, WS = 0.098, 0.985, [1.82, 0.95, 1.12], 0.46
 gs = fig.add_gridspec(1, 3, width_ratios=WR, wspace=WS, left=L0, right=R0, top=0.775, bottom=0.185)
 u = (R0 - L0) / (sum(WR) + 2 * WS * np.mean(WR))                      # fig-fraction per ratio unit
 lefts = [L0, L0 + u * (WR[0] + WS * np.mean(WR)), L0 + u * (WR[0] + WR[1] + 2 * WS * np.mean(WR))]
@@ -124,7 +124,7 @@ axc.set_xlim(0, 1.30); axc.set_ylim(-0.010, 0.0215); axc.set_xticks([])
 axc.set_yticks([0, 0.01, 0.02]); axc.tick_params(labelsize=7.2)
 axc.set_ylabel("CPI at σ ≈ 1 Å", fontsize=8)
 S.strip(axc); S.assert_in_view(axc, list(rz.hi) + list(rz.lo), axis="y")
-S.header(axc, "the 1 Å rung is noise", f"3 ESM-IF1 draws · {n_rz:,} mut", tsize=8.0)
+S.header(axc, "the 1 Å rung is noise", f"3 draws · {n_rz:,} mut", tsize=8.0)
 
 for x, ch in zip(lefts, "abc"):
     S.flabel(fig, x, 0.955, ch)
