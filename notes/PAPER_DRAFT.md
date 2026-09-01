@@ -434,13 +434,14 @@ distinguishable from the retained set — Kolmogorov–Smirnov p = 0.63 — and 
 in the larger retained complexes. → p3_coupling_biascheck.csv.) Two honesties bound the claim: the
 effect is *modest* — about half the single-site leverage's −0.30, and near SKEMPI's own reproducibility floor
 (the same physical pair measured twice differs by up to 1 kcal/mol) — and it is a signal about coupling
-*magnitude* more than *sign*. Per-pair sign accuracy is near chance (0.54) and does *not* beat the majority-class
-baseline on large-|g| or high-|C| subsets; only a small genuine sign channel survives a chance correction —
+*magnitude* more than *sign*. Per-pair sign accuracy is near chance overall (0.54) and unreliable against the majority-class
+baseline: it edges the baseline on the high-|C| subset (|C|>p75, 0.65 vs 0.62) but falls below it on
+large-|g| (0.63 vs 0.69) and the top decile (|C|>p90, 0.68 vs 0.70). What survives is a small chance-corrected sign channel —
 controlling for |g| and distance, C still tracks the *direction* of epistasis at partial ρ = +0.08 [+0.01, +0.17],
 a few points of real sign information rather than the fifteen a naïve accuracy would suggest. The direction is
 nonetheless unambiguous, and it is the first direct empirical test of that expressivity property: what the model knows about
 binding reaches past single-residue effects to their epistatic couplings, and lives — at both derivative
-orders — in the structure of the distribution, not in the confidence. → p3_coupling.csv,
+orders — in the structure of the distribution, not in the confidence. → p3_coupling.csv, p3_sign_verify.csv,
 FINDINGS_p3_coupling.md.
 
 **De-novo designs corroborate — there, even the scalar distribution shows it.** Where selection is
