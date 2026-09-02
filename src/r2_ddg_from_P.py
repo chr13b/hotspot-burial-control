@@ -38,12 +38,13 @@ def load_P(pqf):
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--out", default="results/r2_ddg_from_P.csv"); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--out", default="results/r2_ddg_from_P.csv")
+    ap.add_argument("--pq", default="results/leverage_pq_skempi.csv"); ap.add_argument("--model", default="ProteinMPNN"); a = ap.parse_args()
     gbm = lambda: HistGradientBoostingRegressor(max_depth=4, max_iter=400, learning_rate=0.05, l2_regularization=1.0, random_state=SEED)
     rf  = lambda: RandomForestRegressor(n_estimators=200, min_samples_leaf=3, max_features=0.5, n_jobs=4, random_state=SEED)
     flexible = [("gbm", gbm), ("rf", rf)]
 
-    P = load_P("results/leverage_pq_skempi.csv")
+    P = load_P(a.pq)
     m = pd.read_csv("results/leverage_skempi_mutations.csv", low_memory=False)
     m["icode"] = m.icode.fillna("").astype(str)
     m = m[np.isfinite(m.ddG) & m.mut.isin(list(AA))].copy()
@@ -74,7 +75,7 @@ def main():
     report("ddG ->Ala", Xp[ala], y[ala], g[ala], "P(20)")                          # (A) comparable to L_ala
     report("ddG all | subst-only", onehot, y, g, "onehot(20)")                     # (B) baseline
     report("ddG all | P+subst", np.hstack([Xp, onehot]), y, g, "P+onehot(40)")     # (B) full
-    pd.DataFrame(rows).assign(seed=SEED, command="python3 src/r2_ddg_from_P.py").to_csv(a.out, index=False)
+    pd.DataFrame(rows).assign(model=a.model, seed=SEED, command=f"python3 src/r2_ddg_from_P.py --pq {a.pq}").to_csv(a.out, index=False)
     print(f"[wrote] {a.out}", flush=True)
 
 

@@ -46,7 +46,9 @@ beyond-conservation) control on any inverse-folding binding signal, and the feat
 general and already familiar: the mixed derivative is the model's **classifier-free-guidance direction** (the
 binding partner as conditioner), and to read an un-trained quantity off a conditional generative model one
 ablates the conditioner and reads that direction — not the conditional marginal the field has been mistaking
-for competence.
+for competence. And the direction is *actionable*: biasing a frozen off-the-shelf ProteinMPNN's interface
+logits by `+α·L` raises the binding-leverage an independent model (ESM-IF1) assigns the sampled residues —
+monotonically, while a matched-magnitude random direction *lowers* it — with native recovery preserved.
 
 ## 1. Introduction
 
@@ -135,6 +137,13 @@ biophysics.
 hotspots to null residues on relative complex SASA (±0.05), secondary-structure class, and neighbour count
 (±1). Effects are aggregated by complex-level bootstrap; every seed is fixed (20260803) and reported with its
 bootstrap replicate count. → PREREG.md, PREREG_knows_where.md, PREREG_bennett_hardening.md.
+
+**Statistical stance (multiple comparisons).** Headline claims are *pre-registered* (P1–P3 and the PREREG files
+above), so their tests are confirmatory rather than selected after seeing the data; the placebo floor calibrates
+the CPI estimator's false-positive rate directly (a feature must clear the floor, not merely exceed zero); and
+every interval is a complex-clustered bootstrap. The many secondary and cross-architecture analyses are reported
+without a global family-wise correction and are treated as descriptive support, not independent confirmatory
+tests.
 
 **Models.** Five inverse-folding architectures span the design space: ProteinMPNN (vanilla and soluble
 variants), ESM-IF1 (a 142M-parameter GVP-transformer), PiFold (a one-shot GNN), MIF (masked inverse folding),
@@ -256,7 +265,7 @@ injective — and it is not. That `Var(L|P) > 0` is measured directly: a flexibl
 forests), so **~63% of the mixed derivative is irreducible from `P`** even under a nonlinear readout, and only
 ~15% under a linear one (`r2_leverage_from_P.csv`). And the floor holds against *ground truth*, not just the
 `L` proxy: regressing **experimental** ΔΔG_bind directly on `P` (the →Ala substitutions, the readout comparable
-to `L(→A)`) leaves **88% irreducible** (R² = 0.12 [0.06, 0.16]) — even more than `L`'s 63%, as expected once
+to `L(→A)`) leaves **88% irreducible** (R² = 0.12 [0.06, 0.16]) — even more than the mixed derivative's own 63–66% (66% for the strictly comparable →Ala readout), as expected once
 experimental measurement noise enters, with substitution identity alone explaining ~1.5% of ΔΔG. → r2_ddg_from_P.csv. (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
 model(X_monomer)` costs a second forward pass, which by (ii) no function of `P` reproduces. ∎
 
@@ -324,7 +333,10 @@ alone. So the mixed derivative adds beyond the **standard hotspot feature set** 
 geometry *and* conservation — not merely cheap geometry. → skempi_conservation.csv, skempi_conservation_masked_cpi.csv, FINDINGS_conservation.md. To calibrate the effect
 size: L is a *zero-shot* readout of a model never trained on binding, yet it adds **+0.030 interface AUROC**
 (0.700→0.730) beyond a *supervised* geometry+substitution baseline fit directly on the binding labels, and on
-its own reaches AUROC 0.647 — near that supervised baseline. → leverage_effect_size.csv. **This is not a
+its own reaches AUROC 0.647 — near that supervised baseline. That a zero-shot readout beats a supervised one is
+exactly what the ground-truth floor predicts: with ~88% of experimental ΔΔG irreducible from `P` and ~98% from
+substitution identity alone (Prop 1(ii)), there is little in geometry+substitution for a supervised model to
+fit — the binding signal is reachable only through the second pass. → leverage_effect_size.csv, r2_ddg_from_P.csv. **This is not a
 ProteinMPNN artifact:** it replicates under ESM-IF1 — a GVP-transformer with a native-conditioned (not sequence-free) readout
 — where confidence is again blind to hotspots and leverage again adds beyond geometry and beyond every scalar
 including confidence *at the position level* (337/344 complexes; mutation Spearman −0.26, CPI +0.035; position
@@ -558,6 +570,22 @@ gradient, binned by binding affinity, is null on 141 complexes; the natural regi
 obligate endpoint (it is defined by measurable dissociation), so a transient→obligate gradient is not
 constructible here. → confidence_gradient{,_affinity}.csv.
 
+**The named direction is actionable.** If `L` is the classifier-free-guidance direction, the direct test is to
+*guide* with it. Biasing a **frozen, off-the-shelf** ProteinMPNN's interface logits by `+α·L` and sampling
+(K=64, 271 SKEMPI complexes, pre-registered grid α ∈ {0,0.25,0.5,1,2}) raises the mean binding-leverage a
+**different** model (ESM-IF1) assigns the sampled interface residues, monotonically — **−0.20 at α=0 → +0.27 at
+α=2**, CI clearing zero from α=1. A random direction of matched per-position magnitude does the *opposite*
+(→ −0.51), so the paired L−random gap is +0.13 / +0.24 / +0.45 / **+0.77** (P(>0)=1.0 at every α>0): it is the
+**direction**, not the perturbation. Native interface recovery does not fall but slightly *rises*
+(0.276 → 0.297; the random arm degrades it to 0.220) and non-interface recovery is flat — the tilt concentrates
+probability on residues that are simultaneously more native-consistent *and* higher binding-leverage. This is
+anti-circular (a second, architecturally distinct model scores the sequences) but not an independent binding
+oracle: both are inverse-folding models and ESM-IF1 leverage is a model proxy for ΔΔG, so connecting the steered
+sequences to a physical or experimental binding readout is the natural next step, not claimed here. So the same
+mixed derivative the field's decoders already tilt along (RedNet; §8) works as a training-free knob on a model
+that was never trained to bind. → cfg_steer.csv, cfg_steer_summary.csv, FINDINGS_cfg_steer.md; pre-registered in
+PREREG_cfg_steer.md.
+
 ## 5. On crystal backbones, the hotspot gap is a burial artifact
 
 We now return to the published deficit and show, on crystal backbones, that it is a burial confound. The
@@ -684,7 +712,9 @@ autoregressive likelihoods. **StaB-ddG** parameterises ΔΔG through a folding-e
 fixture; a distinct question. **RedNet** independently operationalises exactly this leverage as a *design-time
 decoder*: its contrastive decode `logit_bound + α·(logit_bound − logit_apo)` — verified in their released code
 (zw2x/rednet_public: the α-tilt in `sampling_utils.py` and the partner-deleted apo contrast in
-`infer_pipeline.py`) — is our mixed derivative applied at sampling time. (One terminological guard: RedNet's own
+`infer_pipeline.py`) — is our mixed derivative applied at sampling time. Where RedNet retrains a decoder, we show the tilt is already
+actionable on a *frozen, off-the-shelf* model and that an *independent* model scores the steered residues as
+higher-binding (§4) — turning the shared direction into a diagnosis-then-intervention arc. (One terminological guard: RedNet's own
 framing invokes the *thermodynamic* decomposition of binding free energy — the standard `ΔG_bind = ΔG_complex −
 Σ ΔG_partners`; our "decomposition" is a distinct object, a split of the *model's likelihood function* into a
 diagonal-confidence and a mixed-leverage derivative, which is what makes ours a diagnostic rather than a decoder
