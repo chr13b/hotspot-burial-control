@@ -574,7 +574,11 @@ attenuation is not a residual-ΔSASA artifact. → dsasa_matched_sens.csv. We do
 matched-pair PRIMARY tier (47 pairs) MIF and PiFold retain a residual recovery deficit whose CI excludes zero
 (MIF +0.277 [+0.098, +0.465]; PiFold +0.191 [+0.022, +0.359]), and a two-one-sided-tests check does not certify
 equivalence at the ±0.115-nat margin. The honest claim is **strong attenuation — most of the gap is burial —
-not proven absence**, and the residual is architecture-dependent. → FINDINGS.md, panel_summary.csv.
+not proven absence**, and the residual is architecture-dependent. → FINDINGS.md, panel_summary.csv. Tellingly,
+MIF and PiFold — the two architectures that retain this residual *recovery* deficit — are two of the four on
+which the *mixed derivative* replicates (§4; CPI(L | geometry) = +0.058 and +0.050): within a single model the
+confidence-type readout keeps a deficit exactly where the leverage readout still works — the §4 decomposition
+seen *within* an architecture, not only across the feature classes.
 
 The strongest form of this test uses ProBID-Net's own released voxel-CNN. Run on our fixture, its port is
 faithful (overall interface recovery 0.472, matching its reported non-hotspot number), and its published
