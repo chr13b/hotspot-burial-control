@@ -1,0 +1,10 @@
+readout,features,learner,r2,lo,hi,n,n_complexes,irreducible_frac,model,seed,command
+ddG ->Ala,P(20),gbm,0.0425,-0.0205,0.0874,2287,,,ESM-IF1,20260803,python3 src/r2_ddg_from_P.py --pq results/leverage_pq_skempi_esmif.csv
+ddG ->Ala,P(20),rf,0.1011,0.0505,0.1411,2287,,,ESM-IF1,20260803,python3 src/r2_ddg_from_P.py --pq results/leverage_pq_skempi_esmif.csv
+ddG ->Ala,P(20),MAX_FLEXIBLE,0.1011,0.0505,0.1411,2287,178.0,0.8989,ESM-IF1,20260803,python3 src/r2_ddg_from_P.py --pq results/leverage_pq_skempi_esmif.csv
+ddG all | subst-only,onehot(20),gbm,0.015,-0.0137,0.0315,4123,,,ESM-IF1,20260803,python3 src/r2_ddg_from_P.py --pq results/leverage_pq_skempi_esmif.csv
+ddG all | subst-only,onehot(20),rf,0.0149,-0.0137,0.0313,4123,,,ESM-IF1,20260803,python3 src/r2_ddg_from_P.py --pq results/leverage_pq_skempi_esmif.csv
+ddG all | subst-only,onehot(20),MAX_FLEXIBLE,0.015,-0.0137,0.0315,4123,313.0,0.985,ESM-IF1,20260803,python3 src/r2_ddg_from_P.py --pq results/leverage_pq_skempi_esmif.csv
+ddG all | P+subst,P+onehot(40),gbm,0.1037,0.0223,0.1758,4123,,,ESM-IF1,20260803,python3 src/r2_ddg_from_P.py --pq results/leverage_pq_skempi_esmif.csv
+ddG all | P+subst,P+onehot(40),rf,0.1041,0.0456,0.1555,4123,,,ESM-IF1,20260803,python3 src/r2_ddg_from_P.py --pq results/leverage_pq_skempi_esmif.csv
+ddG all | P+subst,P+onehot(40),MAX_FLEXIBLE,0.1041,0.0456,0.1555,4123,313.0,0.8959,ESM-IF1,20260803,python3 src/r2_ddg_from_P.py --pq results/leverage_pq_skempi_esmif.csv

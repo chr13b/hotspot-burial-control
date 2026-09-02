@@ -265,8 +265,8 @@ injective — and it is not. That `Var(L|P) > 0` is measured directly: a flexibl
 forests), so **~63% of the mixed derivative is irreducible from `P`** even under a nonlinear readout, and only
 ~15% under a linear one (`r2_leverage_from_P.csv`). And the floor holds against *ground truth*, not just the
 `L` proxy: regressing **experimental** ΔΔG_bind directly on `P` (the →Ala substitutions, the readout comparable
-to `L(→A)`) leaves **88% irreducible** (R² = 0.12 [0.06, 0.16]) — even more than the mixed derivative's own 63–66% (66% for the strictly comparable →Ala readout), as expected once
-experimental measurement noise enters, with substitution identity alone explaining ~1.5% of ΔΔG. → r2_ddg_from_P.csv. (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
+to `L(→A)`) leaves **88% irreducible** for ProteinMPNN and **90%** for ESM-IF1 (R² = 0.12 [0.06, 0.16] and 0.10 [0.05, 0.14]) — even more than the mixed derivative's own 63–66% (66% for the strictly comparable →Ala readout), as expected once
+experimental measurement noise enters, with substitution identity alone explaining ~1.5% of ΔΔG (both floors hold on a second model's distribution). → r2_ddg_from_P.csv, r2_ddg_from_P_esmif.csv. (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
 model(X_monomer)` costs a second forward pass, which by (ii) no function of `P` reproduces. ∎
 
 The empirical sections instantiate the proposition — and they trace a single arc: `L` is the model's
