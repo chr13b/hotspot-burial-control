@@ -56,7 +56,9 @@ def main():
     if a.limit:
         cids = cids[:a.limit]
     model, _ = fc.load_mpnn(LD.MPNN_W)
-    print(f"[cfg-steer] {len(cids)} complexes, K={a.K}, alphas={alphas}, temp={a.temp}", flush=True)
+    device = "cuda" if torch.cuda.is_available() else "cpu"      # optional GPU speed; CPU path unchanged
+    model = model.to(device)
+    print(f"[cfg-steer] {len(cids)} complexes, K={a.K}, alphas={alphas}, temp={a.temp}, device={device}", flush=True)
     rng = np.random.default_rng(SEED); rows = []
     for ci, cid in enumerate(cids):
         pdb, g1, g2 = cid.split("_"); path = f"{DATA}/PDBs/{pdb}.pdb"

@@ -196,7 +196,8 @@ def draw(model, cx, K, batch, order=None, temperature=0.1, seed=0, use_patch=Fal
 
     `bias_by_res`: None (unbiased, default) or a [L,21] / [B,L,21] tensor added to the per-position logits
     before the softmax (this is how the CFG tilt +alpha*L is injected). Backward-compatible."""
-    X, S, mask, residue_idx, chain_enc = featurize(cx)
+    dev = next(model.parameters()).device                 # run on the model's device (CPU unless ported to GPU)
+    X, S, mask, residue_idx, chain_enc = featurize(cx, device=dev)
     L = cx.n
     ALPHA = "ACDEFGHIKLMNPQRSTVWYX"
     omit = np.array([1.0 if a == "X" else 0.0 for a in ALPHA], dtype=np.float32)
@@ -206,23 +207,23 @@ def draw(model, cx, K, batch, order=None, temperature=0.1, seed=0, use_patch=Fal
     with torch.no_grad():
         while done < K:
             b = min(batch, K - done)
-            cm = torch.ones(b, L)
+            cm = torch.ones(b, L, device=dev)
             if order is None:
-                rnd = torch.randn(b, L)
+                rnd = torch.randn(b, L, device=dev)
             else:
                 o = torch.as_tensor(order, dtype=torch.long)
                 o = o[None].repeat(b, 1) if o.dim() == 1 else o[:b]
-                rnd = order_to_randn(o, cm)
+                rnd = order_to_randn(o, cm).to(dev)
             if bias_by_res is None:
-                bbr = torch.zeros(b, L, 21)
+                bbr = torch.zeros(b, L, 21, device=dev)
             else:
-                _t = torch.as_tensor(bias_by_res, dtype=torch.float32)
+                _t = torch.as_tensor(bias_by_res, dtype=torch.float32, device=dev)
                 bbr = _t[None].expand(b, -1, -1).contiguous() if _t.dim() == 2 else _t[:b]
             kw = dict(X=X.repeat(b, 1, 1, 1), randn=rnd, S_true=S.repeat(b, 1),
                       chain_mask=cm, chain_encoding_all=chain_enc.repeat(b, 1),
                       residue_idx=residue_idx.repeat(b, 1), mask=mask.repeat(b, 1),
                       temperature=temperature, omit_AAs_np=omit, bias_AAs_np=bias,
-                      chain_M_pos=torch.ones(b, L), omit_AA_mask=None, pssm_coef=None,
+                      chain_M_pos=torch.ones(b, L, device=dev), omit_AA_mask=None, pssm_coef=None,
                       pssm_bias=None, pssm_multi=0.0, pssm_log_odds_flag=False,
                       pssm_log_odds_mask=None, pssm_bias_flag=False,
                       bias_by_res=bbr)
