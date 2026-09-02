@@ -167,7 +167,11 @@ monomer-conditioned distributions (a KL detector), which one might hope captures
 beyond geometry. It captures a *small* one: under a combiner-free conditional test, KL adds CPI = +0.002
 [+0.0006, +0.0034], P=0.998 beyond full geometry, and its within-geometry-stratum AUROC is 0.60 (vs 0.50
 leakage) — a genuine learned-frustratometer signal, but ~6× smaller than ΔSASA's contribution and not worth
-the network as a standalone ranker. (We are careful here about readout: the unfitted z-sum ΔAUROC we first
+the network as a standalone ranker. It is the same signal §4 reads *at the placebo floor*: the scalar KL is a
+contraction of the leverage vector (`E_P[L]` up to a constant) — the single best scalar summary of the two-pass
+signal — and even it captures only a sliver, a hair above the floor on this matched 5,742-position sample and
+sitting on it on the full 13,401-position sample, an order of magnitude below the full mixed derivative it
+summarises. (We are careful here about readout: the unfitted z-sum ΔAUROC we first
 used has a −0.021 noise floor — it penalises adding *any* feature — so the earlier "KL adds ≈0 / actively
 hurts" reading measured the combiner, not KL; we retire that estimator, as we do the sibling
 ΔAUROC-over-one-hot in §4.) So KL is a learned frustratometer that *largely* recapitulates the classical
@@ -211,7 +215,9 @@ trained on the full 20-vector `P` recovers **only ~37%** of the leverage — R²
 when wt identity is added, the fair `φ(P, wt)` class since confidence itself uses `log P(wt)`); a *linear*
 readout recovers less than half, R² ≈ 0.15. The recoverable part is the one-pass complex log-odds *vector*; the
 *scalar* one-pass magnitude alone recovers far less, and the irreducible majority is the partner-ablation term
-that lives in `Q`. → r2_leverage_from_P.csv.
+that lives in `Q`. A second, threshold-free reading agrees: within deciles of confidence the interquartile
+range of `|L|` is **1.09× [1.06, 1.13]** the overall — so conditioning on confidence removes essentially none
+of the leverage spread. → r2_leverage_from_P.csv, conf_decile_leverage.csv.
 
 We state the decomposition as a proposition; it is short, and it is what turns the corrections above into a
 theorem rather than a list.
@@ -248,10 +254,16 @@ definitional; the content is that `P` does **not** determine `Q`, which would ho
 injective — and it is not. That `Var(L|P) > 0` is measured directly: a flexible learner (gradient boosting) trained on the full 20-vector
 `P` recovers only R²(L|P) ≈ **0.37** out-of-sample in both families (max over gradient boosting and random
 forests), so **~63% of the mixed derivative is irreducible from `P`** even under a nonlinear readout, and only
-~15% under a linear one (`r2_leverage_from_P.csv`). (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
+~15% under a linear one (`r2_leverage_from_P.csv`). And the floor holds against *ground truth*, not just the
+`L` proxy: regressing **experimental** ΔΔG_bind directly on `P` (the →Ala substitutions, the readout comparable
+to `L(→A)`) leaves **88% irreducible** (R² = 0.12 [0.06, 0.16]) — even more than `L`'s 63%, as expected once
+experimental measurement noise enters, with substitution identity alone explaining ~1.5% of ΔΔG. → r2_ddg_from_P.csv. (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
 model(X_monomer)` costs a second forward pass, which by (ii) no function of `P` reproduces. ∎
 
-The empirical sections instantiate the proposition. The feature-class law below is (ii) measured on natural
+The empirical sections instantiate the proposition — and they trace a single arc: `L` is the model's
+classifier-free-guidance direction (this section), it is among the best *training-free* readouts for locating
+interface hotspots (§8), and it is exactly the mixed derivative Proposition 1 proves confidence cannot see. The
+feature-class law below is (ii) measured on natural
 complexes; the no-go for scalar readouts is its immediate corollary; and §5 (ProBID-Net), §8 (BindCraft) and
 the KL detector are three scalars-of-`P` the field met separately, each blind for exactly this reason.
 
@@ -309,7 +321,7 @@ sharpens against the conservation baseline: adding the mixed derivative on top o
 (the unmasked-negentropy estimator, for which we ran the hotspot ranker) lifts hotspot AUROC by
 **+0.016 [+0.004, +0.029]** (both the |L|_rms and −L(→Ala) variants significant), larger than against geometry
 alone. So the mixed derivative adds beyond the **standard hotspot feature set** —
-geometry *and* conservation — not merely cheap geometry. → skempi_conservation.csv, FINDINGS_conservation.md. To calibrate the effect
+geometry *and* conservation — not merely cheap geometry. → skempi_conservation.csv, skempi_conservation_masked_cpi.csv, FINDINGS_conservation.md. To calibrate the effect
 size: L is a *zero-shot* readout of a model never trained on binding, yet it adds **+0.030 interface AUROC**
 (0.700→0.730) beyond a *supervised* geometry+substitution baseline fit directly on the binding labels, and on
 its own reaches AUROC 0.647 — near that supervised baseline. → leverage_effect_size.csv. **This is not a
@@ -440,8 +452,9 @@ large-|g| (0.63 vs 0.69) and the top decile (|C|>p90, 0.68 vs 0.70). What surviv
 controlling for |g| and distance, C still tracks the *direction* of epistasis at partial ρ = +0.08 [+0.01, +0.17],
 a few points of real sign information rather than the fifteen a naïve accuracy would suggest. The direction is
 nonetheless unambiguous, and it is the first direct empirical test of that expressivity property: what the model knows about
-binding reaches past single-residue effects to their epistatic couplings, and lives — at both derivative
-orders — in the structure of the distribution, not in the confidence. → p3_coupling.csv, p3_sign_verify.csv,
+binding reaches past single-residue effects to their epistatic couplings, and lives — at both orders of the
+mixed derivative, the first (single-residue ΔΔG) and the second (epistasis) — in the structure of the
+distribution, not in the confidence. → p3_coupling.csv, p3_sign_verify.csv,
 FINDINGS_p3_coupling.md.
 
 **De-novo designs corroborate — there, even the scalar distribution shows it.** Where selection is
@@ -690,7 +703,7 @@ geometric feature set (burial + neighbours + ΔSASA) lifts hotspot AUROC from 0.
 [+0.0007, +0.0246], P(>0)=0.98)**, a CI that excludes zero. So the corrected practical rule is *rank interface
 positions by geometry **plus** the mixed derivative, not the confidence* — a training-free readout that adds to
 the standard feature set — with the dose-law caveat (§4) that this holds
-on accurate backbones and degrades with reconstruction error. → leverage_triage.csv, bindcraft_triage.csv. Finally, a wave of
+on accurate backbones and degrades with reconstruction error. → leverage_triage.csv, w4_combined_ranker.csv, bindcraft_triage.csv. Finally, a wave of
 conditioning-aware inverse-folding methods (AlphaFold-DB debiasing / DeSAE, target-conditioned inverse
 folding, UMA-Inverse) *presupposes* the conditioning-set problem; we *measure* it and show the standard
 benchmark hides it. Independent corroboration of the core claim comes from **Janusz et al. (2026)**, who
@@ -704,7 +717,12 @@ UMA-Inverse, Cagiada, Ferreiro/Freiberger, Watson–Wright, Berrett, Janusz, Pro
 
 We evaluate on three fixtures — SKEMPI (natural, primary), Bennett de-novo designs, and AB-Bind
 (antibody–antigen) — none a full generate→design→wet-lab loop; the de-novo evidence is four targets and
-AB-Bind's 27 complexes are indeterminate for the leverage test.
+AB-Bind's 27 complexes are indeterminate for the leverage test. The primary claims rest on one natural fixture;
+we mitigate this with the two further fixtures, four inverse-folding architectures, and a catalytic-site
+replication, but a second large natural binding fixture would strengthen them. The de-novo effect in particular
+is small — the two-pass-specific increment is +0.0032 [+0.0015, +0.0048] — and we do not lean on it: its role is
+only to show the mixed derivative *reaches* the genuine design regime, and its best support is that predicted
+backbones, where the effect is larger, fall in the *surviving* part of the dose law (§4, §6).
 
 **Caveats specific to the decomposition.** (a) *Orthogonal is not independent*: confidence cannot *express*
 leverage, but the two are weakly-to-moderately correlated and the correlation is model-dependent
@@ -726,7 +744,13 @@ geometry (position +0.0042, survives drop-3; mutation Spearman(L,ΔΔG) = −0.2
 geometry+substitution+confidence+scalar-KL, and +0.010 fully controlled), with somewhat smaller magnitudes than
 ProteinMPNN. So the feature-class law is a property of the inverse-folding class, not one model. →
 leverage_esmif.csv. (g) CPI is not formally commensurable across fixtures, so "natural ≫
-de-novo" is a suggestive, not a formal, comparison.
+de-novo" is a suggestive, not a formal, comparison. (h) *Effect sizes are modest in absolute terms* — the
+position-level CPI is +0.0048 — because the hotspot label is rare (base rate 2.4%, entropy 0.115 nats). We read
+them relatively rather than papering over them: leverage is 4.2% of the label's entropy (an order of magnitude
+above any scalar of `P`), ~71% of what the explicit geometric ΔSASA contributes, and, most concretely, it
+reaches a standalone training-free hotspot-ranking AUROC of 0.694 (§8). The result is a *dissociation between
+feature classes*, not a large-magnitude predictor — and it is that dissociation, replicated across architectures
+and backbone regimes, that the paper claims.
 
 **Other limitations.** The all-atom occlusion baseline is a min-over-rotamer repacking proxy, not a force field
 (the 95%-zero-clash prevalence bounds what any clash model could recover). De-novo binding labels convolve
