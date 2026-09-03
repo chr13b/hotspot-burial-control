@@ -48,11 +48,19 @@ def _row(cx, ch, rn):
     return pos[(pos.complex_id == cx) & (pos.chain == ch) & (pos.resnum == rn)].iloc[0]
 EH, EC = _row(*EX_HOT), _row(*EX_COLD)
 
-# ------------------------------------------------------------------ canvas
-fig = plt.figure(figsize=(5.5, 4.90))
-gA = fig.add_gridspec(1, 1, left=0.048, right=0.995, top=0.938, bottom=0.500)
-gB = fig.add_gridspec(1, 2, left=0.090, right=0.985, top=0.418, bottom=0.082,
+# ------------------------------------------------------------------ 1d/1e data (CSV only)
+cfg = pd.read_csv(f"{R}/cfg_steer_summary.csv")
+CL = cfg[cfg.direction == "L"].sort_values("alpha").reset_index(drop=True)
+CR = cfg[cfg.direction == "random"].sort_values("alpha").reset_index(drop=True)
+CFG_A = list(CL.alpha)
+
+# ------------------------------------------------------------------ canvas (3 rows: a / b,c / d,e)
+fig = plt.figure(figsize=(5.5, 7.05))
+gA = fig.add_gridspec(1, 1, left=0.048, right=0.992, top=0.966, bottom=0.672)
+gB = fig.add_gridspec(1, 2, left=0.092, right=0.985, top=0.612, bottom=0.432,
                       width_ratios=[1.16, 1.0], wspace=0.40)
+gD = fig.add_gridspec(1, 2, left=0.092, right=0.985, top=0.300, bottom=0.076,
+                      width_ratios=[1.0, 1.0], wspace=0.38)
 
 # ================================================================== 1a — the operator
 axa = fig.add_subplot(gA[0]); axa.set_axis_off()
@@ -217,9 +225,62 @@ S.strip(axc, left=False)
 S.assert_in_view(axc, [float(FLEX["ProteinMPNN"].hi), float(FLEX["ESM-IF1"].hi)])
 S.header(axc, "and neither does all of P", "GBM / random forest, complex-held-out")
 
-S.flabel(fig, 0.048, 0.995, "a")
-S.flabel(fig, 0.090, 0.470, "b")
-S.flabel(fig, 0.588, 0.470, "c")
+# ================================================================== 1d — steer with it: binding rises
+axd = fig.add_subplot(gD[0])
+xp = np.arange(len(CFG_A))
+axd.axhline(0, color=S.RULE, lw=0.8, ls=(0, (3, 3)), zorder=1)
+axd.plot(xp, CR.meanL_esmif, ls=(0, (2, 2)), color=S.SCALAR, lw=1.1, zorder=2)         # random arm
+for x, lo, hi in zip(xp, CR.esmif_lo, CR.esmif_hi):
+    axd.plot([x, x], [lo, hi], color=S.SCALAR, lw=0.8, zorder=2)
+axd.plot(xp, CR.meanL_esmif, "s", mfc="white", mec=S.SCALAR, mew=1.0, ms=4.0, zorder=3)
+axd.plot(xp, CL.meanL_esmif, "-", color=S.LEV, lw=1.6, zorder=4)                        # L arm
+for x, lo, hi in zip(xp, CL.esmif_lo, CL.esmif_hi):
+    axd.plot([x, x], [lo, hi], color=S.LEV, lw=0.9, zorder=4)
+axd.plot(xp, CL.meanL_esmif, "o", color=S.LEV, ms=4.6, zorder=5)
+axd.text(xp[3], 0.205, "steer by $L$", color=S.LEV,
+         fontsize=6.8, fontweight="bold", ha="center", va="bottom")
+axd.text(xp[2], float(CR.meanL_esmif.iloc[2]) - 0.035, "random dir.", color=S.MUTED,
+         fontsize=6.6, ha="center", va="top")
+gp = float(CL.meanL_esmif.iloc[-1] - CR.meanL_esmif.iloc[-1])
+axd.annotate("", xy=(xp[-1] - 0.12, float(CL.meanL_esmif.iloc[-1])),
+             xytext=(xp[-1] - 0.12, float(CR.meanL_esmif.iloc[-1])),
+             arrowprops=dict(arrowstyle="<->", color=S.INK, lw=0.7, shrinkA=0, shrinkB=0), zorder=6)
+axd.text(xp[-1] - 0.24, np.mean([float(CL.meanL_esmif.iloc[-1]), float(CR.meanL_esmif.iloc[-1])]),
+         f"+{gp:.2f}\n$P{{>}}0{{=}}1.0$", fontsize=5.9, color=S.INK, ha="right", va="center", linespacing=1.3)
+axd.set_xticks(xp); axd.set_xticklabels([f"{a:g}" for a in CFG_A], fontsize=7.0)
+axd.set_ylim(-0.63, 0.37); axd.set_yticks([-0.5, -0.25, 0, 0.25]); axd.tick_params(labelsize=7.0)
+axd.set_xlim(-0.3, len(CFG_A) - 0.55)
+axd.set_xlabel("steering strength  α", fontsize=8); axd.xaxis.set_label_coords(0.5, -0.15)
+axd.set_ylabel("ESM-IF1 leverage", fontsize=7.7)
+S.strip(axd); S.assert_in_view(axd, list(CL.esmif_hi) + list(CR.esmif_lo), axis="y")
+S.header(axd, "steer with it, an independent model agrees",
+         f"frozen ProteinMPNN, scored by ESM-IF1 · n={int(CL.n_cx.iloc[0])}")
+
+# ================================================================== 1e — at no cost to native recovery
+axe = fig.add_subplot(gD[1])
+base = float(CL.int_recovery.iloc[0])
+axe.axhline(base, color=S.RULE, lw=0.7, ls=(0, (3, 3)), zorder=1)
+axe.plot(xp, CR.int_recovery, ls=(0, (2, 2)), color=S.SCALAR, lw=1.1, zorder=2)
+axe.plot(xp, CR.int_recovery, "s", mfc="white", mec=S.SCALAR, mew=1.0, ms=4.0, zorder=3)
+axe.plot(xp, CL.int_recovery, "-", color=S.LEV, lw=1.6, zorder=4)
+axe.plot(xp, CL.int_recovery, "o", color=S.LEV, ms=4.6, zorder=5)
+axe.text(xp[2], float(CL.int_recovery.iloc[2]) + 0.004, "steer by $L$", color=S.LEV,
+         fontsize=6.5, fontweight="bold", ha="center", va="bottom")
+axe.text(xp[-1], float(CR.int_recovery.iloc[-1]) - 0.004, "random dir.", color=S.MUTED,
+         fontsize=6.5, ha="right", va="top")
+axe.text(0.02, base + 0.0015, "α=0 baseline", fontsize=5.8, color=S.MUTED, va="bottom", ha="left")
+axe.set_xticks(xp); axe.set_xticklabels([f"{a:g}" for a in CFG_A], fontsize=7.0)
+axe.set_ylim(0.205, 0.315); axe.set_yticks([0.22, 0.26, 0.30]); axe.tick_params(labelsize=7.0)
+axe.set_xlim(-0.3, len(CFG_A) - 0.4)
+axe.set_xlabel("steering strength  α", fontsize=8); axe.xaxis.set_label_coords(0.5, -0.15)
+axe.set_ylabel("native recovery", fontsize=7.7)
+S.strip(axe); S.header(axe, "at no cost to native recovery", "the L direction is native-consistent too")
+
+S.flabel(fig, 0.048, 0.992, "a")
+S.flabel(fig, 0.092, 0.642, "b")
+S.flabel(fig, 0.590, 0.642, "c")
+S.flabel(fig, 0.092, 0.330, "d")
+S.flabel(fig, 0.545, 0.330, "e")
 S.save(fig, "fig1_decomposition")
 print(f"  1a P({WT})={P[IWT]:.3f} Q({WT})={Q[IWT]:.3f}  Spearman(L,ddG)={SP_LDDG:+.3f} n={SP_N}")
 print(f"  1b IQR ratio {IQR_RATIO:.3f}  rho(conf,|L|)={RHO_CL:+.4f}  exemplars |L| {EH.L_rms:.2f} vs {EC.L_rms:.3f}")
