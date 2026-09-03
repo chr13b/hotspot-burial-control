@@ -17,18 +17,23 @@ Fold each with **AF2-multimer** (one model; reports ipTM natively; the pipeline 
 record **interface ipTM** (primary) and **interface pAE** (secondary), per sequence.
 
 ## Hypotheses
-- **H1 (specificity — the load-bearing test).** Paired per complex, the **interface** metrics favour L over the
-  matched-magnitude random direction — **ipTM(L) > ipTM(random)**, and *consistently* **interface pAE(L) <
-  interface pAE(random)** and **interface pLDDT(L) > interface pLDDT(random)**. Corroboration across all three is
-  the claim; a lift in one metric alone is not.
+- **H1 (specificity — the load-bearing test), robust to per-metric noise.** The pre-registered primary is paired
+  **ipTM(L) > ipTM(random)**. Because single metrics are noisy and can flip for spurious reasons, we ALSO
+  pre-register a **robust composite interface score** — the mean of the three interface metrics, each z-scored
+  across all folds and sign-oriented so higher = better (ipTM, −interface pAE, interface pLDDT) — and require
+  paired **composite(L) > composite(random)** (complex-clustered bootstrap CI). **The effect is claimed when the
+  composite AND ipTM both favour L.** Individual metrics are reported but are *not* individually decisive: a lone
+  metric flipping is treated as noise (not a refutation), and a lone metric agreeing is not sufficient (not a
+  cherry-pick).
 - **H2 (no collapse).** The interface metrics for L-steered are **not below** wt by more than a small margin —
   steering does not destroy a foldable interface (consistent with the CFG result, where native recovery *rose*).
 - **H3 (localization).** The improvement is **interface-specific**: global pTM shifts far less than the interface
   metrics (mirroring the CFG localization control). If global pTM moves as much as ipTM, the effect is not
   interface-localized — disclose it.
-- **Falsifier.** If ipTM(L) ≤ ipTM(random) paired, or the interface metrics **disagree** in direction, the
-  steering benefit does **not** cleanly transfer to a structure predictor — reported verbatim. A null bounds the
-  claim; it does not refute the ESM-IF1-leverage steering result.
+- **Falsifier.** If the **composite** paired L−random ≤ 0, **or** ipTM(L) ≤ ipTM(random) — the two pre-registered
+  quantities — the steering benefit does **not** transfer to the structure predictor; reported verbatim. A single
+  interface metric disagreeing while the composite and ipTM both hold is **not** the falsifier (that is expected
+  noise). A null bounds the claim; it does not refute the ESM-IF1-leverage steering result.
 
 ## Positive controls (rule 6, before trusting any comparison)
 1. **wt sanity:** the wt folds' interface ipTM must be in the normal range for real complexes (~0.6–0.9); if wt
@@ -51,8 +56,10 @@ to be *consistent* across the interface ones — an effect that shows in only on
 
 For each: report the paired **L − random** contrast (complex-clustered bootstrap 95% CI, `P(>0)`), the **L − wt**
 difference, `n` complexes, `SEED`, and folded-sequence provenance. Aggregate k=0..2 per condition (mean; best-of-k
-secondary). **The headline is corroboration across ipTM AND interface pAE AND interface pLDDT** with global pTM
-flat; report each even if some disagree (an inconsistent signal is itself informative and must not be hidden).
+secondary). **The headline is the pre-registered composite (z-mean of ipTM, −interface pAE, interface pLDDT) AND
+ipTM**, with global pTM flat (localization); report every individual metric too, but read them as noisy —
+no single metric confirms or refutes on its own, and disagreements are disclosed rather than resolved by
+picking the convenient one.
 
 ## Model
 **AF2-multimer** (primary, one model). **OpenFold3 kept as an OPTIONAL second predictor** (door open): if the

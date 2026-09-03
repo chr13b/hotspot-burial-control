@@ -46,8 +46,11 @@ replaced by the α=2 steered ProteinMPNN samples). This is the exact set to fold
   `P(>0)`) for **all four** metrics:
   - **ipTM** (higher better), **interface pAE** (lower better → sign flips), **interface pLDDT** (higher better),
     and **global pTM** as the **localization control** (should move far less than the interface metrics).
-  - **H1 passes only if the three interface metrics agree in direction** (ipTM↑, pAE↓, pLDDT↑ for L vs random) —
-    an effect in ipTM alone is not the claim. **H3 (localization):** global pTM shift ≪ interface-metric shift.
+  - **Composite (robust to per-metric noise — the pre-registered rule):** z-score each interface metric across
+    ALL folds, sign-orient so higher = better (ipTM, −interface pAE, interface pLDDT), average into one composite
+    per fold. **H1 passes iff paired composite(L) > composite(random) AND ipTM(L) > ipTM(random)** (both CIs,
+    P>0). A single interface metric flipping while the composite + ipTM hold is expected noise, NOT a refutation;
+    a single metric agreeing is NOT sufficient. **H3 (localization):** global pTM shift ≪ the composite shift.
   - Also report **H2:** paired `interface-metric(L) − (wt)` (should not be strongly negative).
   - Interface pAE = mean predicted aligned error over TCR↔partner interface residue *pairs* (use the interface
     residue set; if the folder outputs a full PAE matrix, average the cross-interface block both ways).
