@@ -1,0 +1,5 @@
+test,x,y,spearman,lo,hi,p_gt0,n,verdict,seed
+OF3 deficit vs OF3 leverage-retention (pred/crystal),d_of3,retention_of3,0.1617,-0.0046,0.3223,0.9716,127,"null / separable (CI spans 0), direction=degrade-together",20260803
+AF2 deficit vs AF2 leverage-retention (pred/crystal),d_af2,retention_af2,0.1918,0.0213,0.356,0.9856,127,degrade-together (bigger deficit <-> lower leverage retention),20260803
+OF3 deficit vs raw OF3 mean|L|rms (proxy),d_of3,Lrms_of3,0.1517,-0.0206,0.3201,0.9588,127,"null / separable (CI spans 0), direction=degrade-together",20260803
+AF2 deficit vs raw AF2 mean|L|rms (proxy),d_af2,Lrms_af2,0.1786,0.0078,0.3457,0.9798,127,degrade-together (bigger deficit <-> lower leverage retention),20260803
