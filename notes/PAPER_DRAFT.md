@@ -83,7 +83,8 @@ little beyond cheap geometry — confidence, negentropy, and the scalar KL all s
 estimator's calibrated false-positive floor** (+0.0007, the score of a placebo feature that is a deterministic
 function of geometry) — whereas the *two-pass* mixed derivative does not reduce: per interface position it adds
 +0.0048, ~7× the floor (CI disjoint from every scalar's, robust to a nonlinear geometry control), and on SKEMPI at the mutation level CPI +0.059
-with Spearman −0.30 against experimental ΔΔG, robustly. The model knows binding on natural complexes; the knowledge
+with Spearman −0.30 against experimental ΔΔG, robustly (a *dissociation between feature classes*, not a claim
+that `L` is a large-magnitude predictor). The model knows binding on natural complexes; the knowledge
 was invisible to every scalar readout the field has used. → leverage_decomposition.csv, nugget_cpi.csv.
 
 **(ii) Confidence is not competence — a property of inverse folding, with a practical consequence.** The
@@ -322,8 +323,8 @@ conservation in disguise — the one control every *published* hotspot predictor
 position's sequence conservation with the **field-standard masked-marginal** ESM-2 estimator (mask the
 position, read the model's distribution) — itself the *stronger* baseline, adding **+0.0064 [+0.0028, +0.0113]**
 beyond geometry — and leverage's contribution is *undiminished*: CPI(L | geometry) +0.0048 → CPI(L | geometry +
-conservation) **+0.0059 [+0.0031, +0.0097]** (surviving the drop of its 3 most influential complexes, +0.0041,
-and with the top three complexes contributing only 27% of the estimate). The simpler unmasked estimator agrees
+conservation) **+0.0059 [+0.0031, +0.0097]** (surviving the drop of its 3 most influential complexes at +0.0040 [+0.0027, +0.0054],
+those three contributing 33% of the estimate). The simpler unmasked estimator agrees
 (+0.0051; the two conservation estimators correlate at +0.71), and conservation adds beyond leverage in turn
 (+0.0083) — the two are nearly orthogonal (Spearman −0.08 masked, −0.14 unmasked). And the *actionable* payoff
 sharpens against the conservation baseline: adding the mixed derivative on top of geometry **and** conservation
@@ -526,7 +527,9 @@ chance and only de-novo clears it, yet the *mixed derivative* carries the bindin
 leverage-AUROC **clears chance in every natural class and beats confidence in each** — 0.641 [0.539, 0.765] (TCR/pMHC), 0.628
 [0.544, 0.716] (AB/AG), 0.701 [0.599, 0.811] (protease–inhibitor), each clearing chance — while confidence
 climbs the fold-coupling gradient beneath it. The two feature classes *diverge across a controlled biological
-axis*: the scalar is regime-dependent and blind, the derivative clears chance regardless of interface type. De-novo designs are simply where the signal is accessible to blunter probes
+axis*: the scalar is regime-dependent and blind, the derivative clears chance regardless of interface type — exactly the split Proposition 1 forces, resolved
+along a controlled biological axis: a scalar of `P` can only track the fold-constraint that varies with interface
+class, while the mixed derivative tracks the binding that does not. De-novo designs are simply where the signal is accessible to blunter probes
 as well: there, even the scalar complex-conditioned distribution adds +0.018 beyond an all-atom occlusion
 baseline — and the *mixed derivative* itself adds in this genuine de-novo regime, CPI(L | geometry) =
 **+0.011 [+0.008, +0.014]** on 73 de-novo binders with wet-lab site-saturation labels, where the scalar KL is

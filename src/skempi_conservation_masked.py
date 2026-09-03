@@ -98,6 +98,20 @@ def stage_analyse(a):
     run("leverage -L | geometry", GEO, L_x)
     run("leverage -L | geometry + masked-conservation", np.column_stack([GEO, cons]), L_x)   # THE headline
     run("masked-conservation | geometry + leverage", np.column_stack([GEO, L_x]), cons)
+    # drop-3-influential robustness + top-3 concentration on the masked headline (matches the unmasked template)
+    Zh = np.column_stack([GEO, cons])
+    _c, _lo, _hi, _p, _, cvec = LD.cpi(y, g, Zh, L_x.copy(), np.random.default_rng(SEED))
+    contrib = pd.Series(cvec).groupby(pd.Series(g)).sum().sort_values(ascending=False)
+    drop = set(contrib.index[:3]); keep = ~pd.Series(g).isin(drop).to_numpy()
+    c2, lo2, hi2, p2, _, _ = LD.cpi(y[keep], g[keep], Zh[keep], L_x[keep].copy(), np.random.default_rng(SEED))
+    tot = contrib.sum(); top3 = 100 * contrib.iloc[:3].sum() / tot
+    print(f"  [robustness] masked headline drop-3 {sorted(drop)}: {c2:+.5f} [{lo2:+.5f},{hi2:+.5f}] "
+          f"{'SURVIVES' if lo2 > 0 else 'does not survive'}; top-3 complexes = {top3:.0f}%")
+    rows.append(dict(test="CPI(leverage -L | geometry + masked-conservation) drop-3", stat=round(c2, 5),
+                     lo=round(lo2, 5), hi=round(hi2, 5), p_gt0=round(p2, 3), n=int(keep.sum()),
+                     n_complex=int(pd.Series(g[keep]).nunique())))
+    rows.append(dict(test="masked headline top-3 complex concentration pct", stat=round(top3, 1),
+                     lo=None, hi=None, p_gt0=None, n=len(y), n_complex=int(d.complex_id.nunique())))
     from scipy import stats as st
     # is masked a better conservation signal than unmasked? correlate with the unmasked column if present
     u = pd.read_csv("results/skempi_conservation_positions.csv")[["complex_id", "chain", "resnum", "icode", "esm_negent"]]

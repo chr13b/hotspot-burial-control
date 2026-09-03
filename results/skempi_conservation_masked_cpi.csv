@@ -3,3 +3,5 @@ CPI(masked-conservation | geometry),0.00635,0.00281,0.01132,1.0,13160,343
 CPI(leverage -L | geometry),0.00484,0.00328,0.00657,1.0,13160,343
 CPI(leverage -L | geometry + masked-conservation),0.00585,0.00314,0.00965,1.0,13160,343
 CPI(masked-conservation | geometry + leverage),0.0083,0.00246,0.01849,1.0,13160,343
+CPI(leverage -L | geometry + masked-conservation) drop-3,0.004,0.0027,0.00539,1.0,13015,340
+masked headline top-3 complex concentration pct,33.3,,,,13160,343
