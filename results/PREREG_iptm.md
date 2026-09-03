@@ -17,14 +17,18 @@ Fold each with **AF2-multimer** (one model; reports ipTM natively; the pipeline 
 record **interface ipTM** (primary) and **interface pAE** (secondary), per sequence.
 
 ## Hypotheses
-- **H1 (specificity — the load-bearing test).** Paired per complex, **ipTM(L-steered) > ipTM(random-steered)**.
-  Steering along the *L direction* improves the predictor's interface confidence more than a matched-magnitude
-  random perturbation.
-- **H2 (no collapse).** ipTM(L-steered) is **not below** ipTM(wt) by more than a small margin — steering does not
-  destroy a foldable interface (consistent with the CFG result, where native recovery *rose*).
-- **Falsifier.** If ipTM(L-steered) ≤ ipTM(random-steered) (paired), the steering benefit does **not** transfer
-  to a structure predictor's confidence — reported verbatim. A null bounds the claim; it does not refute the
-  ESM-IF1-leverage steering result.
+- **H1 (specificity — the load-bearing test).** Paired per complex, the **interface** metrics favour L over the
+  matched-magnitude random direction — **ipTM(L) > ipTM(random)**, and *consistently* **interface pAE(L) <
+  interface pAE(random)** and **interface pLDDT(L) > interface pLDDT(random)**. Corroboration across all three is
+  the claim; a lift in one metric alone is not.
+- **H2 (no collapse).** The interface metrics for L-steered are **not below** wt by more than a small margin —
+  steering does not destroy a foldable interface (consistent with the CFG result, where native recovery *rose*).
+- **H3 (localization).** The improvement is **interface-specific**: global pTM shifts far less than the interface
+  metrics (mirroring the CFG localization control). If global pTM moves as much as ipTM, the effect is not
+  interface-localized — disclose it.
+- **Falsifier.** If ipTM(L) ≤ ipTM(random) paired, or the interface metrics **disagree** in direction, the
+  steering benefit does **not** cleanly transfer to a structure predictor — reported verbatim. A null bounds the
+  claim; it does not refute the ESM-IF1-leverage steering result.
 
 ## Positive controls (rule 6, before trusting any comparison)
 1. **wt sanity:** the wt folds' interface ipTM must be in the normal range for real complexes (~0.6–0.9); if wt
@@ -34,10 +38,21 @@ record **interface ipTM** (primary) and **interface pAE** (secondary), per seque
 3. **Pairing:** every L-vs-random contrast is *within the same complex* (paired), and only complexes with all
    three conditions folded enter the test.
 
-## Metrics
-Per complex, per condition: interface ipTM (AF2 multimer), interface pAE. Report the paired L−random ipTM with a
-**complex-clustered bootstrap 95% CI**, the L−wt difference, `n` complexes, `SEED`, and the folded-sequence
-provenance. Aggregate the k=0..2 samples per condition (mean, and best-of-k as a secondary).
+## Metrics — a MULTI-METRIC hedge (do not rely on ipTM alone), with a localization control
+ipTM is a model proxy and metric-noisy, so we pre-register **four complementary readouts** and require the effect
+to be *consistent* across the interface ones — an effect that shows in only one metric is not trusted:
+- **ipTM** (interface pTM) — primary interface-assembly confidence. *Higher = better.*
+- **interface pAE** (mean predicted aligned error across the TCR↔partner interface residue pairs) — a *different*
+  and largely complementary failure mode from pTM. *Lower = better.*
+- **interface pLDDT** (mean pLDDT over interface residues) — local per-residue confidence. *Higher = better.*
+- **global pTM** — the **localization control**: it should move *much less* than the interface metrics if the
+  effect is genuinely interface-specific (mirroring the CFG result's flat non-interface recovery). A large global
+  pTM shift would mean the fold changed globally, not at the interface — a red flag to disclose.
+
+For each: report the paired **L − random** contrast (complex-clustered bootstrap 95% CI, `P(>0)`), the **L − wt**
+difference, `n` complexes, `SEED`, and folded-sequence provenance. Aggregate k=0..2 per condition (mean; best-of-k
+secondary). **The headline is corroboration across ipTM AND interface pAE AND interface pLDDT** with global pTM
+flat; report each even if some disagree (an inconsistent signal is itself informative and must not be hidden).
 
 ## Model
 **AF2-multimer** (primary, one model). **OpenFold3 kept as an OPTIONAL second predictor** (door open): if the

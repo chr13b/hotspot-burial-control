@@ -41,18 +41,25 @@ replaced by the α=2 steered ProteinMPNN samples). This is the exact set to fold
   low, the chain order / MSA setup is wrong — STOP and fix before trusting any contrast.
 - **Determinism/spread:** fold one wt sequence under 2–3 AF2 seeds; report the ipTM spread so an effect smaller
   than it is not over-read.
-- **The test (paired, per complex):** aggregate k=0..2 (mean, and best-of-k as secondary) per condition, then:
-  - **H1:** paired `ipTM(L) − ipTM(random)`, complex-clustered bootstrap 95% CI, `P(>0)`;
-  - **H2:** paired `ipTM(L) − ipTM(wt)` (should not be strongly negative);
-  - report interface pAE the same way (lower = better; sign flips).
+- **The test (paired, per complex) — MULTI-METRIC, do not rely on ipTM alone:** aggregate k=0..2 (mean; best-of-k
+  secondary) per condition, then report the paired **L − random** contrast (complex-clustered bootstrap 95% CI,
+  `P(>0)`) for **all four** metrics:
+  - **ipTM** (higher better), **interface pAE** (lower better → sign flips), **interface pLDDT** (higher better),
+    and **global pTM** as the **localization control** (should move far less than the interface metrics).
+  - **H1 passes only if the three interface metrics agree in direction** (ipTM↑, pAE↓, pLDDT↑ for L vs random) —
+    an effect in ipTM alone is not the claim. **H3 (localization):** global pTM shift ≪ interface-metric shift.
+  - Also report **H2:** paired `interface-metric(L) − (wt)` (should not be strongly negative).
+  - Interface pAE = mean predicted aligned error over TCR↔partner interface residue *pairs* (use the interface
+    residue set; if the folder outputs a full PAE matrix, average the cross-interface block both ways).
 
 ## Phase 4 — deliverables
 Commit **only** `results/iptm_steer.csv`, `results/iptm_subset.txt`, `results/FINDINGS_iptm.md`, and any small
 fold-driver script you add (`src/fold_iptm.py`). `git add` by name (not `-A`); commit with the repo's two
 trailer lines; push; message me the paired L−random ipTM.
 
-`FINDINGS_iptm.md`: the paired L−random ipTM (CI, P>0), L−wt, the wt-sanity + determinism controls, `n`
-complexes, the subset definition, `SEED`, exact commands.
+`FINDINGS_iptm.md`: the paired L−random contrast for **all four metrics** (ipTM, interface pAE, interface pLDDT,
+global pTM) with CI + P>0, whether the three interface metrics agree (H1), the localization check (H3), L−wt
+(H2), the wt-sanity + determinism controls, `n` complexes, the subset definition, `SEED`, exact commands.
 
 ## Guardrails
 - **Report the falsifier verbatim if it fires** ("ipTM(L) ≤ ipTM(random) paired → steering does not raise the
