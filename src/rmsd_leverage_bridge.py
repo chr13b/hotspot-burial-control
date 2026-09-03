@@ -30,8 +30,13 @@ def main():
         return rho, float(np.percentile(b, 2.5)), float(np.percentile(b, 97.5)), n
 
     print(f"[bridge] {len(m)} complexes merged from the two committed CSVs")
-    for rc, yc, lab in [("of3_ca_rmsd_iface", "leverage_metric", "OF3 (retention_of3)"),
-                        ("af2_ca_rmsd_iface", "retention_af2", "AF2 (retention_af2)")]:
+    # The four tests document WHY #7 (deficit x leverage) is left out of the main text: interface RMSD drives
+    # leverage loss STRONGLY but the confidence deficit only weakly/not at all -> the two readouts are loosely
+    # coupled (a partial dissociation), not merely underpowered.
+    for rc, yc, lab in [("of3_ca_rmsd_iface", "leverage_metric", "OF3: RMSD->leverage retention"),
+                        ("af2_ca_rmsd_iface", "retention_af2", "AF2: RMSD->leverage retention"),
+                        ("of3_ca_rmsd_iface", "d_of3", "OF3: RMSD->confidence deficit"),
+                        ("af2_ca_rmsd_iface", "d_af2", "AF2: RMSD->confidence deficit")]:
         rho, lo, hi, n = boot(m[rc], m[yc])
         print(f"  Spearman(interface Cα-RMSD, retention) {lab}: {rho:+.3f} [{lo:+.3f}, {hi:+.3f}]  n={n}")
         rows.append(dict(predictor=lab, x=rc, y=yc, spearman=round(rho, 4), lo=round(lo, 4), hi=round(hi, 4), n=n))
