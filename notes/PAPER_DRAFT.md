@@ -756,7 +756,13 @@ We evaluate on three fixtures — SKEMPI (natural, primary), Bennett de-novo des
 (antibody–antigen) — none a full generate→design→wet-lab loop; the de-novo evidence is four targets and
 AB-Bind's 27 complexes are indeterminate for the leverage test. The primary claims rest on one natural fixture;
 we mitigate this with the two further fixtures, four inverse-folding architectures, and a catalytic-site
-replication, but a second large natural binding fixture would strengthen them. The de-novo effect in particular
+replication, but a second large natural binding fixture would strengthen them — though none cleanly exists:
+SKEMPI 2.0's curators already re-verified and absorbed the non-redundant content of the other curated
+protein–protein affinity databases, and the subsequent resources are aggregators built around it, so this
+limitation is structural to the field's data rather than a gap in our search. The genuinely non-overlapping
+alternatives — a smaller TCR–pMHC affinity set (ATLAS) or deep-mutational-scanning fitness proxies — trade
+measurement modality or biological scope, and we flag them as replication targets rather than lean on a
+simulated substitute (which our pre-registration forbids). The de-novo effect in particular
 is small — the two-pass-specific increment is +0.0032 [+0.0015, +0.0048] — and we do not lean on it: its role is
 only to show the mixed derivative *reaches* the genuine design regime, and its best support is that predicted
 backbones, where the effect is larger, fall in the *surviving* part of the dose law (§4, §6).
