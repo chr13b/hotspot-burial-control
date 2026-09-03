@@ -1,0 +1,3 @@
+predictor,x,y,spearman,lo,hi,n,seed,source,command
+OF3 (retention_of3),of3_ca_rmsd_iface,leverage_metric,-0.5596,-0.6804,-0.4108,127,20260803,local recompute from committed CSVs (no PDBs),python3 src/rmsd_leverage_bridge.py
+AF2 (retention_af2),af2_ca_rmsd_iface,retention_af2,-0.6379,-0.7465,-0.5003,127,20260803,local recompute from committed CSVs (no PDBs),python3 src/rmsd_leverage_bridge.py

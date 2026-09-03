@@ -396,8 +396,14 @@ binding signal is robust to *accurate* reconstruction and lost under an inaccura
 whether real predicted backbones fall on the surviving or the collapsed part of this curve, and they fall on
 the surviving part** (§6, measured directly): on OpenFold3 and AF2-multimer backbones for 140 shared complexes,
 CPI(L | geometry) is **+0.039 [+0.027, +0.050]** and **+0.032 [+0.023, +0.041]** — 69–84% of the matched
-crystal value, CI clearing the placebo floor, drop-3 robust — i.e. the ~0.5–0.75 Å rung of this ladder, not the
-cliff. So leverage is a design-time-usable readout on the accurate predictors designers actually use, and the
+crystal value, CI clearing the placebo floor, drop-3 robust. Measured directly, these predicted interfaces are
+heavy-tailed: the median Cα-RMSD-to-crystal is **≈1.3 Å** — the dose-law *knee* — with about half at ≤1.5 Å but
+a quarter mis-docked beyond 6 Å (→ predicted_backbone_rmsd.csv). So the pooled +0.039 is a *lower bound*: the
+sub-Ångström bulk carries the signal and the collapsed tail dilutes it. And the fragility is the backbone's, per
+complex — across the 127 complexes leverage retention falls with interface RMSD, Spearman = **−0.56 [−0.68,
+−0.41]** (OpenFold3) and **−0.64 [−0.75, −0.50]** (AF2): the dose law operating on *real* predicted backbones,
+not only synthetic jitter (retention here is a magnitude ratio, which if anything understates the discrimination
+loss the pooled CPI shows). → rmsd_leverage_bridge.csv, predicted_backbone_rmsd.csv, FINDINGS_rmsd_placement.md. So leverage is a design-time-usable readout on the accurate predictors designers actually use, and the
 earlier inference that it would collapse on predicted backbones (extrapolated from this jitter ladder before the
 direct experiment) was too pessimistic and is corrected by measurement. What the staged backbone→sequence
 pipeline still misses at hotspots is not this signal but the *confidence* one it actually reads: on the same
