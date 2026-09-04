@@ -629,7 +629,11 @@ random control on **every** interface metric — ipTM **+0.226 [+0.172, +0.283]*
 pre-registered z-composite of **+0.78 [+0.60, +0.96]** (P(>0)=1.0); the ipTM shift clears AF2's own seed-noise
 floor (±0.017) by ≈13×, so it is not metric noise. It is also interface-*localized*: global pTM does rise, but
 **2.8× less than ipTM** on the same 0–1 confidence scale (**+0.08 [+0.058, +0.103]** vs +0.226) — a local
-interface gain, not a global fold change. And steering does not collapse the fold: native *sequence* recovery
+interface gain, not a global fold change. This interface-localization is a *through-line*, not a one-off: it
+mirrors the CFG tilt's flat non-interface recovery (the steering acts at the interface, not globally) and the
+within-amino-acid-type control on the catalytic result (§4 below) — across the paper, positive effects are
+checked to sit *where* the mechanism places them, never as global artifacts. And steering does not collapse the
+fold: native *sequence* recovery
 *rises* under the tilt (0.276→0.297, above), and while the mean L-steered sequence folds a little below wild-type
 (mean-over-k ipTM L−wt **−0.097 [−0.140, −0.056]**), the *best-of-k* steered sequence matches it (**−0.020**, CI
 spanning zero) — tilting to a non-native, binding-favourable interface costs a little foldability versus the
