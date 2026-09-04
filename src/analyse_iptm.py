@@ -82,7 +82,8 @@ def main():
     out.to_csv(a.out, index=False)
 
     def get(agg, metric, contrast):
-        r = out[(out.agg == agg) & (out.metric == metric) & (out.contrast == contrast)]
+        # NB: out.agg is the DataFrame.agg METHOD; must index with out["agg"].
+        r = out[(out["agg"] == agg) & (out["metric"] == metric) & (out["contrast"] == contrast)]
         return r.iloc[0] if len(r) else None
 
     print(f"[iptm-analyse] {n_cx} complexes with wt+L+random\n")
