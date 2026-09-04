@@ -4,8 +4,8 @@
 passes decisively — steering a frozen ProteinMPNN by `+α·L` at interface positions produces sequences an
 **independent structure predictor (AF2-multimer)** is significantly more confident assemble than a
 matched-magnitude **random**-direction control. Confirmation of the CFG-steering result (`FINDINGS_cfg_steer.md`),
-not load-bearing. SEED=20260803. n = **59 complexes** (1 of the frozen 60, 3BTH_E_I, was still folding at
-write time; it does not change the conclusion). Raw `results/iptm_steer.csv`, stats `results/iptm_summary.csv`.
+not load-bearing. SEED=20260803. n = **60 complexes** (the full frozen subset; all 420 folds complete).
+Raw `results/iptm_steer.csv`, stats `results/iptm_summary.csv`.
 
 ```
 python3 src/build_iptm_fastas.py --n 60 --max-res 600 ... # frozen subset -> iptm_subset.txt
@@ -29,25 +29,25 @@ Paired **L − random** per complex (complex-clustered bootstrap 95% CI, 5000 re
 
 ## Result — H1 PASSES (all three interface metrics agree), falsifier does NOT fire
 
-**Paired L − random (mean over k, n=59, complex-clustered 95% CI):**
+**Paired L − random (mean over k, n=60, complex-clustered 95% CI):**
 
 | metric | better | Δ (L − random) | 95% CI | P(>0) |
 |---|---|---|---|---|
-| **ipTM** | higher | **+0.223** | [+0.169, +0.279] | 1.000 |
-| interface pAE | lower | **−5.23** | [−6.53, −3.91] | 0.000 (i.e. L lower = better) |
-| interface pLDDT | higher | **+9.29** | [+6.85, +11.82] | 1.000 |
-| **composite** (z-mean of the three) | higher | **+0.770** | [+0.589, +0.954] | 1.000 |
-| global pTM (localization control) | higher | +0.080 | [+0.058, +0.104] | 1.000 |
+| **ipTM** | higher | **+0.226** | [+0.172, +0.283] | 1.000 |
+| interface pAE | lower | **−5.27** | [−6.51, −3.98] | 0.000 (i.e. L lower = better) |
+| interface pLDDT | higher | **+9.47** | [+7.13, +11.91] | 1.000 |
+| **composite** (z-mean of the three) | higher | **+0.779** | [+0.599, +0.955] | 1.000 |
+| global pTM (localization control) | higher | +0.080 | [+0.058, +0.103] | 1.000 |
 
 - **H1 (specificity, load-bearing): PASS.** The pre-registered composite **AND** ipTM both favour L with CIs
   excluding zero, and **all three interface metrics agree** (ipTM ↑, interface pAE ↓, interface pLDDT ↑),
   P(>0)=1.000 throughout. The benefit is specific to the **L direction** — a matched-magnitude random
-  perturbation does the opposite. The +0.223 ipTM gain is ~13× the 0.017 determinism floor.
+  perturbation does the opposite. The +0.226 ipTM gain is ~13× the 0.017 determinism floor.
 - **H3 (localization): PASS.** Global pTM shifts **+0.080** — ~3× smaller than the ipTM shift and ~10× smaller
   than the composite: the improvement is interface-specific, not a global fold change. (pTM is not perfectly
   flat — a better interface lifts global pTM a little — but it moves far less than the interface metrics.)
-- **H2 (no collapse): satisfied, with honest disclosure.** L−wt ipTM = −0.095 [−0.139, −0.054], composite
-  −0.38. So the ordering is **wt 0.88 > L ≈ 0.79 > random ≈ 0.56**: L sits between wt and random, **much closer
+- **H2 (no collapse): satisfied, with honest disclosure.** L−wt ipTM = −0.097 [−0.140, −0.056], composite
+  −0.39. So the ordering is **wt 0.88 > L ≈ 0.78 > random ≈ 0.56**: L sits between wt and random, **much closer
   to wt** (Δ0.095) than to random (Δ0.223). Steering to a non-native (binding-favorable) interface costs a
   little foldability relative to wt but does **not** collapse the interface (L ipTM ~0.79 is a confident
   assembly), whereas the random control tanks it. Consistent with the CFG result where native recovery was
@@ -56,7 +56,7 @@ Paired **L − random** per complex (complex-clustered bootstrap 95% CI, 5000 re
 ## Reading
 An independent structure predictor confirms the CFG-steering direction: sequences steered along ProteinMPNN's
 own leverage `L` fold to interfaces AF2-multimer is markedly more confident about than random-of-matched-
-magnitude, across three complementary interface metrics, localized to the interface, on 59 complexes with
+magnitude, across three complementary interface metrics, localized to the interface, on 60 complexes with
 tight CIs. This corroborates the anti-circular ESM-IF1 leverage result with a physics-adjacent readout.
 
 ## Honest scope
