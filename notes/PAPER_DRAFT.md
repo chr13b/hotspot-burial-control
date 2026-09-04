@@ -48,7 +48,8 @@ binding partner as conditioner), and to read an un-trained quantity off a condit
 ablates the conditioner and reads that direction — not the conditional marginal the field has been mistaking
 for competence. And the direction is *actionable*: biasing a frozen off-the-shelf ProteinMPNN's interface
 logits by `+α·L` raises the binding-leverage an independent model (ESM-IF1) assigns the sampled residues —
-monotonically, while a matched-magnitude random direction *lowers* it — with native recovery preserved.
+monotonically, while a matched-magnitude random direction *lowers* it — with native recovery preserved, and an
+independent *structure* predictor (AF2-multimer interface ipTM) concurs that the steered interfaces bind better.
 
 ## 1. Introduction
 
@@ -592,8 +593,15 @@ anti-circular (a second, architecturally distinct model scores the sequences) bu
 oracle: both are inverse-folding models and ESM-IF1 leverage is a model proxy for ΔΔG, so connecting the steered
 sequences to a physical or experimental binding readout is the natural next step, not claimed here. So the same
 mixed derivative the field's decoders already tilt along (RedNet; §8) works as a training-free knob on a model
-that was never trained to bind. → cfg_steer.csv, cfg_steer_summary.csv, FINDINGS_cfg_steer.md; pre-registered in
-PREREG_cfg_steer.md.
+that was never trained to bind. **And the steered sequences transfer to an independent *structure* predictor:**
+folding them with AF2-multimer (60 complexes, pre-registered), the L-steered interfaces beat the matched-magnitude
+random control across every interface metric — ipTM **+0.223 [+0.172, +0.283]**, with interface pAE and pLDDT
+agreeing (pre-registered z-composite **+0.78 [+0.60, +0.96]**, P(>0)=1.0) — while global pTM barely moves (+0.08,
+the localization control), so the gain is interface-specific and ≈13× the fold-to-fold determinism floor, not
+metric noise. A second, physics-adjacent model agrees the steered interfaces bind better; L-steering costs a
+little foldability versus wild-type but the *best-of-k* steered sequence matches it. → cfg_steer.csv,
+cfg_steer_summary.csv, FINDINGS_cfg_steer.md, iptm_summary.csv, FINDINGS_iptm.md; pre-registered in
+PREREG_cfg_steer.md, PREREG_iptm.md.
 
 ## 5. On crystal backbones, the hotspot gap is a burial artifact
 
@@ -767,8 +775,15 @@ SKEMPI 2.0's curators already re-verified and absorbed the non-redundant content
 protein–protein affinity databases, and the subsequent resources are aggregators built around it, so this
 limitation is structural to the field's data rather than a gap in our search. The genuinely non-overlapping
 alternatives — a smaller TCR–pMHC affinity set (ATLAS) or deep-mutational-scanning fitness proxies — trade
-measurement modality or biological scope, and we flag them as replication targets rather than lean on a
-simulated substitute (which our pre-registration forbids). The de-novo effect in particular
+measurement modality or biological scope. We *did* test the cleanest, **ATLAS** (TCR–pMHC), under a hard
+WT-identity mapping gate (91% of substitutions map cleanly; atypical class-II structures are dropped, not
+force-mapped): the leverage rank-direction replicates in both models — Spearman(L, ΔΔG) = **−0.22** (ProteinMPNN)
+/ **−0.32** (ESM-IF1), CIs excluding zero and bracketing SKEMPI's −0.30 — and confidence stays blind while the
+*scalar* readouts point the wrong way. But ATLAS is substantially a SKEMPI subset (only 3 non-overlapping
+complexes), so the geometry-controlled CPI cannot be powered there (its placebo floor is ~60× SKEMPI's, above any
+SKEMPI-sized effect). This is a **bounded generalization**: the leverage direction and the confidence-blindness
+carry to TCR–pMHC; the geometry-controlled add-on is indeterminate there, not absent. We do not lean on a
+simulated ΔΔG substitute (which our pre-registration forbids). → atlas_summary.csv, FINDINGS_atlas.md. The de-novo effect in particular
 is small — the two-pass-specific increment is +0.0032 [+0.0015, +0.0048] — and we do not lean on it: its role is
 only to show the mixed derivative *reaches* the genuine design regime, and its best support is that predicted
 backbones, where the effect is larger, fall in the *surviving* part of the dose law (§4, §6).
