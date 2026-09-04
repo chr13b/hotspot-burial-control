@@ -624,13 +624,16 @@ sequences to a physical or experimental binding readout is the natural next step
 mixed derivative the field's decoders already tilt along (RedNet; §8) works as a training-free knob on a model
 that was never trained to bind. **And the steered sequences transfer to an independent *structure* predictor:**
 folding them with AF2-multimer (60 complexes, pre-registered), the L-steered interfaces beat the matched-magnitude
-random control on **every** interface metric — ipTM **+0.223 [+0.172, +0.283]**, interface pAE
+random control on **every** interface metric — ipTM **+0.226 [+0.172, +0.283]**, interface pAE
 **−5.27 [−6.51, −3.98]** (lower is better) and interface pLDDT **+9.47 [+7.13, +11.9]** all agreeing — for a
-pre-registered z-composite of **+0.78 [+0.60, +0.96]** (P(>0)=1.0), while global pTM barely moves (**+0.08**, the
-localization control), so the gain is interface-specific and ≈13× the fold-to-fold determinism floor, not metric
-noise. And foldability is *preserved*: the best-of-k L-steered sequence folds as well as wild-type (best-of-k
-ipTM L−wt −0.020, CI spanning zero), mirroring the native-recovery rise under steering — tilting toward binding
-does not cost the fold. **The mixed derivative is thus corroborated three independent ways that do not share a
+pre-registered z-composite of **+0.78 [+0.60, +0.96]** (P(>0)=1.0); the ipTM shift clears AF2's own seed-noise
+floor (±0.017) by ≈13×, so it is not metric noise. It is also interface-*localized*: global pTM does rise, but
+**2.8× less than ipTM** on the same 0–1 confidence scale (**+0.08 [+0.058, +0.103]** vs +0.226) — a local
+interface gain, not a global fold change. And steering does not collapse the fold: native *sequence* recovery
+*rises* under the tilt (0.276→0.297, above), and while the mean L-steered sequence folds a little below wild-type
+(mean-over-k ipTM L−wt **−0.097 [−0.140, −0.056]**), the *best-of-k* steered sequence matches it (**−0.020**, CI
+spanning zero) — tilting to a non-native, binding-favourable interface costs a little foldability versus the
+crystal but does not break it, whereas the matched-magnitude random control does. **The mixed derivative is thus corroborated three independent ways that do not share a
 failure mode:** the theory (it is the model's classifier-free-guidance direction, Prop 1), a second *sequence*
 model (ESM-IF1 leverage rises specifically along it), and a second, physics-adjacent *structure* predictor
 (AF2-multimer interface confidence rises specifically along it). This closes the paper's central arc into a loop
