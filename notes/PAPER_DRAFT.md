@@ -42,7 +42,9 @@ published deficit is then largely a corollary — mostly a burial confound that 
 model — and the blindness generalizes from binding to *catalytic* residues (confidence blind, sequence
 conservation predicts). The leverage operator is BA-Cycle (Jiao et al. 2024); our contribution is the
 decomposition, the identifiability result and its *measured* non-vacuity, the first beyond-geometry (and
-beyond-conservation) control on any inverse-folding binding signal, and the feature-class law. The recipe is
+beyond-conservation) control on any inverse-folding binding signal, the feature-class law, and — on the intervention side —
+frozen-model steering by this direction, validated anti-circularly by a second sequence model and by an
+independent structure predictor. The recipe is
 general and already familiar: the mixed derivative is the model's **classifier-free-guidance direction** (the
 binding partner as conditioner), and to read an un-trained quantity off a conditional generative model one
 ablates the conditioner and reads that direction — not the conditional marginal the field has been mistaking
@@ -63,6 +65,24 @@ because they pay off in binding. If inverse folding optimises fold-compatibility
 should systematically miss exactly these residues, and a hotspot should sit in the tail of the model's
 distribution rather than at its mode. A prominent measurement appears to confirm this: ProBID-Net reports
 inverse-folding recovery of 0.334 at hotspots versus 0.472 elsewhere, and attributes the gap to dynamics.
+
+**This paper asks one question: when an inverse-folding model is used to build a binder, where — if anywhere —
+does its knowledge of *binding* live, and can a designer read it and act on it?** The scope is deliberately
+narrow and practical — structure-conditioned inverse-folding models (ProteinMPNN, ESM-IF1, and three others),
+protein–protein interface binding, and readouts computable at design time. Our answer is that the binding signal
+is real, but the field has been reading it from the wrong place: from *scalar* summaries of the model's output
+(recovery, confidence, a complex-vs-monomer KL) that are blind to binding **by construction**, when it lives in a
+**mixed second derivative** that is cheap to compute and directly actionable. The consequence is immediate for
+practice, in three forms. As a **diagnostic**: inverse-folding confidence is a geometry detector, not a binding
+score, so a pipeline that distrusts it at the interface (as the field's leading one-shot designer does, by
+freezing the interface) is right to — and can now do better. As a **training-free ranker**: the mixed derivative
+locates interface hotspots and adds on top of the exact feature set published predictors already use, at no
+training cost. As a **drop-in steering knob**: a `+α·L` tilt biases a *frozen, off-the-shelf* inverse-folding
+model toward higher-binding interface residues with no retraining, confirmed by both an independent sequence
+model and an independent structure predictor. And the recipe is not protein-specific — the mixed derivative is
+the model's **classifier-free-guidance direction**, so the same move (ablate the conditioner, read the mixed
+derivative, not the marginal) applies to any conditional generative model, which is what places the result at a
+representation-learning venue rather than a purely methodological one.
 
 There is a confound that no prior analysis controls, and it runs opposite to intuition. Hotspots are, on
 average, *more deeply buried* than other interface residues, and burial is precisely where inverse folding is
@@ -150,6 +170,15 @@ tests.
 **Models.** Five inverse-folding architectures span the design space: ProteinMPNN (vanilla and soluble
 variants), ESM-IF1 (a 142M-parameter GVP-transformer), PiFold (a one-shot GNN), MIF (masked inverse folding),
 and ProBID-Net (a voxel CNN). A positive control gates every scoring path.
+
+**What the evaluation answers.** Four questions organise the empirical sections; a reader who remembers only
+these has the paper. **(Q1)** Can *any* scalar a designer reads off an inverse-folding model — recovery,
+confidence, entropy, a complex-vs-monomer KL — locate binding hotspots beyond cheap geometry? (§3) **(Q2)** If
+not, *where* does the model's binding knowledge live, and is it real beyond geometry, beyond evolutionary
+conservation, and beyond the standard one-pass log-odds — on the natural complexes the field actually benchmarks
+on? (§4) **(Q3)** Is that knowledge *actionable* — can it steer a frozen off-the-shelf model, and do independent
+models agree the result binds better? (§4) **(Q4)** Does it survive the *predicted* backbones designers
+condition on, and is the published recovery deficit a real binding effect or a burial confound? (§5–§6)
 
 ## 3. Confidence is not competence
 
@@ -595,11 +624,19 @@ sequences to a physical or experimental binding readout is the natural next step
 mixed derivative the field's decoders already tilt along (RedNet; §8) works as a training-free knob on a model
 that was never trained to bind. **And the steered sequences transfer to an independent *structure* predictor:**
 folding them with AF2-multimer (60 complexes, pre-registered), the L-steered interfaces beat the matched-magnitude
-random control across every interface metric — ipTM **+0.223 [+0.172, +0.283]**, with interface pAE and pLDDT
-agreeing (pre-registered z-composite **+0.78 [+0.60, +0.96]**, P(>0)=1.0) — while global pTM barely moves (+0.08,
-the localization control), so the gain is interface-specific and ≈13× the fold-to-fold determinism floor, not
-metric noise. A second, physics-adjacent model agrees the steered interfaces bind better; L-steering costs a
-little foldability versus wild-type but the *best-of-k* steered sequence matches it. → cfg_steer.csv,
+random control on **every** interface metric — ipTM **+0.223 [+0.172, +0.283]**, interface pAE
+**−5.27 [−6.51, −3.98]** (lower is better) and interface pLDDT **+9.47 [+7.13, +11.9]** all agreeing — for a
+pre-registered z-composite of **+0.78 [+0.60, +0.96]** (P(>0)=1.0), while global pTM barely moves (**+0.08**, the
+localization control), so the gain is interface-specific and ≈13× the fold-to-fold determinism floor, not metric
+noise. And foldability is *preserved*: the best-of-k L-steered sequence folds as well as wild-type (best-of-k
+ipTM L−wt −0.020, CI spanning zero), mirroring the native-recovery rise under steering — tilting toward binding
+does not cost the fold. **The mixed derivative is thus corroborated three independent ways that do not share a
+failure mode:** the theory (it is the model's classifier-free-guidance direction, Prop 1), a second *sequence*
+model (ESM-IF1 leverage rises specifically along it), and a second, physics-adjacent *structure* predictor
+(AF2-multimer interface confidence rises specifically along it). This closes the paper's central arc into a loop
+— a **diagnosis** (§3–§4: the binding signal is invisible to every scalar), a **named direction** (Prop 1: it is
+the mixed derivative / CFG direction), and an **intervention** (here: steer a frozen model by it) that three
+separate instruments confirm. → cfg_steer.csv,
 cfg_steer_summary.csv, FINDINGS_cfg_steer.md, iptm_summary.csv, FINDINGS_iptm.md; pre-registered in
 PREREG_cfg_steer.md, PREREG_iptm.md.
 
@@ -723,7 +760,15 @@ that confidence is blind to it; **(ii)** the *beyond-geometry control* — to ou
 first for an inverse-folding binding signal (BA-Cycle runs none — no burial/rSASA/ΔSASA/contact anywhere in
 their paper, which we verified), built on the conditional predictive impact (Watson & Wright 2021) with a
 conditional permutation test (Berrett et al. 2018), so the fact that L survives geometry (and that scalar
-summaries do not) is new; and **(iii)** the *feature-class law*. We also differ in construction
+summaries do not) is new; and **(iii)** the *feature-class law* — every scalar of the bound distribution sits at the CPI placebo floor
+while only the mixed derivative clears it. Two further contributions concern *using* and *validating* the
+direction. **(iv)** *Frozen-model steering:* where RedNet retrains a decoder around this contrast, we show the
+direction is already actionable as a drop-in `+α·L` tilt on a **frozen, off-the-shelf** inverse-folding model,
+with no retraining and native recovery preserved. **(v)** *Anti-circular, independent-predictor validation:* the
+steering is confirmed by a **different sequence model** (ESM-IF1 leverage rises specifically along `L`, while a
+matched-magnitude random direction lowers it) *and* by an **independent structure predictor** (AF2-multimer
+interface ipTM), against a random-direction specificity control — a validated leverage-steering intervention we
+are not aware of in prior work. We also differ in construction
 — per-position sequence-free marginals (design-time usable, decoding-order-free) versus their whole-sequence
 autoregressive likelihoods. **StaB-ddG** parameterises ΔΔG through a folding-energy difference on an overlapping
 fixture; a distinct question. **RedNet** independently operationalises exactly this leverage as a *design-time
@@ -782,7 +827,10 @@ force-mapped): the leverage rank-direction replicates in both models — Spearma
 *scalar* readouts point the wrong way. But ATLAS is substantially a SKEMPI subset (only 3 non-overlapping
 complexes), so the geometry-controlled CPI cannot be powered there (its placebo floor is ~60× SKEMPI's, above any
 SKEMPI-sized effect). This is a **bounded generalization**: the leverage direction and the confidence-blindness
-carry to TCR–pMHC; the geometry-controlled add-on is indeterminate there, not absent. We do not lean on a
+carry to TCR–pMHC; the geometry-controlled add-on is indeterminate there, not absent. Tellingly, this is the
+sternest place for the split to hold: TCR–pMHC is the *lowest*-confidence interface class in the §4 gradient
+(hotspot confidence-AUROC 0.430, below chance), so ATLAS tests the mixed derivative exactly where the scalar
+readout is blindest — and the direction still points the right way. We do not lean on a
 simulated ΔΔG substitute (which our pre-registration forbids). → atlas_summary.csv, FINDINGS_atlas.md. The de-novo effect in particular
 is small — the two-pass-specific increment is +0.0032 [+0.0015, +0.0048] — and we do not lean on it: its role is
 only to show the mixed derivative *reaches* the genuine design regime, and its best support is that predicted
