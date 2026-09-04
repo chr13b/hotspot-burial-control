@@ -9,6 +9,8 @@ results/p0_dssp_positions.csv
 results/leverage_pq_skempi.csv
 results/leverage_bennett_pairs.csv
 results/leverage_pq_*.csv
+# ATLAS per-position PQ caches (derivable via leverage_atlas.py --stage score; headline numbers live in atlas_leverage.csv + atlas_summary.csv)
+results/atlas_pq_*.csv
 # predicted-backbone leverage PQ caches (derivable; re-score with leverage_predicted.py --stage score)
 results/leverage_pq_predicted_*.csv
 # predicted-backbone per-source frames (derivable via leverage_predicted.py --stage analyse); headline numbers live in leverage_predicted.csv + _ranker.csv
