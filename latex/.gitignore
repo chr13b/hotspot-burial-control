@@ -1,0 +1,13 @@
+# LaTeX build artifacts (Overleaf/pdflatex regenerate these)
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.blg
+*.bbl
+*.toc
+*.nav
+*.snm
+*.vrb

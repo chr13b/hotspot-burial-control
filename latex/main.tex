@@ -1,0 +1,170 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2027_conference,times}
+
+\usepackage[T1]{fontenc}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+% This also pulls in amsmath, amsfonts and bm (see math_commands.tex line 3),
+% which we rely on below for \text{...} inside inline math.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+
+\title{Confidence is not competence: inverse-folding models know binding in the mixed derivative}
+
+% ANONYMOUS SUBMISSION. Do not add real names/emails/affiliations here.
+% The iclr2027_conference.sty style automatically prints "Anonymous authors /
+% Paper under double-blind review" in place of whatever \author{} contains,
+% as long as \iclrfinalcopy (below) stays commented out. \author{} content is
+% required by \maketitle but is not rendered in this (default) anonymous mode.
+\author{Anonymous authors \\ Anonymous affiliation}
+
+%\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Staged binder design---generate a backbone, then inverse-fold a sequence---is believed to stumble
+at protein--protein interface \emph{hotspots}, and a prominent report (ProBID-Net) quantifies this
+as inverse-folding recovery of 0.334 at hotspots versus 0.472 elsewhere, attributed to dynamics.
+The phenomenon is real but misread: the model's binding knowledge was being read from the wrong
+place. \textbf{Confidence and competence are two different derivatives of the same inverse-folding
+likelihood.} A residue's \emph{confidence} is the \emph{diagonal} term---a scalar summary of the
+bound-conditioned distribution---and measures fold-stability constraint; its binding
+\emph{leverage} is the \emph{mixed second derivative}, the response to ablating the binding
+partner, $[\log p(a \mid \text{complex}) - \log p(\text{wt} \mid \text{complex})] - [\log p(a \mid
+\text{monomer}) - \log p(\text{wt} \mid \text{monomer})]$, and measures the binding effect. Because
+the partner-ablated structure is \emph{determined} by the complex, leverage is computable from the
+structure but \textbf{not} from the bound distribution alone---so every scalar the field reads off
+the model (recovery, confidence, the complex-vs-monomer KL) is a lossy projection, blind to binding
+\textbf{by construction, not by failure}. This is no vacuous identity: holding the bound
+distribution fixed, much of the leverage spread survives---a flexible learner (the best of
+gradient boosting and random forests) trained on the \emph{entire} bound distribution recovers
+only $\sim$37\% of the leverage, so \textbf{$\sim$63\% is irreducible from the bound distribution}
+in both inverse-folding families ($\sim$62\% even when wt identity is added); the
+binding-specific component provably requires the partner-ablated second pass. And the consequence
+is measurable and large. On our main fixture (SKEMPI natural complexes) confidence ranks hotspots
+at or barely above chance across five architectures and adds nothing beyond geometry
+(position-level conditional predictive impact 0.000), while the mixed derivative adds binding
+information \textbf{beyond geometry, beyond the standard one-pass log-odds readout, and beyond
+evolutionary conservation}---the full feature set of published hotspot predictors (mutation-level
+CPI $+0.059$; Spearman with experimental $\Delta\Delta G$ $-0.30$; per-position $\sim 5\times$ the
+best scalar, where confidence is conditionally independent)---and the whole result replicates in
+three further inverse-folding families (ESM-IF1: CPI $+0.035$, Spearman $-0.26$; PiFold: $+0.050$,
+$-0.33$; MIF: $+0.058$, $-0.27$). Three consequences follow. It is \textbf{actionable}: the mixed
+derivative is among the strongest single features for ranking interface hotspots (AUROC 0.69, on
+par with the learned KL detector at 0.68 and above geometry's 0.66 and confidence's 0.51), and adds
+\textbf{+0.016 AUROC [+0.004, +0.029]} on top of the full feature set published predictors already
+use---geometry \emph{and} conservation. It is a \textbf{dose law} of backbone accuracy---the signal
+survives $\le 0.5$~\AA{} of error and then collapses, at $\sim$1~\AA{} for ProteinMPNN and
+$\sim$1.5~\AA{} for ESM-IF1---and because the sensitivity is to the \emph{backbone the derivative
+is read from}, not to the network, the fragility (though not its exact threshold, which we measure
+to be model-dependent) is a prediction every method built on the same mixed derivative (BA-Cycle,
+RedNet, StaB-ddG) inherits on predicted backbones. And it reaches the \textbf{second} mixed
+derivative: the model's partner-ablated pairwise couplings predict experimental binding
+\emph{epistasis}. The published deficit is then largely a corollary---mostly a burial confound
+that attenuates sharply under matching, across five architectures plus ProBID-Net's own released
+model---and the blindness generalizes from binding to \emph{catalytic} residues (confidence blind,
+sequence conservation predicts). The leverage operator is BA-Cycle (Jiao et al. 2024); our
+contribution is the decomposition, the identifiability result and its \emph{measured} non-vacuity,
+the first beyond-geometry (and beyond-conservation) control on any inverse-folding binding signal,
+the feature-class law, and---on the intervention side---frozen-model steering by this direction,
+validated anti-circularly by a second sequence model and by an independent structure predictor. The
+recipe is general and already familiar: the mixed derivative is the model's
+\textbf{classifier-free-guidance direction} (the binding partner as conditioner), and to read an
+un-trained quantity off a conditional generative model one ablates the conditioner and reads that
+direction---not the conditional marginal the field has been mistaking for competence. And the
+direction is \emph{actionable}: biasing a frozen off-the-shelf ProteinMPNN's interface logits by
+$+\alpha \cdot L$ raises the binding-leverage an independent model (ESM-IF1) assigns the sampled
+residues---monotonically, while a matched-magnitude random direction \emph{lowers} it---with
+native recovery preserved, and an independent \emph{structure} predictor (AF2-multimer interface
+ipTM) concurs that the steered interfaces bind better.
+\end{abstract}
+
+\section{Introduction}
+
+The dominant paradigm for designing protein binders is staged: a generative model proposes a
+backbone, and an inverse-folding model assigns a sequence by maximising $p(\text{sequence} \mid
+\text{backbone})$. This factorisation is convenient but it omits the very quantity a binder exists
+to optimise---there is no binding-energy term anywhere in $p(\text{sequence} \mid
+\text{backbone})$. The concern this raises is sharpest at \emph{interface hotspots}: the small set
+of residues that contribute most of the binding free energy, and which are frequently
+\emph{frustrated}---buried polar residues or strained rotamers that are locally unfavourable for
+the monomer's fold but bought because they pay off in binding. If inverse folding optimises
+fold-compatibility, the reasoning goes, it should systematically miss exactly these residues, and a
+hotspot should sit in the tail of the model's distribution rather than at its mode. A prominent
+measurement appears to confirm this: ProBID-Net reports inverse-folding recovery of 0.334 at
+hotspots versus 0.472 elsewhere, and attributes the gap to dynamics.
+
+\textbf{This paper asks one question: when an inverse-folding model is used to build a binder,
+where---if anywhere---does its knowledge of \emph{binding} live, and can a designer read it and act
+on it?} The scope is deliberately narrow and practical---structure-conditioned inverse-folding
+models (ProteinMPNN, ESM-IF1, and three others), protein--protein interface binding, and readouts
+computable at design time. Our answer is that the binding signal is real, but the field has been
+reading it from the wrong place: from \emph{scalar} summaries of the model's output (recovery,
+confidence, a complex-vs-monomer KL) that are blind to binding \textbf{by construction}, when it
+lives in a \textbf{mixed second derivative} that is cheap to compute and directly actionable. The
+consequence is immediate for practice, in three forms. As a \textbf{diagnostic}: inverse-folding
+confidence is a geometry detector, not a binding score, so a pipeline that distrusts it at the
+interface (as the field's leading one-shot designer does, by freezing the interface) is
+right to---and can now do better. As a \textbf{training-free ranker}: the mixed derivative locates
+interface hotspots and adds on top of the exact feature set published predictors already use, at
+no training cost. As a \textbf{drop-in steering knob}: a $+\alpha \cdot L$ tilt biases a
+\emph{frozen, off-the-shelf} inverse-folding model toward higher-binding interface residues with no
+retraining, confirmed by both an independent sequence model and an independent structure predictor.
+And the recipe is not protein-specific---the mixed derivative is the model's
+\textbf{classifier-free-guidance direction}, so the same move (ablate the conditioner, read the
+mixed derivative, not the marginal) applies to any conditional generative model, which is what
+places the result at a representation-learning venue rather than a purely methodological one.
+
+There is a confound that no prior analysis controls, and it runs opposite to intuition. Hotspots
+are, on average, \emph{more deeply buried} than other interface residues, and burial is precisely
+where inverse folding is \emph{most} confident and accurate. An uncontrolled hotspot-vs-rest
+comparison therefore mixes a putative binding effect with a large burial effect of the opposite
+sign---so the naive comparison \textbf{hides} any real deficit rather than inventing one.
+Controlling burial is not a detail; it is the experiment.
+
+\section{Setup and pre-registration}
+% TODO: migrate from PAPER_DRAFT.md \S2
+
+\section{Confidence is not competence}
+% TODO: migrate from PAPER_DRAFT.md \S3
+
+\section{The Confidence--Leverage Decomposition: the model knows binding --- in the mixed derivative}
+% TODO: migrate from PAPER_DRAFT.md \S4
+
+\section{On crystal backbones, the hotspot gap is a burial artifact}
+% TODO: migrate from PAPER_DRAFT.md \S5
+
+\section{The tax lives in the conditioning set}
+% TODO: migrate from PAPER_DRAFT.md \S6
+
+\section{Ruling out competing mechanisms}
+% TODO: migrate from PAPER_DRAFT.md \S7
+
+\section{Related work and positioning}
+% TODO: migrate from PAPER_DRAFT.md \S8
+
+\section{Limitations}
+% TODO: migrate from PAPER_DRAFT.md \S9
+
+\section*{Reproducibility statement}
+% TODO: migrate from PAPER_DRAFT.md "Reproducibility and LLM-usage disclosure"
+
+\section*{LLM usage disclosure}
+% TODO: migrate from PAPER_DRAFT.md "Reproducibility and LLM-usage disclosure"
+
+\appendix
+
+\section{Pre-registered false-positive modes and their controls}
+% TODO: migrate from PAPER_DRAFT.md "Appendix A. Pre-registered false-positive modes and their controls"
+% FLAG: PAPER_DRAFT.md (as of this pass) defines only ONE appendix section (the table above,
+% "Appendix A"). The setup brief asked for "the two appendix headers" but no second appendix
+% header exists in the source yet -- not fabricating one. Confirm with the author what the
+% second appendix should contain (e.g. extended per-model tables/figures per MANUSCRIPT_PREP.md)
+% before adding it.
+
+\end{document}
