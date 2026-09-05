@@ -127,7 +127,8 @@ Inverse-folding confidence is blind to functional importance in general, not onl
 **(iv) The published deficit is largely a burial confound.** Under a pre-registered burial-matched matched-pair
 design (matching within-complex on relative SASA, secondary-structure class, and neighbour count), the
 crystal-backbone hotspot deficit attenuates sharply across five inverse-folding architectures — most of the gap
-is burial, though a residual persists for two of them (MIF, PiFold) on the strict tier — and ProBID-Net's own
+is burial, and no architecture retains a deficit under matching — two (MIF, PiFold) even flip to a hotspot
+*advantage* on the underpowered strict tier — and ProBID-Net's own
 released voxel-CNN reproduces its published deficit and then dissolves it under joint burial-and-composition
 matching. We offer the matched-pair design as a reusable diagnostic *protocol*. → probid_gap_estimators.csv,
 composition_confound.csv.
@@ -659,15 +660,15 @@ attenuating sharply from its unmatched value. The matching controls relative SAS
 neighbour count but not partner-contact area (ΔSASA) — the cheap feature that carries the most hotspot
 information — so we check the residual directly: the SECONDARY-B pairs do carry a ΔSASA imbalance (+0.072
 [+0.045, +0.100]), yet adjusting the deficit for it moves it essentially nowhere (−0.042 → −0.028), so the
-attenuation is not a residual-ΔSASA artifact. → dsasa_matched_sens.csv. We do not claim it vanishes everywhere: on the strict
-matched-pair PRIMARY tier (47 pairs) MIF and PiFold retain a residual recovery deficit whose CI excludes zero
-(MIF +0.277 [+0.098, +0.465]; PiFold +0.191 [+0.022, +0.359]), and a two-one-sided-tests check does not certify
-equivalence at the ±0.115-nat margin. The honest claim is **strong attenuation — most of the gap is burial —
-not proven absence**, and the residual is architecture-dependent. → FINDINGS.md, panel_summary.csv. Tellingly,
-MIF and PiFold — the two architectures that retain this residual *recovery* deficit — are two of the four on
-which the *mixed derivative* replicates (§4; CPI(L | geometry) = +0.058 and +0.050): within a single model the
-confidence-type readout keeps a deficit exactly where the leverage readout still works — the §4 decomposition
-seen *within* an architecture, not only across the feature classes.
+attenuation is not a residual-ΔSASA artifact. → dsasa_matched_sens.csv. We do not claim exact equivalence everywhere: on the underpowered strict
+matched-pair PRIMARY tier (47 pairs) MIF and PiFold do **not** retain a deficit — they show a hotspot recovery
+*advantage* whose CI excludes zero (MIF +0.277 [+0.098, +0.465]; PiFold +0.191 [+0.022, +0.359]), i.e. hotspots
+recovered *better* than matched controls, the **opposite sign** to the published deficit (a residual-confound or
+reduced-matched-set effect on 47 pairs — MIF and PiFold drop chain-junction positions from the matched set — not
+a binding deficit), and a two-one-sided-tests check does not certify equivalence at the ±0.115-nat margin. The
+honest claim is that **no architecture retains a hotspot deficit under matching** — most attenuate to zero, two
+flip to an advantage — so the published deficit is a burial confound, even if strict-tier equivalence is not
+formally certified. → FINDINGS.md, panel_summary.csv.
 
 The strongest form of this test uses ProBID-Net's own released voxel-CNN. Run on our fixture, its port is
 faithful (overall interface recovery 0.472, matching its reported non-hotspot number), and its published

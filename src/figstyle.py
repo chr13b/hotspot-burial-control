@@ -63,7 +63,7 @@ def flabel(fig, gs_left, y, ch):
 
 
 def assert_in_view(ax, xs, axis="x"):
-    lo, hi = ax.get_xlim() if axis == "x" else ax.get_ylim()
+    lo, hi = sorted(ax.get_xlim() if axis == "x" else ax.get_ylim())   # sorted: reversed axes too
     bad = [round(x, 6) for x in xs if x is not None and not (lo <= x <= hi)]
     assert not bad, f"[figstyle] clipped {axis}-data {bad} outside {(round(lo,5), round(hi,5))}"
 
