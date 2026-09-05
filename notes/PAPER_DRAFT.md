@@ -454,7 +454,7 @@ ProteinMPNN's**: at 1.0 Å ProteinMPNN is already at the floor (+0.0024, CI touc
 more slowly, reaching the floor only by 1.5–2.0 Å (+0.0020 [−0.0013, +0.0053] at 1.5 Å). The 1.0 Å rung itself
 is unstable across noise realizations and should be read as *straddling* the floor, not as retained signal:
 three independent jitter draws on the 200-complex subsample (σ = 0.99/1.00/1.01, the seed being a function of σ)
-give +0.0114, +0.0019 and −0.0002 — a draw-to-draw spread (~0.012) the size of the estimates themselves, so the
+give +0.0019, +0.0114 and −0.0002 — a draw-to-draw spread (~0.012) the size of the estimates themselves, so the
 per-rung bootstrap CIs understate the tail uncertainty and the 0.75-vs-1.0 non-monotonicity is inside
 realization variance. **The honest
 class claim is therefore: the fragility to backbone error and the survival of accurate reconstruction are
@@ -577,12 +577,12 @@ volume, hydropathy) is controlled — where, as on SKEMPI, the reverse also hold
 so neither pass subsumes the other. The partner-ablation pass carries design-regime signal on *actual* de-novo
 binders, complementing R2's predicted-backbone result (§6) on natural complexes, with the scalar contraction
 (KL) at the floor throughout. → leverage_bennett_denovo.csv. A methodological note this forces: an earlier AB-Bind analysis reported the per-mutation
-distribution "adds nothing" on natural antibody–antigen ΔΔG (ΔAUROC +0.008 over geometry + substitution), but
-under the conditional CPI test on the same baseline it adds **+0.031 [+0.015, +0.045]** (and +0.042 beyond
-geometry alone); the ΔAUROC readout's own fitted detection floor (≈−0.002) sits below the effect. The result is
-**fixture-fragile**, though — under a leaner control set the CPI is +0.009 and spans zero — and AB-Bind's 27
-complexes are too few to decide it either way; SKEMPI is where the question is settled. → abbind_bigidea1.csv,
-abbind_cpi.csv, leverage_decomposition.csv.
+distribution "adds nothing" on natural antibody–antigen ΔΔG (ΔAUROC +0.008 over geometry + substitution) — but
+that readout's own fitted detection floor sits *above* so small an effect. Under the conditional CPI test on the
+full geometry+substitution baseline the per-mutation distribution adds **+0.009 [−0.001, +0.019]** — a positive
+point estimate whose CI spans zero (conditionally independent). AB-Bind's 27 complexes are simply too few to
+decide it either way, so we do not lean on it; SKEMPI, where the same readout adds +0.059 with the CI far from
+zero, is where the question is settled. → abbind_cpi.csv, abbind_bigidea1.csv, leverage_decomposition.csv.
 
 **The blindness generalises beyond binding — to catalytic residues.** "Confidence is not competence" is not
 specific to binding hotspots. (The premise that a *functional*-site signal can be disentangled from a
