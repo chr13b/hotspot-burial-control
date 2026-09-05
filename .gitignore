@@ -16,3 +16,5 @@ results/leverage_pq_predicted_*.csv
 # predicted-backbone per-source frames (derivable via leverage_predicted.py --stage analyse); headline numbers live in leverage_predicted.csv + _ranker.csv
 results/leverage_predicted_*_mutations.csv
 results/leverage_predicted_*_positions.csv
+# personal plain-language explainer (to share with non-experts) — not part of the paper
+notes/PLAIN_EXPLAINER.md
