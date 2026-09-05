@@ -1,0 +1,4 @@
+arm,k,iptm,interface_plddt,interface_pae,arm_mean_iptm,selection_note
+wt,-1,0.94,95.7877,2.1274,0.94,single wt fold
+L,0,0.90,91.4037,3.0169,0.9067,representative: k closest to L-arm mean ipTM 0.907 (tie with k2 on ipTM; k0 also closest on interface_plddt)
+random,1,0.83,76.7226,5.5926,0.71,representative: k closest to random-arm mean ipTM 0.71 (avoids k0=0.44 disordered outlier and k2=0.86 best-of-k)
