@@ -179,20 +179,26 @@ for i, (_, lab, x, y, n, is_hot) in enumerate(POOLS):
                  xytext=(-3.5, 0), textcoords="offset points", fontsize=5.5,
                  color=S.INK if is_hot else S.SOFT, ha="right", va="center", linespacing=1.3,
                  fontweight="bold" if is_hot else "normal", annotation_clip=False, zorder=6)
+    # burial as a NUMBER, not only as an ordinal colour: the pool's mean rSASA, from the same row.
+    # The quantity is named once, on the first (most exposed) pool; the rest are the same column.
+    axa.annotate(("rSASA " if i == 0 else "") + num(x, 3, False), xy=(y, YA[i]), xytext=(4.5, 1.6),
+                 textcoords="offset points", fontsize=5.5,
+                 color=S.INK if is_hot else S.SOFT, ha="left", va="bottom",
+                 fontweight="bold" if is_hot else "normal", zorder=6)
 
-axa.set_xlim(0.325, 0.552)
+axa.set_xlim(0.325, 0.585)
 axa.set_ylim(len(POOLS) - 0.42, -0.72)
 axa.set_xticks([0.35, 0.40, 0.45, 0.50])
 axa.set_xticklabels(["0.35", "0.40", "0.45", "0.50"], fontsize=6.4)
 axa.set_yticks([])
 axa.spines["left"].set_visible(False)
+axa.spines["bottom"].set_bounds(0.325, 0.540)          # rule only under the data, not under the rSASA column
 axa.set_xlabel("sequence recovery", fontsize=7.0, labelpad=1.8)
+axa.xaxis.set_label_coords(0.415, -0.155)
 axa.tick_params(labelsize=6.4)
 S.strip(axa, left=False)
 S.assert_in_view(axa, list(PY), axis="x")
-axa.text(0.330, len(POOLS) - 1.42, sgn(f"colour = pool burial\ndarker = more buried\n"
-                                       f"rSASA {num(PX.max(), 3, False)} → "
-                                       f"{num(PX.min(), 3, False)}"),
+axa.text(0.330, len(POOLS) - 1.45, "marker colour = rSASA\ndarker = more buried",
          fontsize=5.5, color=S.MUTED, ha="left", va="center", linespacing=1.45)
 S.header(axa, "recovery tracks pool burial",
          f"5 overlapping pools of {thousands(N_IFACE)} interface positions")
@@ -207,10 +213,11 @@ for i, r in enumerate(PROBID):
     YB[r["key"]] = y
     y += 1.0
 BSEP = (YB[PROBID[3]["key"]] + YB[PROBID[4]["key"]]) / 2.0
+NCOL_B = 21.0                                            # width (pt) of the complex-count gutter column
 XB = (-0.235, 0.325)
 axb.set_xlim(*XB)
-axb.set_ylim(max(YB.values()) + 0.60, -0.98)
-axb.plot([0, 0], [-0.62, max(YB.values()) + 0.52], ls=(0, (3, 3)), color=S.RULE, lw=0.8, zorder=2)
+axb.set_ylim(max(YB.values()) + 0.60, -1.52)          # headroom for the gutter's column header
+axb.plot([0, 0], [-0.36, max(YB.values()) + 0.52], ls=(0, (3, 3)), color=S.RULE, lw=0.8, zorder=2)
 
 for r in PROBID:
     yy = YB[r["key"]]
@@ -219,12 +226,22 @@ for r in PROBID:
     for e in ("lo", "hi"):
         axb.plot([r[e]] * 2, [yy - 0.16, yy + 0.16], "-", color=c, lw=1.15, zorder=4)
     axb.plot(r["v"], yy, "o", ms=4.6, mfc=c if r["sig"] else "white", mec=c, mew=1.0, zorder=5)
-    axb.annotate(f"{r['label']}   {thousands(r['n'])} cx", xy=(XB[0], yy), xytext=(-2.5, 0),
+    # two-column gutter: stratum on the left, its complex count in its own right-aligned column,
+    # so the reader sees at a glance that the widest CIs are the smallest strata (25, 18 complexes)
+    axb.annotate(r["label"], xy=(XB[0], yy), xytext=(-NCOL_B, 0),
+                 textcoords="offset points", fontsize=6.0,
+                 color=S.INK if r["sig"] else S.SOFT, ha="right", va="center",
+                 fontweight="bold" if r["sig"] else "normal",
+                 annotation_clip=False, zorder=6)
+    axb.annotate(thousands(r["n"]), xy=(XB[0], yy), xytext=(-2.5, 0),
                  textcoords="offset points", fontsize=6.0,
                  color=S.INK if r["sig"] else S.SOFT, ha="right", va="center",
                  fontweight="bold" if r["sig"] else "normal",
                  annotation_clip=False, zorder=6)
 
+axb.annotate("n complexes", xy=(XB[0], YB[PROBID[0]["key"]] - 1.16), xytext=(-2.5, 0),
+             textcoords="offset points", fontsize=5.8, color=S.MUTED, ha="right", va="center",
+             annotation_clip=False, zorder=6)
 axb.text(XB[0] + 0.008, YB[PROBID[0]["key"]] - 0.62, "no confound control  ·  by scan depth",
          fontsize=5.8, color=S.MUTED, ha="left", va="center", zorder=6)
 axb.text(XB[0] + 0.008, YB[PROBID[4]["key"]] - 0.60, "confound-matched, same fixture",
@@ -294,8 +311,13 @@ for t, tl in TIERS:
 for m, lab, _ in ARCH:                                       # label only what excludes zero
     if PAN[(m, ST)]["sig"]:
         r = PAN[(m, ST)]
-        axc.text(VXC, YC[m] + TSTYLE[ST]["dy"], ci(r["v"], r["lo"], r["hi"]), fontsize=5.9,
-                 color=S.INK, ha="left", va="center", zorder=7)
+        yv = YC[m] + TSTYLE[ST]["dy"]
+        axc.text(VXC, yv - 0.01, ci(r["v"], r["lo"], r["hi"]), fontsize=5.9,
+                 color=S.INK, ha="left", va="bottom", zorder=7)
+        # the strict tier is the small-n tier: print its n on the row, so a wide CI reads as
+        # few pairs rather than as noise
+        axc.text(VXC, yv + 0.05, f"{r['n']} pairs  ·  {r['ncx']} complexes", fontsize=5.2,
+                 color=S.MUTED, ha="left", va="top", zorder=7)
 
 axc.set_xticks([-0.1, 0.0, 0.1, 0.2, 0.3, 0.4])
 axc.set_xticklabels([sgn("-0.1"), "0", "+0.1", "+0.2", "+0.3", "+0.4"], fontsize=6.4)
