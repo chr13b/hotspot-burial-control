@@ -170,7 +170,11 @@ tests.
 
 **Models.** Five inverse-folding architectures span the design space: ProteinMPNN (vanilla and soluble
 variants), ESM-IF1 (a 142M-parameter GVP-transformer), PiFold (a one-shot GNN), MIF (masked inverse folding),
-and ProBID-Net (a voxel CNN). A positive control gates every scoring path.
+and ProBID-Net (a voxel CNN). A positive control gates every scoring path. (These are inverse-folding *sequence*
+models — the stage our critique targets. *Backbone* generators such as RFdiffusion are the upstream stage: they
+emit coordinates, not a per-residue amino-acid distribution, so they are neither steerable by `+α·L` nor usable
+as a leverage judge, and they enter here only through the generated-backbone regime we test directly in §6 and
+the RFdiffusion+ProteinMPNN de-novo designs of §4.)
 
 **What the evaluation answers.** Four questions organise the empirical sections; a reader who remembers only
 these has the paper. **(Q1)** Can *any* scalar a designer reads off an inverse-folding model — recovery,
