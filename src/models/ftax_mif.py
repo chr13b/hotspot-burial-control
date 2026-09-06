@@ -45,7 +45,7 @@ import numpy as np
 import torch
 
 MPNN_ALPHABET = "ACDEFGHIKLMNPQRSTVWYX"
-DEFAULT_HUB = "/home/chris/ftax/models/mif/torchhub"
+DEFAULT_HUB = os.environ.get("FTAX_MIF_HUB", "/home/chris/ftax/models/mif/torchhub")
 
 
 def load_mif(name="mif", torch_home=DEFAULT_HUB, device="cpu"):

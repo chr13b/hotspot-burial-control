@@ -20,14 +20,22 @@ import pandas as pd
 SEED = 20260803
 NBOOT = 5000
 JUDGE_NAME = {"mpnn": "ProteinMPNN", "esmif": "ESM-IF1", "pifold": "PiFold", "mif": "MIF"}
-# (csv, steered_model_label, self_judge_key)
-SOURCES = [("results/cfg_steer.csv", "ProteinMPNN", "mpnn"),
-           ("results/cfg_steer_esmif.csv", "ESM-IF1", "esmif")]
+# (csv, steered_model_label, self_judge_key, method)
+# K64 = mean over K=64 samples (ProteinMPNN/ESM-IF1 judges only, high power);
+# dumped3 = mean over the 3 folded samples, uniform across ALL judges incl. MIF (the multi-judge extension).
+SOURCES = [("results/cfg_steer.csv", "ProteinMPNN", "mpnn", "K64"),
+           ("results/cfg_steer_esmif.csv", "ESM-IF1", "esmif", "K64"),
+           ("results/cfg_judge_dumped_setA.csv", "ProteinMPNN", "mpnn", "dumped3"),
+           ("results/cfg_judge_dumped_setB.csv", "ESM-IF1", "esmif", "dumped3")]
 
 
 def paired(df_a, col, rng, nboot=NBOOT):
-    piv = (df_a.pivot_table(index="complex_id", columns="direction", values=col)
-                .dropna(subset=["L", "random"]))
+    if not len(df_a):
+        return None
+    piv = df_a.pivot_table(index="complex_id", columns="direction", values=col)
+    if "L" not in piv.columns or "random" not in piv.columns:
+        return None
+    piv = piv.dropna(subset=["L", "random"])
     if len(piv) < 2:
         return None
     d = (piv["L"] - piv["random"]).to_numpy()
@@ -47,7 +55,7 @@ def main():
     rng = np.random.default_rng(SEED)
     rows = []
     print("=== JUDGE MATRIX (paired L − random judge-leverage, complex-clustered 95% CI) ===")
-    for csv, steered, selfkey in SOURCES:
+    for csv, steered, selfkey, method in SOURCES:
         if not os.path.exists(csv):
             print(f"[skip] {csv} missing")
             continue
@@ -62,10 +70,11 @@ def main():
                 if res is None:
                     continue
                 is_self = int(jkey == selfkey)
-                rows.append(dict(steered_model=steered, judge=judge, is_self=is_self, alpha=al, **res))
+                rows.append(dict(steered_model=steered, judge=judge, is_self=is_self, method=method,
+                                 alpha=al, **res))
                 if al == max(alphas):
                     tag = "SELF/circular" if is_self else "anti-circular"
-                    print(f"  steer={steered:11s} judge={judge:11s} a={al:g} [{tag:13s}] "
+                    print(f"  steer={steered:11s} judge={judge:11s} [{method:7s}] [{tag:13s}] "
                           f"L−random={res['delta']:+.4f} [{res['lo']:+.4f},{res['hi']:+.4f}] "
                           f"P(>0)={res['p_gt0']:.3f}  (L={res['arm_L']:+.3f} rnd={res['arm_random']:+.3f} n={res['n_cx']})")
     out = pd.DataFrame(rows)
