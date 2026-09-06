@@ -16,9 +16,12 @@ non-interface positions held at wt — wt-background, steered-interface, exactly
 is **ESM-IF1's OWN interface leverage** (from `leverage_pq_skempi_esmif.csv`) — the exact symmetric analog of
 SET-A, where `cfg_steer.py` steers ProteinMPNN by *ProteinMPNN's* own leverage. This is what makes the primary
 judge (ProteinMPNN, a DIFFERENT model) anti-circular: we steer ESM-IF1 by ESM-IF1's own L and ask whether a
-different model rates the result as more binding-favorable. (Pre-data correction to the first draft of this
-file, which mistakenly used ProteinMPNN-L as the steering direction — that would make the ProteinMPNN judge
-circular; no number had been computed.) Same interface set, α grid {0, 2}, K as `cfg_steer.py`. NOTE (disclosed up front, not after seeing a
+different model rates the result as more binding-favorable. (Erratum, corrected 2026-09-07 after a code-audit: the first draft of this file's *prose* mis-described the
+steering direction as ProteinMPNN-`L`, which would make the ProteinMPNN judge circular. The steering *code*
+(`cfg_steer_esmif.py`) in fact steered by ESM-IF1's own `L` from its first commit — verified by re-running it to
+reproduce `cfg_steer_esmif.csv` — so the experiment was never circular. This prose was corrected *after* the
+SET-B numbers already existed, so it is a post-hoc clarification of an already-sound design, **not** a pre-data
+amendment; we state the timeline honestly rather than claim otherwise.) Same interface set, α grid {0, 2}, K as `cfg_steer.py`. NOTE (disclosed up front, not after seeing a
 number): this is a **one-shot biased-conditional** sampler — interface positions are drawn independently given
 the native context, whereas `cfg_steer.py`'s ProteinMPNN path is autoregressively coupled. This is the natural
 sampler for ESM-IF1's conditional readout and is reported as such. Emit arms wt / L(k=0..2) / random(k=0..2) on

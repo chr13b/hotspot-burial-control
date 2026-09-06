@@ -59,3 +59,8 @@ across structure predictors.
   per metric within each folder), which is exactly what `PREREG_boltz.md` pre-registered — not the raw values.
 - interface pAE / composite are over n=58 (2 complexes had a PAE-array length mismatch and were dropped for the
   pAE-dependent metrics; ipTM/pLDDT/pTM are the full 60). The effect is decisive at either n.
+- **Pre-registered determinism spread — disclosed, not measured.** `PREREG_boltz.md` pre-registered a Boltz
+  seed-SD (same wt under 2–3 seeds); it was **not** separately run (GPU-bounded). We rely on the within-complex
+  paired design and on AF2's measured determinism reference (~0.017 ipTM SD; Boltz's own SD is expected to be of
+  comparable order), against which the paired +0.139 ipTM effect is large. A Boltz-specific seed-SD (one wt ×
+  2–3 seeds, ~3 folds) can close this cleanly if wanted — flagged as a ~3-fold add, not a re-run of the contrast.
