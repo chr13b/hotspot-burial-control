@@ -21,7 +21,7 @@ confidence, the complex-vs-monomer KL) is a lossy projection, blind to binding *
 failure**. This is no vacuous identity: holding the bound distribution fixed, much of the leverage spread
 survives — a flexible learner (the best of gradient boosting and random forests) trained on the *entire* bound
 distribution recovers only ~37% of the leverage, so **~63% is irreducible from the bound distribution** in both
-inverse-folding families (~62% even when wt identity is added);
+inverse-folding families (~62–63% even when wt identity is added);
 the binding-specific component provably requires the partner-ablated second pass. And the consequence is measurable and large. On our main fixture (SKEMPI natural complexes)
 confidence ranks hotspots at or barely above chance across five architectures and adds nothing beyond geometry
 (position-level conditional predictive impact 0.000), while the mixed derivative adds binding information **beyond
@@ -30,7 +30,7 @@ feature set of published hotspot predictors (mutation-level CPI +0.059; Spearman
 per-position ~5× the best scalar, where confidence is conditionally independent) — and the whole result
 replicates in three further inverse-folding families (ESM-IF1: CPI +0.035, Spearman −0.26; PiFold: +0.050, −0.33; MIF: +0.058, −0.27). Three consequences follow. It is **actionable**: the mixed derivative is among the strongest single features
 for ranking interface hotspots (AUROC 0.69, on par with the learned KL detector at 0.68 and above geometry's
-0.66 and confidence's 0.51), and adds
+0.66 and confidence's 0.51; → leverage_triage.csv), and adds
 **+0.016 AUROC [+0.004, +0.029]** on top of the full feature set published predictors already use —
 geometry *and* conservation. It is a **dose law** of backbone accuracy
 — the signal survives ≤0.5 Å of error and then collapses, at ~1 Å for ProteinMPNN and ~1.5 Å for ESM-IF1 — and
@@ -252,7 +252,7 @@ construction:** two positions with an identical bound distribution have identica
 arbitrarily in L — and this is not hypothetical. We measure how much of the mixed derivative the *whole* bound distribution can determine: a flexible learner
 (the max over gradient boosting and random forests, out-of-sample under complex-clustered cross-validation)
 trained on the full 20-vector `P` recovers **only ~37%** of the leverage — R²(L_rms | P) = 0.37 [0.34, 0.40]
-(ProteinMPNN), 0.36 [0.34, 0.39] (ESM-IF1) — so **~63% is irreducible from `P`** in both families (~62% even
+(ProteinMPNN), 0.36 [0.34, 0.39] (ESM-IF1) — so **~63% is irreducible from `P`** in both families (~62–63% even
 when wt identity is added, the fair `φ(P, wt)` class since confidence itself uses `log P(wt)`); a *linear*
 readout recovers less than half, R² ≈ 0.15. The recoverable part is the one-pass complex log-odds *vector*; the
 *scalar* one-pass magnitude alone recovers far less, and the irreducible majority is the partner-ablation term
@@ -316,10 +316,12 @@ same diagonal §3 finds conditionally independent):
 | feature (all functionals of the same distribution) | CPI beyond geometry |
 |---|---|
 | *placebo floor* — a deterministic function of geometry | *+0.0007* — the estimator's false-positive floor (pure noise ≈0) |
-| **confidence** — the diagonal | **+0.0002 [−0.0003, +0.0006]** — below the floor; conditionally independent |
+| **confidence** — the diagonal | **+0.0002 [−0.0002, +0.0006]** — below the floor; conditionally independent |
 | negentropy — one-pass | +0.0009 [+0.0003, +0.0015] — at the floor |
-| scalar KL — a contraction of L | +0.0009 [+0.0003, +0.0016] — at the floor |
-| **leverage L** — the mixed derivative | **+0.0048 [+0.0033, +0.0065]** — ~7× the floor; CI disjoint from every scalar; robust to a nonlinear geometry control (+0.0047); survives dropping the 3 most influential complexes |
+| scalar KL — a contraction of L | +0.0010 [+0.0003, +0.0017] — at the floor |
+| **leverage L** — the mixed derivative | **+0.0048 [+0.0034, +0.0065]** — ~7× the floor; CI disjoint from every scalar; robust to a nonlinear geometry control (+0.0047); survives dropping the 3 most influential complexes |
+
+→ w_placebo_ladder.csv.
 
 On the identical 5,742-position sample §3's confidence test uses, the same ordering holds and sharpens —
 leverage +0.0092 [+0.0062, +0.0124], ~5× the scalar KL, while confidence stays conditionally independent (CI
@@ -343,7 +345,7 @@ own is inert (Spearman(monomer log-odds, ΔΔG) = **+0.04**), and the one-pass a
 correlated (Pearson **+0.64**), are genuinely distinct — yet subtracting the individually-inert monomer pass
 *improves* the tracking of ΔΔG (one-pass Spearman −0.26 → leverage −0.30 on this sample). Leverage
 works precisely because the second pass *corrects* the first for the fold-stability constraint that the
-one-pass score conflates with binding. → w2_monomer_inert.csv. This scopes the
+one-pass score conflates with binding. → w2_onepass_control.csv, w2_monomer_inert.csv. This scopes the
 feature-class law precisely: it is about *position-level* scalars of P (recovery, confidence, entropy); a
 *per-substitution* one-pass readout legitimately carries constraint and substitution-similarity information,
 but the *binding-specific* increment requires the second pass. The direction is robust, not a residue-type
@@ -379,7 +381,7 @@ leverage's mutation-level increment (leverage +0.035 → +0.018 when confidence 
 **third and fourth** time under PiFold (a graph message-passing model; mutation Spearman(L, ΔΔG) =
 **−0.33 [−0.39, −0.26]**, CPI(L | geometry) = **+0.050 [+0.039, +0.061]**) and MIF (a masked-inverse-folding
 model; Spearman **−0.27 [−0.36, −0.18]**, CPI **+0.058 [+0.045, +0.070]**), each surviving substitution,
-confidence and scalar-KL controls, with confidence again position-blind (CPI +0.0000). So the feature-class law
+confidence and scalar-KL controls, with confidence again position-blind (CPI +0.0001 PiFold, +0.0000 MIF). So the feature-class law
 is a property of the inverse-folding *class*, now across **four** architectures — the same panel on which
 confidence is blind at hotspots. → leverage_esmif.csv, leverage_pifold.csv, leverage_mif.csv. So the model *does*
 know binding on natural complexes — the knowledge was invisible to every scalar readout the field used. The law is
@@ -396,9 +398,9 @@ false-positive floor: a placebo feature that is a deterministic function of the 
 information beyond them, still scores **+0.0007** (a duplicate of ΔSASA; pure noise correctly scores ≈0). →
 w_placebo_ladder.csv. Against that floor the scalars of the bound distribution are indistinguishable from
 noise-beyond-geometry: confidence **+0.0002** (CI spans zero), one-pass negentropy **+0.0009**, and even
-leverage's own P-weighted contraction — the KL detector, algebraically `E_P[L] + const` — **+0.0009**, all at or
+leverage's own P-weighted contraction — the KL detector, algebraically `E_P[L] + const` — **+0.0010**, all at or
 below the floor. Only the *two-pass* mixed derivative L(→Ala) clears it decisively: **+0.0048**, ~7× the floor,
-CI disjoint from every scalar's, robust to a *nonlinear* (quadratic or cubic) geometry control (+0.0047), and
+CI disjoint from every scalar's, robust to a *nonlinear* (quadratic or cubic) geometry control (+0.0047 quadratic, +0.0046 cubic), and
 surviving the drop of its 3 most influential complexes. So collapsing the leverage vector to any scalar of the
 bound distribution discards **essentially all** of its conditional signal. (That confidence and sequence recovery track
 burial is itself long known — Dauparas et al. 2022, Hsu et al. 2022; what is new here is the *formal*
@@ -426,7 +428,7 @@ re-drawn noise realization at 1 Å reproduces the collapse, so it is not a singl
 binding signal is robust to *accurate* reconstruction and lost under an inaccurate one. **The decisive test is
 whether real predicted backbones fall on the surviving or the collapsed part of this curve, and they fall on
 the surviving part** (§6, measured directly): on OpenFold3 and AF2-multimer backbones for 140 shared complexes,
-CPI(L | geometry) is **+0.039 [+0.027, +0.050]** and **+0.032 [+0.023, +0.041]** — 69–84% of the matched
+CPI(L | geometry) is **+0.039 [+0.026, +0.050]** and **+0.032 [+0.023, +0.041]** — 69–84% of the matched
 crystal value, CI clearing the placebo floor, drop-3 robust. Measured directly, these predicted interfaces are
 heavy-tailed: the median Cα-RMSD-to-crystal is **≈1.3 Å** — the dose-law *knee* — with about half at ≤1.5 Å but
 a quarter mis-docked beyond 6 Å (→ predicted_backbone_rmsd.csv). So the pooled +0.039 is a *lower bound*: the
@@ -540,7 +542,8 @@ vs 0.587), the model's per-substitution probability still adds ΔAUROC = **+0.01
 P(>0)=1.000. The model encodes per-substitution binding *energetics* beyond all-atom steric occlusion. (We
 report the process in full: an early run mis-implemented the validity gate as a clash-correlation, which
 failed for lack of dynamic range; we corrected it to the pre-registered reconstruction gate and remained
-blind to the ΔAUROC until that gate passed.) → bennett_occlusion_allatom.csv.
+blind to the ΔAUROC until that gate passed.) → bennett_occlusion_allatom.csv, bennett_occlusion_energetics.csv
+(earlier proxy, 0.587).
 
 **Not circularity.** Because the SSM parents are themselves ProteinMPNN outputs, one might worry the model is
 scoring substitutions around its own mode. A non-parent model — ESM-IF1, which did not generate the designs —
@@ -562,7 +565,7 @@ low-confidence). Adjacent classes overlap in CI — a monotone trend with de-nov
 transient-recognition classes, not four pairwise-significant steps — but every natural class sits at or below
 chance and only de-novo clears it, yet the *mixed derivative* carries the binding signal in all of them: the
 leverage-AUROC **clears chance in every natural class and beats confidence in each** — 0.641 [0.539, 0.765] (TCR/pMHC), 0.628
-[0.544, 0.716] (AB/AG), 0.701 [0.599, 0.811] (protease–inhibitor), each clearing chance — while confidence
+[0.544, 0.716] (AB/AG), 0.701 [0.599, 0.812] (protease–inhibitor), each clearing chance — while confidence
 climbs the fold-coupling gradient beneath it. The two feature classes *diverge across a controlled biological
 axis*: the scalar is regime-dependent and blind, the derivative clears chance regardless of interface type — exactly the split Proposition 1 forces, resolved
 along a controlled biological axis: a scalar of `P` can only track the fold-constraint that varies with interface
@@ -728,7 +731,7 @@ is the *confidence*-type readout degrading; the complementary question is whethe
 object this paper says carries binding — still works when computed on a predicted rather than a crystal
 backbone. It does. Re-running the identical leverage scorer on the OpenFold3 and AF2-multimer backbones for the
 140 complexes shared with the SKEMPI fixture, with geometry recomputed from the predicted structure (the honest
-baseline a designer has, not the crystal), CPI(L | burial+nbr+ΔSASA) is **+0.039 [+0.027, +0.050]** on OpenFold3
+baseline a designer has, not the crystal), CPI(L | burial+nbr+ΔSASA) is **+0.039 [+0.026, +0.050]** on OpenFold3
 and **+0.032 [+0.023, +0.041]** on AF2-multimer (pooled +0.036 [+0.026, +0.048]), P(>0)=1.000, each surviving
 removal of its three most influential complexes, against a matched crystal-on-140 value of +0.046 — a 69–84%
 retention, and L still adds beyond confidence on the predicted backbone (+0.046/+0.036, CI>0). The positive
