@@ -36,6 +36,9 @@ def main():
     ap.add_argument("--subset-out", default="results/iptm_subset.txt")
     ap.add_argument("--n", type=int, default=60)
     ap.add_argument("--max-res", type=int, default=600)
+    ap.add_argument("--exclude", default="",
+                    help="file of complex_ids to drop from eligibility (e.g. batch-1 subset) BEFORE the "
+                         "SEED-shuffle; default '' reproduces the original first-N selection exactly")
     a = ap.parse_args()
     os.makedirs(a.fadir, exist_ok=True)
 
@@ -53,6 +56,10 @@ def main():
     elig = sorted(c for c in have if have[c] and nres.get(c, 1e9) <= a.max_res)
     print(f"[build] {df.complex_id.nunique()} complexes in seqs; {len(elig)} eligible "
           f"(all 7 conditions, <= {a.max_res} res)")
+    if a.exclude and os.path.exists(a.exclude):
+        ex = set(l.strip() for l in open(a.exclude) if l.strip())
+        elig = [c for c in elig if c not in ex]
+        print(f"[build] excluded {len(ex)} complexes ({a.exclude}); {len(elig)} eligible remain")
 
     rng = np.random.default_rng(SEED)
     order = rng.permutation(len(elig))
