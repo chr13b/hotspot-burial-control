@@ -621,7 +621,12 @@ constructible here. → confidence_gradient{,_affinity}.csv.
 probability on residues that are simultaneously more native-consistent *and* higher binding-leverage. This is
 anti-circular (a second, architecturally distinct model scores the sequences) but not an independent binding
 oracle: both are inverse-folding models and ESM-IF1 leverage is a model proxy for ΔΔG, so connecting the steered
-sequences to a physical or experimental binding readout is the natural next step, not claimed here. So the same
+sequences to a physical or experimental binding readout is the natural next step, not claimed here. Scoring the steered sequences with a *different* model is
+what makes this non-trivial: steering ProteinMPNN by its own leverage and scoring with ProteinMPNN would be
+circular — tilting toward high `L` raises ProteinMPNN's own `L` by construction — whereas ESM-IF1 never saw the
+steering and carries no such guarantee, so its agreement is genuine cross-model evidence. Two inverse-folding
+models could in principle still share a blind spot; that residual risk is exactly what the independent
+*structure*-predictor confirmation (next) addresses. So the same
 mixed derivative the field's decoders already tilt along (RedNet; §8) works as a training-free knob on a model
 that was never trained to bind. **And the steered sequences transfer to an independent *structure* predictor:**
 folding them with AF2-multimer (60 complexes, pre-registered), the L-steered interfaces beat the matched-magnitude
@@ -638,7 +643,14 @@ fold: native *sequence* recovery
 *rises* under the tilt (0.276→0.297, above), and while the mean L-steered sequence folds a little below wild-type
 (mean-over-k ipTM L−wt **−0.097 [−0.140, −0.056]**), the *best-of-k* steered sequence matches it (**−0.020**, CI
 spanning zero) — tilting to a non-native, binding-favourable interface costs a little foldability versus the
-crystal but does not break it, whereas the matched-magnitude random control does. **The mixed derivative is thus corroborated three independent ways that do not share a
+crystal but does not break it, whereas the matched-magnitude random control does. Two baselines make this a clean, causal test. The
+**random-direction** arm is the *specificity* control — it perturbs the same interface positions by the same
+per-position magnitude and differs from the L arm *only in direction*, so (positions, magnitude, folder and
+complex all held fixed and paired) **L − random** isolates the effect of the *direction* from the effect of
+perturbing at all: a placebo at matched dose, and the headline. The **wild-type** arm is the natural-sequence
+*anchor*, not a target to beat — the real, evolved sequence — so **L − wt** is a *foldability guardrail*:
+steering toward binding should not break a foldable interface, and it does not (best-of-k matches wt, the mean a
+little below). **The mixed derivative is thus corroborated three independent ways that do not share a
 failure mode:** the theory (it is the model's classifier-free-guidance direction, Prop 1), a second *sequence*
 model (ESM-IF1 leverage rises specifically along it), and a second, physics-adjacent *structure* predictor
 (AF2-multimer interface confidence rises specifically along it). This closes the paper's central arc into a loop

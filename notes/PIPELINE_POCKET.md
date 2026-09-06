@@ -52,3 +52,34 @@ ESM-IF1) behind a `Model` protocol (score p(seq|structure) for complex AND monom
 but only *recommend* the benchmarked adapters; others work via the protocol without us claiming they're tested.
 Scope: for the deadline ship **reproducible code + Zenodo** (anonymised for double-blind); build the polished
 PyPI package for camera-ready / post-acceptance so it doesn't eat the 20-day runway.
+
+## Comparison plan — fair head-to-heads (2026-09-06)
+**We are ZERO-SHOT / unsupervised for binding:** `L` is read off a model never trained on binding labels; no
+ΔΔG labels enter its computation. (Labels are used only to *evaluate*.) So the fairest comparators are other
+zero-shot / physics scores, with any *supervised* comparator's training-data advantage disclosed.
+
+**Detection claim** ("scalars blind; the mixed derivative sees binding beyond geometry+conservation+one-pass"):
+- Already in-paper: `L` (zero-shot) vs a **supervised geometry+substitution baseline** *trained on the binding
+  labels* — `L` adds **+0.030 AUROC** on top and reaches **0.647** alone (`leverage_effect_size.csv`). That is
+  the "supervised baseline we beat zero-shot."
+- Optional SOTA add (reviewer-anticipation, moderate effort): a **physics ΔΔG tool** (FoldX or Rosetta ddG) on
+  the SAME SKEMPI fixture/mutation set, same metric (Spearman, hotspot-AUROC). Fair (non-learned). Report
+  BA-Cycle's published SKEMPI correlation as the same-`L`-operator reference (already cited). Not load-bearing.
+
+**Steering / actionable claim** — the higher-value comparison, since we *intervene*:
+- **Frozen `+α·L` tilt vs RedNet (retrained decoder)**, same complexes, same interface positions, same
+  independent judges (ESM-IF1/PiFold/MIF leverage + AF2/Boltz-2 ipTM), same budget. Framing: *"a frozen,
+  off-the-shelf tilt recovers most of what RedNet buys by retraining"* — if frozen ≈ RedNet that is a strong
+  "no retraining needed"; if RedNet > frozen, disclose honestly (retraining helps, direction alone is most of
+  it). RedNet code is public (`zw2x/rednet_public`, already verified in §8) → **feasible**. This is the
+  comparison that credibly positions us against another *method*.
+- **Non-SOTA / naive-guidance baseline:** a tilt toward the model's own *confidence* (or BLOSUM-favorable),
+  same judges — shows the gain needs the *binding* direction, not any guidance (complements the random control).
+- Fairness rules for all: same fixture/complexes, same positions, same metric, same judges; disclose
+  training-data leakage for supervised comparators.
+
+**Recommendation:** the RedNet frozen-vs-retrained head-to-head is the one worth doing (feasible + directly on
+our actionable claim) — a candidate to add to the Sherlock bundle *or* keep rebuttal-ready; the FoldX detection
+baseline is optional reviewer-anticipation; a full SOTA-ΔΔG accuracy leaderboard is a different claim and is
+skipped.
+
