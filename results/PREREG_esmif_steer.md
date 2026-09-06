@@ -13,9 +13,12 @@ Steer frozen ESM-IF1 by biasing its **native-conditional interface distribution*
 teacher-forced readout — the same one used for its leverage), add `α·L_i(a)` at the committed interface
 positions, and sample K sequences (each interface position drawn from the biased softmax at temperature T;
 non-interface positions held at wt — wt-background, steered-interface, exactly like `cfg_steer.py`'s output). `L`
-is the **ProteinMPNN-derived** interface leverage already used by `cfg_steer.py` (the operator under test is
-model-agnostic; the question is whether ESM-IF1, when tilted by it, samples more binding-favorable interface
-residues). Same interface set, α grid {0, 2}, K as `cfg_steer.py`. NOTE (disclosed up front, not after seeing a
+is **ESM-IF1's OWN interface leverage** (from `leverage_pq_skempi_esmif.csv`) — the exact symmetric analog of
+SET-A, where `cfg_steer.py` steers ProteinMPNN by *ProteinMPNN's* own leverage. This is what makes the primary
+judge (ProteinMPNN, a DIFFERENT model) anti-circular: we steer ESM-IF1 by ESM-IF1's own L and ask whether a
+different model rates the result as more binding-favorable. (Pre-data correction to the first draft of this
+file, which mistakenly used ProteinMPNN-L as the steering direction — that would make the ProteinMPNN judge
+circular; no number had been computed.) Same interface set, α grid {0, 2}, K as `cfg_steer.py`. NOTE (disclosed up front, not after seeing a
 number): this is a **one-shot biased-conditional** sampler — interface positions are drawn independently given
 the native context, whereas `cfg_steer.py`'s ProteinMPNN path is autoregressively coupled. This is the natural
 sampler for ESM-IF1's conditional readout and is reported as such. Emit arms wt / L(k=0..2) / random(k=0..2) on
