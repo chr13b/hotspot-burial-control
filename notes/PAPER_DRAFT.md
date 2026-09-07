@@ -678,13 +678,15 @@ FINDINGS_judge_matrix.md.
 *naive* tilt of matched per-position magnitude toward the model's *own confidence* (not the binding direction)
 recovers most of the ipTM gain and in fact slightly *exceeds* L on it (paired ipTM L−naive **−0.034 [−0.066,
 −0.006]**), because ipTM rewards foldability and the most-confident residues fold best. So the ipTM steering gain
-is **largely a foldability effect and does not by itself isolate a binding improvement.** The *binding-specific*
-advantage of L appears exactly where the mechanism predicts — at the inverse-folding-*judge* level, where L beats
-the confidence tilt (ESM-IF1 **+0.159 [+0.110, +0.207]**, MIF **+0.242 [+0.191, +0.292]**, CI>0): binding-favorable
-residues are frequently *frustrated* (in the confidence tail), so a structure predictor under-credits them while a
-binding-sensitive judge does not. (The confidence tilt is itself far from a null — ProteinMPNN confidence is
-substantially binding-correlated, recovering ~64–77% of L−random at the judge level — so "naive ≈ random" was the
-wrong prior; the honest control is L vs *confidence*, not L vs random.) The standing **L − random** ipTM (+0.235)
+is **largely a foldability effect and does not by itself isolate a binding improvement.** A *smaller but decisive*
+binding-specific increment of L nonetheless survives exactly where the mechanism predicts — at the
+inverse-folding-*judge* level, where L beats the confidence tilt (ESM-IF1 **+0.159 [+0.110, +0.207]**, MIF
+**+0.242 [+0.191, +0.292]**, CI>0 — about a quarter to a third of L−random): binding-favorable residues are
+frequently *frustrated* (in the confidence tail), so a structure predictor under-credits them while a
+binding-sensitive judge does not. (Two honesties bound this: the confidence tilt is *far* from a null —
+ProteinMPNN confidence is substantially binding-correlated, carrying ~64–77% of L−random at the judge level, so
+"naive ≈ random" was the wrong prior and the honest control is L vs *confidence*, not L vs random; and these
+judges are inverse-folding models — proxies for binding, not experimental ΔΔG.) The standing **L − random** ipTM (+0.235)
 holds; what the naive control bounds is the *interpretation* of that fold gain, not the judge-level
 binding-specificity. → cfg_naive_summary.csv, iptm_summary_naive.csv, FINDINGS_naive.md.
 
