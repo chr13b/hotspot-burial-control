@@ -83,3 +83,14 @@ our actionable claim) — a candidate to add to the Sherlock bundle *or* keep re
 baseline is optional reviewer-anticipation; a full SOTA-ΔΔG accuracy leaderboard is a different claim and is
 skipped.
 
+**UPDATE 2026-09-07 — RedNet head-to-head BLOCKED → rescued.** RedNet's pipeline needs private packages
+(`faust`, `atomtools`; not public, not in the author's repos) and its Zenodo weights (record 20113403) are
+access-restricted, so the true head-to-head cannot be run and we will not fake it (rule 3). **Two rescues, both
+accessible and arguably stronger:** (1) a **code-level positioning result** — RedNet's released decode is
+`logits=(1+α)·logP_complex − α·logP_contrast` = our `+α·L` (contrast = unbound monomer; scorer `cd_ll=ll−ub_ll`),
+so a published *retrained* method converges on our exact direction (edge = retrained decoder + β-mask); (2) a
+**naive-guidance specificity arm** — frozen ProteinMPNN tilted toward its own confidence, matched magnitude, run
+via `notes/SHERLOCK_REDNET_PROMPT.md` (rescued). Do NOT chase a different *retrained* SOTA (same access risk, no
+added claim). For a runnable "vs SOTA" on the *detection* claim, **FoldX/Rosetta** (physics, downloadable, no
+weights) is the accessible comparator — optional, different claim.
+

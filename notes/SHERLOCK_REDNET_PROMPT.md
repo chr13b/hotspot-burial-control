@@ -1,46 +1,53 @@
-# Sherlock — RedNet head-to-head (frozen +α·L vs retrained decoder) [PREPARED; run on decision]
+# Sherlock — RESCUED "vs another method": naive-guidance specificity + RedNet code-positioning
 
-`SEED=20260803`. Repo: `/scratch/users/cbertsch/project/factorization-tax/hotspot-burial-control`.
-**Pre-register `results/PREREG_rednet.md` FIRST.** CLAUDE.md rules apply (pre-register; never fabricate; every
-number → committed CSV; positive controls; `git add` by name; two trailer lines; push). Sharding + idempotent
-per-fold checkpoint as in the main bundle.
+**The RedNet head-to-head is BLOCKED and we are NOT faking it (CLAUDE.md rule 3).** RedNet's pipeline needs
+private companion packages (`faust`, `atomtools` — imported at module top in `cli/infer_pipeline.py` /
+`cli/make_select_data.py`, not in `pyproject.toml`, not public, not among the author's 6 public repos), and its
+Zenodo weights (record 20113403) are access-restricted. So we cannot run their sampler or format our complexes
+into their pipeline. **We rescue the comparison two ways, both honest and fully accessible.**
 
-## The claim — honest framing (NOT "we beat RedNet")
-Does a **frozen, off-the-shelf `+α·L` tilt** recover **most of what RedNet buys by *retraining*** a decoder
-around the same contrastive direction? RedNet is retrained (a disclosed advantage); the interesting, publishable
-result is *"no retraining is needed for most of the benefit."* If RedNet ≫ frozen, we report that honestly.
+`SEED=20260803`. Repo: `/scratch/users/cbertsch/project/factorization-tax/hotspot-burial-control`. Pre-register
+first; every number → committed CSV; positive controls; `git add` by name; two trailer lines; push.
 
-## Phase 0 — get RedNet
-Clone `zw2x/rednet_public` (verified in §8: α-tilt in `sampling_utils.py`, apo contrast in
-`infer_pipeline.py`); install; obtain weights; reproduce one of their examples as a sanity check.
+## The gift the recon produced (no run needed — a code-level positioning result)
+RedNet's released contrastive decode is, in code, `logits = (1+α)·logP_complex − α·logP_contrast`, i.e. exactly
+our `+α·L` (`= logP_complex + α·(logP_complex − logP_contrast)`); `contrast` = the **unbound monomer** for
+`run_hdimer` (off-target for `run_sel`), and the scorer computes `cd_ll = ll − ub_ll` (bound minus unbound).
+**The field's retrained binder-design method converges on our exact direction; its only edge is a retrained
+decoder + a β plausibility mask.** Write this up (see Phase 3) — do NOT claim a head-to-head measurement.
 
-## Phase 1 — shared sequence sets (SAME complexes, SAME interface positions, SAME K)
-On the ipTM 60-complex set (or a pre-registered subset), per complex generate:
-- **wt** (crystal) and **random** (matched-magnitude) — already committed (`cfg_steer_seqs.csv`).
-- **ours** — frozen ProteinMPNN `+α·L` — already committed.
-- **RedNet** — run their pipeline on the identical targets + interface positions.
-- **naive-guidance** — frozen ProteinMPNN tilted toward its own **confidence** (matched magnitude): shows the
-  gain needs the *binding* direction, not any tilt (complements the random control).
+## Phase 1 — the naive-guidance specificity arm (frozen ProteinMPNN, matched magnitude)
+Pre-register `results/PREREG_naive.md` FIRST (H1: a matched non-binding tilt does NOT raise binding-favorability
+the way `L` does; falsifier: naive − random ≥ L − random under an anti-circular judge → the specificity claim is
+bounded, reported verbatim). Then generate the **naive** arm on the ipTM 60-complex set, same committed interface
+set / α grid {0,2} / K as `cfg_steer.py`: bias the interface logits toward the model's **own confident residues**
+— its complex-conditioned logit direction (amplify what it already prefers) — scaled to the **same per-position
+magnitude** as the `+α·L` tilt (so it differs from L only in *direction*, like the random arm but pointed along
+confidence rather than at random). → `results/cfg_steer_naive_seqs.csv`. (This is a third arm alongside the
+committed wt / L / random.)
 
-## Phase 2 — judge (CPU, ~free)
-Score every arm with the independent judge matrix {ESM-IF1, ProteinMPNN, MIF} leverage (non-self only).
+## Phase 2 — judge the naive arm (CPU, ~free — the core result)
+Score the naive arm's interface residues with the **non-ProteinMPNN** judges {ESM-IF1, MIF, PiFold} leverage
+(ProteinMPNN is the steered model → circular), reusing `judge_dumped.py` + `cfg_judge_matrix.py`. Report paired
+**naive − random** and **L − naive** per complex (complex-clustered bootstrap 95% CI). Expected: naive ≈ random
+≪ L (the confidence tilt does not carry binding), which is the specificity result. → append to a
+`results/cfg_naive_judge.csv`.
 
-## Phase 3 — fold (GPU, sharded + checkpointed)
-Fold **only the NEW arms (RedNet, naive-guidance)** with AF2-multimer — **REUSE the committed wt / ours / random
-AF2 folds** from `results/iptm_steer.csv` (do NOT re-fold them: that is the compute saving, and it keeps "ours"
-on the exact same folds as the standing result). Record **all four metrics** — ipTM, global pTM, interface pAE,
-interface pLDDT — via `src/parse_iptm.py` on the committed **crystal** interface set (unbiased), and analyse with
-`src/analyse_iptm.py` so the **pre-registered composite** (z-mean of the three interface metrics) is computed
-identically to the main result (coherent with `iptm_summary*.csv`). Optionally also fold with Boltz-2 for a
-cross-folder check — reporting Boltz as a *within-folder* paired effect (not a magnitude match to AF2).
+## Phase 3 — the RedNet code-positioning note (no run)
+Write `results/FINDINGS_rednet.md`: the mechanism-identity (exact formula above, with the `sampling_utils.py` /
+`infer_pipeline.py` line refs the recon found), RedNet's genuine additions (retrained decoder + β-mask), and the
+**blocker stated plainly** (private `faust`/`atomtools`, access-restricted Zenodo 20113403) — so the record shows
+the head-to-head is *measurement-blocked*, positioned at the code level, never faked. Add the blocker + the
+mechanism-identity to memory (`bundle-run.md` or a new note) for reproducibility.
 
-## Phase 4 — compare (paired, per complex)
-Report paired contrasts on judges + ipTM: **ours − random** (specificity, our headline), **ours − naive**
-(needs the binding direction), and **ours vs RedNet** — the fraction of RedNet's gain that the frozen tilt
-recovers. Fairness: same complexes/positions/judges/folder/budget; RedNet is retrained (disclosed). →
-`results/rednet_compare.csv`, `PREREG_rednet.md`, `FINDINGS_rednet.md`.
+## Phase 4 — OPTIONAL GPU: fold the naive arm
+Only if GPU is free: fold the naive arm with AF2-multimer (k=0..2), **reusing the committed wt / L / random
+folds** from `iptm_steer.csv` (fold ONLY naive ≈ 60×3 = 180 folds); parse with `parse_iptm.py` (crystal
+interface set), analyse with `analyse_iptm.py`; report ipTM **naive − random** and **L − naive** + the composite.
+Expected: naive ≈ random, confirming at the structure level that only the binding direction transfers.
 
-## Falsifiers / honesty
-Report verbatim. RedNet ≫ frozen → retraining helps (state the gap). naive ≈ ours → our binding-direction
-specificity is weaker than claimed (disclose). This is a *positioning* comparison, not a leaderboard; a null
-bounds the "no-retraining-needed" claim, it does not touch the standing steering result.
+## Deliverables / guardrails
+`cfg_steer_naive_seqs.csv`, `cfg_naive_judge.csv`, `PREREG_naive.md`, `FINDINGS_rednet.md` (+ optional
+`iptm_steer_naive.csv`, `iptm_summary_naive.csv`), any small driver. Report the paired L − naive headline. If the
+naive tilt matches L (falsifier), report verbatim — that would bound our direction-specificity claim, and is a
+finding, not a failure.
