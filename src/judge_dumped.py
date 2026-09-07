@@ -53,12 +53,16 @@ def main():
     ap.add_argument("--seqs", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--alpha", type=float, default=2.0)
+    ap.add_argument("--directions", default="", help="comma-sep; default=auto-detect all directions except wt")
     a = ap.parse_args()
     iface = cs.interface_set()
     judges = {k: cs.load_L(v) for k, v in JUDGE_CACHE.items() if os.path.exists(v)}
     print(f"[judge-dumped] judges available: {list(judges)}")
     df = pd.read_csv(a.seqs)
     df["k"] = df.k.astype(int)
+    DIRS = [d.strip() for d in a.directions.split(",") if d.strip()] or \
+           [d for d in df.direction.unique() if d != "wt"]
+    print(f"[judge-dumped] directions: {DIRS}")
     rows = []
     for cid, g in df.groupby("complex_id"):
         if cid not in iface:
@@ -74,7 +78,7 @@ def main():
         ipos = [j for j in range(cx.n) if keys[j] in iface[cid]]
         if not ipos:
             continue
-        for direction in ("L", "random"):
+        for direction in DIRS:
             sub = g[(g.direction == direction) & (g.alpha == a.alpha)]
             if not len(sub):
                 continue
