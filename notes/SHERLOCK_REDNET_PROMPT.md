@@ -26,8 +26,13 @@ On the ipTM 60-complex set (or a pre-registered subset), per complex generate:
 Score every arm with the independent judge matrix {ESM-IF1, ProteinMPNN, MIF} leverage (non-self only).
 
 ## Phase 3 — fold (GPU, sharded + checkpointed)
-Fold every arm with AF2-multimer (optionally Boltz-2); ipTM + interface metrics via `parse_iptm.py` (the
-committed **crystal** interface set, unbiased).
+Fold **only the NEW arms (RedNet, naive-guidance)** with AF2-multimer — **REUSE the committed wt / ours / random
+AF2 folds** from `results/iptm_steer.csv` (do NOT re-fold them: that is the compute saving, and it keeps "ours"
+on the exact same folds as the standing result). Record **all four metrics** — ipTM, global pTM, interface pAE,
+interface pLDDT — via `src/parse_iptm.py` on the committed **crystal** interface set (unbiased), and analyse with
+`src/analyse_iptm.py` so the **pre-registered composite** (z-mean of the three interface metrics) is computed
+identically to the main result (coherent with `iptm_summary*.csv`). Optionally also fold with Boltz-2 for a
+cross-folder check — reporting Boltz as a *within-folder* paired effect (not a magnitude match to AF2).
 
 ## Phase 4 — compare (paired, per complex)
 Report paired contrasts on judges + ipTM: **ours − random** (specificity, our headline), **ours − naive**

@@ -7,51 +7,27 @@ a `→ file.csv` trace to a committed result. Sections marked ⟨PENDING …⟩ 
 
 ## Abstract
 
-Staged binder design — generate a backbone, then inverse-fold a sequence — is believed to stumble at
-protein–protein interface *hotspots*, and a prominent report (ProBID-Net) quantifies this as inverse-folding
-recovery of 0.334 at hotspots versus 0.472 elsewhere, attributed to dynamics. The phenomenon is real but
-misread: the model's binding knowledge was being read from the wrong place. **Confidence and competence are two
-different derivatives of the same inverse-folding likelihood.** A residue's *confidence* is the *diagonal* term
-— a scalar summary of the bound-conditioned distribution — and measures fold-stability constraint; its binding
-*leverage* is the *mixed second derivative*, the response to ablating the binding partner,
-`[log p(a|complex)−log p(wt|complex)] − [log p(a|monomer)−log p(wt|monomer)]`, and measures the binding effect.
-Because the partner-ablated structure is *determined* by the complex, leverage is computable from the structure
-but **not** from the bound distribution alone — so every scalar the field reads off the model (recovery,
-confidence, the complex-vs-monomer KL) is a lossy projection, blind to binding **by construction, not by
-failure**. This is no vacuous identity: holding the bound distribution fixed, much of the leverage spread
-survives — a flexible learner (the best of gradient boosting and random forests) trained on the *entire* bound
-distribution recovers only ~37% of the leverage, so **~63% is irreducible from the bound distribution** in both
-inverse-folding families (~62–63% even when wt identity is added);
-the binding-specific component provably requires the partner-ablated second pass. And the consequence is measurable and large. On our main fixture (SKEMPI natural complexes)
-confidence ranks hotspots at or barely above chance across five architectures and adds nothing beyond geometry
-(position-level conditional predictive impact 0.000), while the mixed derivative adds binding information **beyond
-geometry, beyond the standard one-pass log-odds readout, and beyond evolutionary conservation** — the full
-feature set of published hotspot predictors (mutation-level CPI +0.059; Spearman with experimental ΔΔG −0.30;
-per-position ~5× the best scalar, where confidence is conditionally independent) — and the whole result
-replicates in three further inverse-folding families (ESM-IF1: CPI +0.035, Spearman −0.26; PiFold: +0.050, −0.33; MIF: +0.058, −0.27). Three consequences follow. It is **actionable**: the mixed derivative is among the strongest single features
-for ranking interface hotspots (AUROC 0.69, on par with the learned KL detector at 0.68 and above geometry's
-0.66 and confidence's 0.51; → leverage_triage.csv), and adds
-**+0.016 AUROC [+0.004, +0.029]** on top of the full feature set published predictors already use —
-geometry *and* conservation. It is a **dose law** of backbone accuracy
-— the signal survives ≤0.5 Å of error and then collapses, at ~1 Å for ProteinMPNN and ~1.5 Å for ESM-IF1 — and
-because the sensitivity is to the *backbone the derivative is read from*, not to the network, the fragility
-(though not its exact threshold, which we measure to be model-dependent) is a prediction every method built on
-the same mixed derivative (BA-Cycle, RedNet, StaB-ddG) inherits on predicted backbones. And it reaches the **second** mixed
-derivative: the model's partner-ablated pairwise couplings predict experimental binding *epistasis*. The
-published deficit is then largely a corollary — mostly a burial confound that attenuates sharply under matching, across five architectures plus ProBID-Net's own released
-model — and the blindness generalizes from binding to *catalytic* residues (confidence blind, sequence
-conservation predicts). The leverage operator is BA-Cycle (Jiao et al. 2024); our contribution is the
-decomposition, the identifiability result and its *measured* non-vacuity, the first beyond-geometry (and
-beyond-conservation) control on any inverse-folding binding signal, the feature-class law, and — on the intervention side —
-frozen-model steering by this direction, validated anti-circularly by a second sequence model and by an
-independent structure predictor. The recipe is
-general and already familiar: the mixed derivative is the model's **classifier-free-guidance direction** (the
-binding partner as conditioner), and to read an un-trained quantity off a conditional generative model one
-ablates the conditioner and reads that direction — not the conditional marginal the field has been mistaking
-for competence. And the direction is *actionable*: biasing a frozen off-the-shelf ProteinMPNN's interface
-logits by `+α·L` raises the binding-leverage an independent model (ESM-IF1) assigns the sampled residues —
-monotonically, while a matched-magnitude random direction *lowers* it — with native recovery preserved, and an
-independent *structure* predictor (AF2-multimer interface ipTM) concurs that the steered interfaces bind better.
+Staged binder design — generate a backbone, then inverse-fold a sequence — is thought to stumble at interface
+*hotspots*, and a prominent report (ProBID-Net) quantifies this as inverse-folding recovery of 0.334 at hotspots
+versus 0.472 elsewhere. The phenomenon is real but misread. **Confidence and competence are two different
+derivatives of the same inverse-folding likelihood.** A residue's *confidence* is the *diagonal* — any scalar of
+the bound-conditioned distribution `P` (recovery, log-likelihood, entropy) — and measures fold-stability
+constraint; its binding *leverage* is the *mixed second derivative*, the response to ablating the partner. We
+prove `L` is not a function of `P`, so every scalar the field reads off these models is blind to binding **by
+construction, not by failure**; empirically a flexible learner over the *entire* bound distribution recovers only
+~37% of `L`. The consequence is large and controlled: on natural complexes (SKEMPI) confidence ranks hotspots at
+chance and adds nothing beyond geometry, while the mixed derivative — a **zero-shot** readout that uses no binding
+labels — adds binding information **beyond geometry, evolutionary conservation, and the one-pass log-odds** (the
+full feature set of published predictors, and beating a *supervised* baseline fit on those labels), replicating
+across four inverse-folding architectures; the published deficit is largely a burial confound. And the direction
+is **actionable**: biasing a *frozen* ProteinMPNN by `+α·L` yields interfaces that independent models score as
+better-binding, while a matched random direction does not — confirmed across three inverse-folding judges, two
+independent structure predictors (AF2-multimer and Boltz-2), both steering directions, and 120 complexes. The
+leverage operator is BA-Cycle; our contribution is the decomposition, the identifiability no-go, the first
+beyond-geometry-and-conservation control on an inverse-folding binding signal, the feature-class law, and
+frozen-model steering. `L` is the model's **classifier-free-guidance direction**: to read an un-trained quantity
+off a conditional generative model, ablate the conditioner and take the mixed derivative — not the marginal the
+field has mistaken for competence.
 
 ## 1. Introduction
 
@@ -636,19 +612,20 @@ models could in principle still share a blind spot; that residual risk is exactl
 *structure*-predictor confirmation (next) addresses. So the same
 mixed derivative the field's decoders already tilt along (RedNet; §8) works as a training-free knob on a model
 that was never trained to bind. **And the steered sequences transfer to an independent *structure* predictor:**
-folding them with AF2-multimer (60 complexes, pre-registered), the L-steered interfaces beat the matched-magnitude
-random control on **every** interface metric — ipTM **+0.226 [+0.172, +0.283]**, interface pAE
-**−5.27 [−6.51, −3.98]** (lower is better) and interface pLDDT **+9.47 [+7.13, +11.9]** all agreeing — for a
-pre-registered z-composite of **+0.78 [+0.60, +0.96]** (P(>0)=1.0); the ipTM shift clears AF2's own seed-noise
-floor (±0.017) by ≈13×, so it is not metric noise. It is also interface-*localized*: global pTM does rise, but
-**2.8× less than ipTM** on the same 0–1 confidence scale (**+0.08 [+0.058, +0.103]** vs +0.226) — a local
+folding them with AF2-multimer (a pre-registered 60 complexes, extended by a second pre-registered batch to
+**120**), the L-steered interfaces beat the matched-magnitude random control on **every** interface metric —
+ipTM **+0.235 [+0.199, +0.272]**, interface pAE **−5.69 [−6.58, −4.74]** (lower is better) and interface pLDDT
+**+10.25 [+8.63, +11.93]** all agreeing — for a pre-registered z-composite of **+0.82 [+0.70, +0.94]**
+(P(>0)=1.0), tighter than and consistent with the original 60 (ipTM +0.226); the ipTM shift clears AF2's own
+seed-noise floor (±0.017) by ≈14×, so it is not metric noise. It is also interface-*localized*: global pTM does
+rise, but **~2.9× less than ipTM** on the same 0–1 confidence scale (**+0.08 [+0.065, +0.096]** vs +0.235) — a local
 interface gain, not a global fold change. This interface-localization is a *through-line*, not a one-off: it
 mirrors the CFG tilt's flat non-interface recovery (the steering acts at the interface, not globally) and the
 within-amino-acid-type control on the catalytic result (§4 below) — across the paper, positive effects are
 checked to sit *where* the mechanism places them, never as global artifacts. And steering does not collapse the
 fold: native *sequence* recovery
 *rises* under the tilt (0.276→0.297, above), and while the mean L-steered sequence folds a little below wild-type
-(mean-over-k ipTM L−wt **−0.097 [−0.140, −0.056]**), the *best-of-k* steered sequence matches it (**−0.020**, CI
+(mean-over-k ipTM L−wt **−0.084 [−0.116, −0.053]**), the *best-of-k* steered sequence matches it (**−0.006**, CI
 spanning zero) — tilting to a non-native, binding-favourable interface costs a little foldability versus the
 crystal but does not break it, whereas the matched-magnitude random control does. Two baselines make this a clean, causal test. The
 **random-direction** arm is the *specificity* control — it perturbs the same interface positions by the same
@@ -666,6 +643,34 @@ the mixed derivative / CFG direction), and an **intervention** (here: steer a fr
 separate instruments confirm. → cfg_steer.csv,
 cfg_steer_summary.csv, FINDINGS_cfg_steer.md, iptm_summary.csv, FINDINGS_iptm.md; pre-registered in
 PREREG_cfg_steer.md, PREREG_iptm.md.
+
+**And the effect is robust across a full matrix of independent checks** (all paired L − random, complex-clustered
+95% CI; Fig. R). It survives a *second, decorrelated structure predictor* — **Boltz-2** ipTM
+**+0.139 [+0.101, +0.177]**, composite **+0.68**, global pTM again shifting far less (localization) — where the
+claim is the *direction* replicating, **not** a magnitude: Boltz-2 and AF2 ipTM are differently calibrated, so
+each contrast is read within its own folder. It survives a *second steered model* — steering frozen **ESM-IF1**
+by its own `+α·L` and judging by a *different* model transfers to AF2 (ipTM **+0.158 [+0.102, +0.215]**), so the
+direction is actionable in *both* steering directions, not one model's quirk. And the anti-circular *judge
+matrix* agrees across architectures: the steered residues score higher `L` under every **non-self** judge —
+steer-ProteinMPNN → ESM-IF1 **+0.77**, MIF **+0.71**; steer-ESM-IF1 → ProteinMPNN **+0.43**, MIF **+0.57** —
+while the *self*-judged cells (steer-X, judge-X) are excluded as trivially circular (they inflate to +0.80/+1.15,
+the fingerprint that the non-self cells are real). The steering benefit thus holds across **two structure
+predictors, three inverse-folding judges, both steering directions, and 120 complexes**:
+
+| steered model | independent readout | paired L − random |
+|---|---|---|
+| ProteinMPNN | AF2-multimer ipTM (n=120) | **+0.235 [+0.199, +0.272]** |
+| ProteinMPNN | Boltz-2 ipTM (n=60) | **+0.139 [+0.101, +0.177]** |
+| ProteinMPNN | ESM-IF1 leverage (judge) | **+0.77 [+0.72, +0.82]** |
+| ProteinMPNN | MIF leverage (judge) | **+0.71 [+0.66, +0.76]** |
+| ESM-IF1 (reverse) | AF2-multimer ipTM (n=60) | **+0.158 [+0.102, +0.215]** |
+| ESM-IF1 (reverse) | ProteinMPNN leverage (judge) | **+0.43 [+0.37, +0.49]** |
+| ESM-IF1 (reverse) | MIF leverage (judge) | **+0.57 [+0.48, +0.66]** |
+
+The ipTM rows are within-folder paired effects (AF2 and Boltz-2 magnitudes are not directly comparable — each is
+decisive against zero in its own calibration); the judge rows are on the leverage scale. → iptm_summary_120.csv,
+iptm_summary_boltz.csv, iptm_summary_esmif.csv, cfg_judge_matrix.csv, FINDINGS_boltz.md, FINDINGS_esmif_steer.md,
+FINDINGS_judge_matrix.md.
 
 ## 5. On crystal backbones, the hotspot gap is a burial artifact
 
