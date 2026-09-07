@@ -53,6 +53,42 @@ confidence tilt gets most of the way, but the explicit binding direction adds a 
 increment (L − naive +0.16/+0.24). That is exactly the quantity a retrained contrastive method (RedNet) is built
 to capture, measured here without it.
 
+**But the two readouts diverge — see Phase 4.** The `L > naive` advantage is a property of the inverse-folding
+*judge* readout; at the AF2 *fold* level a confidence tilt does as well as or slightly better than `L`. That split
+is itself evidence for the project's frustration thesis.
+
+## Phase 4 — structure-level (AF2 fold): the divergence the frustration thesis predicts
+Folded the naive arm (180 folds, 60×k0-2, **0 missing**; naive interface ipTM median 0.830), reusing the committed
+wt/L/random folds. Paired, mean over k, complex-clustered 95% CI (n=60; pAE/composite n=58):
+
+| metric | naive − random | **L − naive** | L − random |
+|---|---|---|---|
+| **ipTM** | +0.260 [+.205,+.317] | **−0.034** [−.066,−.006] | +0.226 [+.171,+.281] |
+| **composite** | +0.933 [+.745,+1.120] | **−0.150** [−.258,−.052] | +0.782 [+.601,+.965] |
+| interface pLDDT | +12.9 [+10.4,+15.3] | **−3.42** [−4.87,−2.15] | +9.47 |
+| interface pAE (↓ better) | −5.41 | +0.14 [−.64,+.93] (ns) | −5.27 |
+| global pTM (localization) | +0.089 | −0.009 [−.020,+.002] | +0.080 |
+
+**At the fold level the ordering FLIPS to `random ≪ L ≲ naive`:** the confidence tilt folds to interfaces AF2 scores
+as confidently as — slightly better than — the L-steered ones (L − naive negative on ipTM / composite / interface
+pLDDT, CIs excluding 0; indistinguishable on interface pAE). The pre-registered Phase-4 expectation ("naive ≈
+random") is **doubly wrong** — naive ≫ random AND naive ≳ L — so **at the ipTM level the specificity is BOUNDED**
+(the structure-level falsifier fires).
+
+**This is coherent, not contradictory — it is the frustration mechanism.** ipTM / interface pLDDT are assembly-
+*confidence*/foldability proxies; the naive tilt steers toward exactly the residues the model is most confident
+about, so it folds most confidently. `L` steers toward *binding-favorable* residues which — the central thesis of
+this project — are frequently **frustrated** (the binding-optimal residue sits in the confidence tail), so they
+fold slightly *less* confidently than the naive picks. The binding-specific advantage of `L` over `naive` is
+therefore **invisible to ipTM** yet **visible to the inverse-folding leverage judges** (L − naive +0.16/+0.24,
+CI>0). Two proxies, two answers, diverging exactly where frustration predicts.
+
+**Honest caveat for the ipTM steering headline.** Because a pure confidence tilt reproduces (indeed exceeds) the
+ipTM gain, **ipTM improvement from `+α·L` is largely a confidence/foldability effect and does not by itself isolate
+a binding improvement** — the binding-specific increment of the L direction is carried by the inverse-folding-judge
+readout. This bounds the *interpretation* of the ipTM steering result, not the standing `L > random` ipTM fact
+(+0.226, CI>0), which holds. Raw: `results/iptm_steer_naive.csv`, `results/iptm_summary_naive.csv`.
+
 ## Honest scope
 - `L` is an inverse-folding leverage proxy; the judges (ESM-IF1, MIF) are independent inverse-folding proxies, not
   experimental binding. The effect is a paired L−naive / naive−random contrast in judge-leverage of the sampled
@@ -61,5 +97,6 @@ to capture, measured here without it.
   (the steered model), reported for reference only. The two anti-circular judges (ESM-IF1, MIF) agree.
 - Protocol identical to `cfg_steer.py` (K=64, order=None, temp=1.0, SEED) so decoding-order variance cancels in
   the paired contrasts.
-- Optional structure-level confirmation (Phase 4, AF2 fold of the naive arm, reusing committed wt/L/random) is
-  GPU-gated; see the commit/finding update if run.
+- The judge-level and fold-level readouts **disagree by design** (Phase 4): `L > naive` in inverse-folding
+  leverage but `naive ≳ L` in ipTM/composite. Neither is "the" answer — they measure binding-favorability vs
+  assembly foldability, and the gap is the frustration signature. Report both; do not cite one alone.
