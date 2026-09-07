@@ -40,6 +40,9 @@ SET-A = ProteinMPNN-steered (`cfg_steer.py`, 271 complexes); SET-B = ESM-IF1-ste
 `leverage_pq_skempi_esmif.csv` (pre-reg `PREREG_esmif_steer.md`). Judges are the committed per-position leverage
 caches; **MIF's cache was regenerated on Sherlock** (`leverage_extra_models.py --model mif --stage score`, after
 adding an `FTAX_MIF_HUB` env override to `ftax_mif.py` — the committed default path was laptop-only). **PiFold**,
-the other requested non-self judge, is **not set up on Sherlock** (no repo/checkpoint; laptop-only) and is not
-included — MIF stands as the third independent judge. `L` here is an inverse-folding leverage proxy, not
+the other requested non-self judge, was **not installable on Sherlock** (no repo/checkpoint there) but was
+**added locally** afterward from its committed per-position leverage cache (`leverage_pq_skempi_pifold.csv` →
+`cfg_judge_matrix_pifold.csv`): steer-ProteinMPNN → PiFold **+0.892 [+0.836, +0.949]**, steer-ESM-IF1 → PiFold
+**+0.727 [+0.621, +0.837]**, both anti-circular (`is_self=0`) with CI>0 — completing the **four**-architecture
+judge matrix (ProteinMPNN, ESM-IF1, MIF, PiFold). `L` here is an inverse-folding leverage proxy, not
 experimental ΔΔG — the AF2/Boltz fold legs (Phases 2/3) test the downstream structural consequence.

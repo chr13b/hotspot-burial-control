@@ -21,7 +21,7 @@ labels — adds binding information **beyond geometry, evolutionary conservation
 full feature set of published predictors, and beating a *supervised* baseline fit on those labels), replicating
 across four inverse-folding architectures; the published deficit is largely a burial confound. And the direction
 is **actionable**: biasing a *frozen* ProteinMPNN by `+α·L` yields interfaces that independent models score as
-better-binding, while a matched random direction does not — confirmed across three inverse-folding judges, two
+better-binding, while a matched random direction does not — confirmed across four inverse-folding judges, two
 independent structure predictors (AF2-multimer and Boltz-2), both steering directions, and 120 complexes. The
 leverage operator is BA-Cycle; our contribution is the decomposition, the identifiability no-go, the first
 beyond-geometry-and-conservation control on an inverse-folding binding signal, the feature-class law, and
@@ -652,10 +652,10 @@ each contrast is read within its own folder. It survives a *second steered model
 by its own `+α·L` and judging by a *different* model transfers to AF2 (ipTM **+0.158 [+0.102, +0.215]**), so the
 direction is actionable in *both* steering directions, not one model's quirk. And the anti-circular *judge
 matrix* agrees across architectures: the steered residues score higher `L` under every **non-self** judge —
-steer-ProteinMPNN → ESM-IF1 **+0.77**, MIF **+0.71**; steer-ESM-IF1 → ProteinMPNN **+0.43**, MIF **+0.57** —
+steer-ProteinMPNN → ESM-IF1 **+0.77**, MIF **+0.71**, PiFold **+0.89**; steer-ESM-IF1 → ProteinMPNN **+0.43**, MIF **+0.57**, PiFold **+0.73** —
 while the *self*-judged cells (steer-X, judge-X) are excluded as trivially circular (they inflate to +0.80/+1.15,
 the fingerprint that the non-self cells are real). The steering benefit thus holds across **two structure
-predictors, three inverse-folding judges, both steering directions, and 120 complexes**:
+predictors, four inverse-folding judges, both steering directions, and 120 complexes**:
 
 | steered model | independent readout | paired L − random |
 |---|---|---|
@@ -663,13 +663,15 @@ predictors, three inverse-folding judges, both steering directions, and 120 comp
 | ProteinMPNN | Boltz-2 ipTM (n=60) | **+0.139 [+0.101, +0.177]** |
 | ProteinMPNN | ESM-IF1 leverage (judge) | **+0.77 [+0.72, +0.82]** |
 | ProteinMPNN | MIF leverage (judge) | **+0.71 [+0.66, +0.76]** |
+| ProteinMPNN | PiFold leverage (judge) | **+0.89 [+0.84, +0.95]** |
 | ESM-IF1 (reverse) | AF2-multimer ipTM (n=60) | **+0.158 [+0.102, +0.215]** |
 | ESM-IF1 (reverse) | ProteinMPNN leverage (judge) | **+0.43 [+0.37, +0.49]** |
 | ESM-IF1 (reverse) | MIF leverage (judge) | **+0.57 [+0.48, +0.66]** |
+| ESM-IF1 (reverse) | PiFold leverage (judge) | **+0.73 [+0.62, +0.84]** |
 
 The ipTM rows are within-folder paired effects (AF2 and Boltz-2 magnitudes are not directly comparable — each is
 decisive against zero in its own calibration); the judge rows are on the leverage scale. → iptm_summary_120.csv,
-iptm_summary_boltz.csv, iptm_summary_esmif.csv, cfg_judge_matrix.csv, FINDINGS_boltz.md, FINDINGS_esmif_steer.md,
+iptm_summary_boltz.csv, iptm_summary_esmif.csv, cfg_judge_matrix.csv, cfg_judge_matrix_pifold.csv, FINDINGS_boltz.md, FINDINGS_esmif_steer.md,
 FINDINGS_judge_matrix.md.
 
 ## 5. On crystal backbones, the hotspot gap is a burial artifact
