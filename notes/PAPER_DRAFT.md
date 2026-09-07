@@ -8,26 +8,24 @@ a `→ file.csv` trace to a committed result. Sections marked ⟨PENDING …⟩ 
 ## Abstract
 
 Staged binder design — generate a backbone, then inverse-fold a sequence — is thought to stumble at interface
-*hotspots*, and a prominent report (ProBID-Net) quantifies this as inverse-folding recovery of 0.334 at hotspots
+*hotspots*; a prominent report (ProBID-Net) quantifies this as inverse-folding recovery of 0.334 at hotspots
 versus 0.472 elsewhere. The phenomenon is real but misread. **Confidence and competence are two different
 derivatives of the same inverse-folding likelihood.** A residue's *confidence* is the *diagonal* — any scalar of
-the bound-conditioned distribution `P` (recovery, log-likelihood, entropy) — and measures fold-stability
-constraint; its binding *leverage* is the *mixed second derivative*, the response to ablating the partner. We
-prove `L` is not a function of `P`, so every scalar the field reads off these models is blind to binding **by
-construction, not by failure**; empirically a flexible learner over the *entire* bound distribution recovers only
-~37% of `L`. The consequence is large and controlled: on natural complexes (SKEMPI) confidence ranks hotspots at
-chance and adds nothing beyond geometry, while the mixed derivative — a **zero-shot** readout that uses no binding
-labels — adds binding information **beyond geometry, evolutionary conservation, and the one-pass log-odds** (the
-full feature set of published predictors, and beating a *supervised* baseline fit on those labels), replicating
-across four inverse-folding architectures; the published deficit is largely a burial confound. And the direction
-is **actionable**: biasing a *frozen* ProteinMPNN by `+α·L` yields interfaces that independent models score as
-better-binding, while a matched random direction does not — confirmed across four inverse-folding judges, two
-independent structure predictors (AF2-multimer and Boltz-2), both steering directions, and 120 complexes. The
-leverage operator is BA-Cycle; our contribution is the decomposition, the identifiability no-go, the first
-beyond-geometry-and-conservation control on an inverse-folding binding signal, the feature-class law, and
-frozen-model steering. `L` is the model's **classifier-free-guidance direction**: to read an un-trained quantity
-off a conditional generative model, ablate the conditioner and take the mixed derivative — not the marginal the
-field has mistaken for competence.
+the bound-conditioned distribution `P` — and measures fold-stability constraint; its binding *leverage* is the
+*mixed second derivative*, the response to ablating the partner. We prove `L` is not a function of `P`, so every
+scalar the field reads off these models is blind to binding **by construction**; empirically a flexible learner
+over the entire bound distribution recovers only ~37% of `L`. The consequence is large and controlled: on natural
+complexes (SKEMPI) confidence sits at chance and adds nothing beyond geometry, while the mixed derivative — a
+**zero-shot** readout using no binding labels — adds binding information **beyond geometry, conservation, and the
+one-pass log-odds** (the full published feature set, beating a *supervised* baseline), across four inverse-folding
+architectures; the published deficit is largely a burial confound. And the direction is **actionable**: an
+`+α·L` tilt on a *frozen* ProteinMPNN steers it toward higher binding-favorability — confirmed by independent
+sequence models and structure predictors against a matched random control (four judges, two folders, both
+steering directions, 120 complexes). The leverage operator is BA-Cycle; ours is the decomposition, the
+identifiability no-go, the first beyond-geometry-and-conservation control on an inverse-folding binding signal,
+the feature-class law, and frozen-model steering. `L` is the model's **classifier-free-guidance direction**: to
+read an un-trained quantity off a conditional generative model, ablate the conditioner and take the mixed
+derivative — not the marginal mistaken for competence.
 
 ## 1. Introduction
 
@@ -676,6 +674,20 @@ decisive against zero in its own calibration); the judge rows are on the leverag
 iptm_summary_boltz.csv, iptm_summary_esmif.csv, cfg_judge_matrix.csv, cfg_judge_matrix_pifold.csv, FINDINGS_boltz.md, FINDINGS_esmif_steer.md,
 FINDINGS_judge_matrix.md.
 
+**A specificity control bounds what the fold metrics prove — and it is the frustration thesis showing up.** A
+*naive* tilt of matched per-position magnitude toward the model's *own confidence* (not the binding direction)
+recovers most of the ipTM gain and in fact slightly *exceeds* L on it (paired ipTM L−naive **−0.034 [−0.066,
+−0.006]**), because ipTM rewards foldability and the most-confident residues fold best. So the ipTM steering gain
+is **largely a foldability effect and does not by itself isolate a binding improvement.** The *binding-specific*
+advantage of L appears exactly where the mechanism predicts — at the inverse-folding-*judge* level, where L beats
+the confidence tilt (ESM-IF1 **+0.159 [+0.110, +0.207]**, MIF **+0.242 [+0.191, +0.292]**, CI>0): binding-favorable
+residues are frequently *frustrated* (in the confidence tail), so a structure predictor under-credits them while a
+binding-sensitive judge does not. (The confidence tilt is itself far from a null — ProteinMPNN confidence is
+substantially binding-correlated, recovering ~64–77% of L−random at the judge level — so "naive ≈ random" was the
+wrong prior; the honest control is L vs *confidence*, not L vs random.) The standing **L − random** ipTM (+0.235)
+holds; what the naive control bounds is the *interpretation* of that fold gain, not the judge-level
+binding-specificity. → cfg_naive_summary.csv, iptm_summary_naive.csv, FINDINGS_naive.md.
+
 ## 5. On crystal backbones, the hotspot gap is a burial artifact
 
 We now return to the published deficit and show, on crystal backbones, that it is a burial confound. The
@@ -810,17 +822,23 @@ autoregressive likelihoods. **StaB-ddG** parameterises ΔΔG through a folding-e
 fixture; a distinct question. **RedNet** independently operationalises exactly this leverage as a *design-time
 decoder*: its contrastive decode `logit_bound + α·(logit_bound − logit_apo)` — verified in their released code
 (zw2x/rednet_public: the α-tilt in `sampling_utils.py` and the partner-deleted apo contrast in
-`infer_pipeline.py`) — is our mixed derivative applied at sampling time. Where RedNet retrains a decoder, we show the tilt is already
-actionable on a *frozen, off-the-shelf* model and that an *independent* model scores the steered residues as
-higher-binding (§4) — turning the shared direction into a diagnosis-then-intervention arc. (One terminological guard: RedNet's own
-framing invokes the *thermodynamic* decomposition of binding free energy — the standard `ΔG_bind = ΔG_complex −
-Σ ΔG_partners`; our "decomposition" is a distinct object, a split of the *model's likelihood function* into a
-diagonal-confidence and a mixed-leverage derivative, which is what makes ours a diagnostic rather than a decoder
-objective.) That an independent design pipeline reintroduces precisely this term is strong corroboration that the
-leverage is the *actionable* quantity, and we
-credit it as such; our contribution is again orthogonal — the decomposition, the first beyond-geometry control,
-and the feature-class law, none of which RedNet reports (it runs no burial/ΔSASA control and no scalar-vs-mixed
-split). On the phenomenon itself, **ProBID-Net** reports interface blindness as a recovery deficit; we correct
+`infer_pipeline.py`) — is our mixed derivative applied at sampling time. **We credit the direction to BA-Cycle and RedNet and claim none
+of it; that a *published, retrained* design pipeline independently converged on exactly `+α·L` is corroboration
+that the leverage is the actionable quantity, not a scoop of it — our contribution is a different object.** RedNet
+is a *retrained decoder* (plus a β-mask) built to *design*; we (i) *diagnose* — the decomposition and the no-go
+proof that confidence, and every scalar of `P`, is blind to `L` (a question RedNet never poses); (ii) supply the
+*first beyond-geometry (and beyond-conservation) control* and the *feature-class law* (RedNet runs no
+burial/ΔSASA/CPI control and no scalar-vs-mixed split); (iii) show the direction is actionable on a **frozen,
+off-the-shelf** model with *no retraining*; (iv) *validate* it anti-circularly across four inverse-folding judges,
+two structure predictors, and both steering directions, plus a **confidence-tilt specificity control** — `L`
+beats a naive tilt of matched per-position magnitude toward the model's own confidence, at the judge level (§4),
+a specificity test no design method has run; and (v) frame the whole as the model's classifier-free-guidance
+direction. (A terminological guard: RedNet's "decomposition" is the *thermodynamic* `ΔG_bind = ΔG_complex −
+Σ ΔG_partners`; ours splits the *model's likelihood* into a diagonal-confidence and a mixed-leverage derivative —
+a diagnostic, not a decoder objective.) A direct frozen-vs-retrained head-to-head is not runnable — RedNet's
+pipeline needs non-public packages and access-restricted weights — and would in any case be muddy, since the
+*direction* is shared; the sharp, runnable comparisons are the ones we report: `L` vs a random direction and `L`
+vs the confidence tilt. On the phenomenon itself, **ProBID-Net** reports interface blindness as a recovery deficit; we correct
 the attribution — it is neither dynamics nor decoding but conditioning, and a burial confound on the crystal
 benchmark. The most telling piece of related practice is **BindCraft**, whose one-shot binder pipeline
 hard-codes a 4 Å interface freeze that forbids inverse folding at the interface — the field's implicit
