@@ -653,9 +653,11 @@ by its own `+α·L` and judging by a *different* model transfers to AF2 (ipTM **
 direction is actionable in *both* steering directions, not one model's quirk. And the anti-circular *judge
 matrix* agrees across architectures: the steered residues score higher `L` under every **non-self** judge —
 steer-ProteinMPNN → ESM-IF1 **+0.77**, MIF **+0.71**, PiFold **+0.89**; steer-ESM-IF1 → ProteinMPNN **+0.43**, MIF **+0.57**, PiFold **+0.73** —
-while the *self*-judged cells (steer-X, judge-X) are excluded as trivially circular (they inflate to +0.80/+1.15,
-the fingerprint that the non-self cells are real). The steering benefit thus holds across **two structure
-predictors, four inverse-folding judges, both steering directions, and 120 complexes**:
+while the *self*-judged cells (steer-X, judge-X) are excluded as trivially circular: steering a model by its own
+leverage maximises that model's own leverage by construction (the ESM-IF1 self-cell reaches +1.15, far above any
+of its anti-circular cells), so only the non-self cells are evidence. The steering benefit thus holds across **two structure
+predictors, four inverse-folding judges, and both steering directions** — the AF2 primary on **120** complexes, the
+anti-circular judge matrix on 271 (forward) / 60 (reverse):
 
 | steered model | independent readout | paired L − random |
 |---|---|---|
