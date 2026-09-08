@@ -1,0 +1,3 @@
+metric,rho,p,n,n_complex,seed
+spearman_FoldX_vs_expddG,0.4344,5.207872231012816e-136,2948,284,20260803
+spearman_L_vs_expddG,-0.3009,9.073078644115616e-63,2948,284,20260803

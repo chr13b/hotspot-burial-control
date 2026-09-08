@@ -72,7 +72,8 @@ sequence conservation predicts). The leverage operator is BA-Cycle (Jiao et al. 
 contribution is the decomposition, the identifiability result and its \emph{measured} non-vacuity,
 the first beyond-geometry (and beyond-conservation) control on any inverse-folding binding signal,
 the feature-class law, and---on the intervention side---frozen-model steering by this direction,
-validated anti-circularly by a second sequence model and by an independent structure predictor. The
+validated anti-circularly by a second sequence model, an independent structure predictor, and a
+physics energy function. The
 recipe is general and already familiar: the mixed derivative is the model's
 \textbf{classifier-free-guidance direction} (the binding partner as conditioner), and to read an
 un-trained quantity off a conditional generative model one ablates the conditioner and reads that
@@ -80,8 +81,9 @@ direction---not the conditional marginal the field has been mistaking for compet
 direction is \emph{actionable}: biasing a frozen off-the-shelf ProteinMPNN's interface logits by
 $+\alpha \cdot L$ raises the binding-leverage an independent model (ESM-IF1) assigns the sampled
 residues---monotonically, while a matched-magnitude random direction \emph{lowers} it---with
-native recovery preserved, and an independent \emph{structure} predictor (AF2-multimer interface
-ipTM) concurs that the steered interfaces bind better.
+native recovery preserved, and both an independent \emph{structure} predictor (AF2-multimer interface
+ipTM) and an independent \emph{physics} energy function (FoldX; Schymkowitz et al.\ 2005; Delgado et
+al.\ 2019) concur that the steered interfaces bind better.
 \end{abstract}
 
 \section{Introduction}
@@ -114,7 +116,8 @@ right to---and can now do better. As a \textbf{training-free ranker}: the mixed 
 interface hotspots and adds on top of the exact feature set published predictors already use, at
 no training cost. As a \textbf{drop-in steering knob}: a $+\alpha \cdot L$ tilt biases a
 \emph{frozen, off-the-shelf} inverse-folding model toward higher-binding interface residues with no
-retraining, confirmed by both an independent sequence model and an independent structure predictor.
+retraining, confirmed by an independent sequence model, an independent structure predictor, and a
+physics energy function (FoldX).
 And the recipe is not protein-specific---the mixed derivative is the model's
 \textbf{classifier-free-guidance direction}, so the same move (ablate the conditioner, read the
 mixed derivative, not the marginal) applies to any conditional generative model, which is what
