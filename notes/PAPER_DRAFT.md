@@ -713,12 +713,20 @@ inverse-folding judges (`L > naive`) against ipTM (naive ≳ `L`)**, so the bind
 and the ipTM disagreement was exactly the foldability effect the frustration thesis predicts. As a *detector*
 (Lane A, SKEMPI single mutants, same mutations for both), the same physics run positions `L` honestly against the
 tool practitioners actually use: FoldX, purpose-built and fit to ΔΔG, is more accurate — but the **zero-shot `L`,
-with no binding-energy term and no fitting, recovers ~70% of its rank accuracy.**
+with no binding-energy term and no fitting, recovers ~70% of its rank accuracy** — and the two are **not
+redundant**: `L` carries binding rank-signal *beyond* the fitted energy function (partial Spearman of `L` with
+experimental ΔΔG **controlling for FoldX** = **−0.17 [−0.23, −0.12]**, P(<0)=1.0; a leakage-free,
+complex-clustered stack of the two edges past FoldX alone, |ρ| 0.449 vs 0.434, +0.014 [−0.001, +0.031],
+suggestive). The zero-shot *mixed derivative* sees binding information the hand-fit physics misses — the **same
+beyond-geometry-and-conservation dissociation this paper establishes (§8), now extended to physics**. (Note this
+is the *mixed derivative*; the *scalar* KL, by contrast, *equals* ΔSASA and does **not** beat physics, §8 — so the
+scalar-vs-mixed split is reinforced, not contradicted.) → foldx_laneA_deepen.csv.
 
-| Lane A — detection (n=2,948 mutants, 284 complexes) | Spearman vs experimental ΔΔG |
+| Lane A — detection (n=2,948 mutants, 284 complexes) | Spearman vs experimental ΔΔG (complex-clustered 95% CI) |
 |---|---|
-| FoldX ΔΔG_bind (physics; *fit* to ΔΔG) | **+0.434** |
-| `L` (zero-shot inverse-folding leverage) | **−0.301** |
+| FoldX ΔΔG_bind (physics; *fit* to ΔΔG) | **+0.434 [+0.38, +0.49]** |
+| `L` (zero-shot inverse-folding leverage) | **−0.301 [−0.35, −0.24]** |
+| `L` \| FoldX (partial — `L` *beyond* physics) | **−0.17 [−0.23, −0.12]** |
 
 | Lane B — steering specificity (favorability = −ΔΔG_bind; paired 95% CI) | Δ (kcal/mol) | 95% CI | P(>0) |
 |---|---|---|---|
@@ -851,7 +859,10 @@ near binding sites, and the active-site case is Freiberger et al. (2019); the *f
 al.'s tool, and neural predictors of the classical frustration index already exist (FrustraMPNN, FrustrAI-Seq).
 Our narrow, diagnostic point is only that we read the inverse-folding *likelihood itself* — not a physics energy
 function — as a per-residue partner-ablation signal, and find it equals ΔSASA, so the neural version does not
-beat the physics (which is why the *scalar* KL adds only a small increment). That a partner-conditioned-versus-
+beat the physics (which is why the *scalar* KL adds only a small increment). That is the *scalar* KL; the *mixed
+derivative* is a different object, and it carries binding rank-signal *beyond* a fitted physics energy function
+itself (partial Spearman(`L`, experimental ΔΔG | FoldX ΔΔG_bind) = −0.17 [−0.23, −0.12], §4) — the same
+scalar-versus-mixed-derivative dissociation, one modality over. That a partner-conditioned-versus-
 masked KL is essentially a geometric quantity was in fact shown concurrently, for *ligand* conditioning, by
 UMA-Inverse; what is ours is the *formal* feature-class law and the beyond-geometry control, not the observation
 that this one scalar tracks geometry. **The leverage operator L is not ours: it
