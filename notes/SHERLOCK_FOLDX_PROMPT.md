@@ -7,9 +7,13 @@ rationale in `notes/FOLDX_PLAN.md`. FoldX is a **physics energy function — a b
 independent of inverse folding**; it is *not* ground truth (an approximate, fit energy function) — frame it as
 "physics ΔΔG_bind (FoldX)", not truth.
 
-## Phase 0 — FoldX + structures
+## Phase 0 — sync + FoldX + structures
+- `cd` to the repo and `git pull --no-edit origin main` first (the naive/steered-seq CSVs must be present).
 - Obtain the FoldX binary (free academic download; no GPU, no gated weights) and its rotabase; put it on
   `$SCRATCH`, not in the repo. Smoke-test on one complex.
+- Ensure the SET-A steered sequences exist: if `results/cfg_steer_seqs.csv` is absent (it is git-ignored),
+  regenerate with `python3 src/cfg_steer.py --alphas 0,2 --K 64 --dump-seqs --seqs-out results/cfg_steer_seqs.csv
+  --out results/_cfg_forfold.csv`. (`results/cfg_steer_naive_seqs.csv` is already committed.)
 - `RepairPDB` each crystal structure used (SKEMPI fixture PDBs under `data/PDBs/`); cache the repaired PDBs on
   `$SCRATCH`. **Checkpoint/idempotent:** skip any (structure, mutation) whose FoldX output already exists;
   append results incrementally; a crash re-runs only the remainder. Shard across cores/nodes.
