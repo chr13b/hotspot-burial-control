@@ -677,7 +677,10 @@ FINDINGS_judge_matrix.md.
 **A specificity control bounds what the fold metrics prove — and it is the frustration thesis showing up.** A
 *naive* tilt of matched per-position magnitude toward the model's *own confidence* (not the binding direction)
 recovers most of the ipTM gain and in fact slightly *exceeds* L on it (paired ipTM L−naive **−0.034 [−0.066,
-−0.006]**), because ipTM rewards foldability and the most-confident residues fold best. So the ipTM steering gain
+−0.006]**) — because **ipTM is itself a structure-level *confidence*** (how confidently a structure predictor
+assembles the two chains, not a binding-affinity measurement), so it rewards the foldable, confident (naive)
+tilt. This is the *same* confidence-≠-competence split one level up: a structure predictor's ipTM is no more a
+binding readout than an inverse-folding model's confidence is. So the ipTM steering gain
 is **largely a foldability effect and does not by itself isolate a binding improvement.** A *smaller but decisive*
 binding-specific increment of L nonetheless survives exactly where the mechanism predicts — at the
 inverse-folding-*judge* level, where L beats the confidence tilt (ESM-IF1 **+0.159 [+0.110, +0.207]**, MIF
@@ -685,8 +688,11 @@ inverse-folding-*judge* level, where L beats the confidence tilt (ESM-IF1 **+0.1
 frequently *frustrated* (in the confidence tail), so a structure predictor under-credits them while a
 binding-sensitive judge does not. (Two honesties bound this: the confidence tilt is *far* from a null —
 ProteinMPNN confidence is substantially binding-correlated, carrying ~64–77% of L−random at the judge level, so
-"naive ≈ random" was the wrong prior and the honest control is L vs *confidence*, not L vs random; and these
-judges are inverse-folding models — proxies for binding, not experimental ΔΔG.) The standing **L − random** ipTM (+0.235)
+"naive ≈ random" was the wrong prior and the honest control is L vs *confidence*, not L vs random (the two are
+distinct tests — *random* is a null direction of matched magnitude, asking whether the *direction* matters at all;
+*naive* is the confidence direction, asking whether L beats the obvious foldable alternative — and L must clear
+both); and these judges are inverse-folding models — proxies for binding, not experimental ΔΔG (a gap a physics
+ΔΔG readout, §8, would close). The standing **L − random** ipTM (+0.235)
 holds; what the naive control bounds is the *interpretation* of that fold gain, not the judge-level
 binding-specificity. → cfg_naive_summary.csv, iptm_summary_naive.csv, FINDINGS_naive.md.
 
