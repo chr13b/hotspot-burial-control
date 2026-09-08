@@ -19,9 +19,10 @@ complexes (SKEMPI) confidence sits at chance and adds nothing beyond geometry, w
 **zero-shot** readout using no binding labels — adds binding information **beyond geometry, conservation, and the
 one-pass log-odds** (the full published feature set, beating a *supervised* baseline), across four inverse-folding
 architectures; the published deficit is largely a burial confound. And the direction is **actionable**: an
-`+α·L` tilt on a *frozen* ProteinMPNN steers it toward higher binding-favorability — confirmed by independent
-sequence models and structure predictors against a matched random control (four judges, two folders, both
-steering directions, 120 complexes). The leverage operator is BA-Cycle; ours is the decomposition, the
+`+α·L` tilt on a *frozen* ProteinMPNN steers it toward higher binding-favorability — confirmed against a matched
+random control by independent sequence models, structure predictors, **and a physics energy function** (FoldX),
+the last also showing the tilt beats a same-magnitude *confidence* direction, isolating a binding-specific effect
+(four judges, two folders, both steering directions, 120 complexes). The leverage operator is BA-Cycle; ours is the decomposition, the
 identifiability no-go, the first beyond-geometry-and-conservation control on an inverse-folding binding signal,
 the feature-class law, and frozen-model steering. `L` is the model's **classifier-free-guidance direction**: to
 read an un-trained quantity off a conditional generative model, ablate the conditioner and take the mixed
@@ -693,10 +694,51 @@ ProteinMPNN confidence is substantially binding-correlated, carrying ~64–77% o
 "naive ≈ random" was the wrong prior and the honest control is L vs *confidence*, not L vs random (the two are
 distinct tests — *random* is a null direction of matched magnitude, asking whether the *direction* matters at all;
 *naive* is the confidence direction, asking whether L beats the obvious foldable alternative — and L must clear
-both); and these judges are inverse-folding models — proxies for binding, not experimental ΔΔG (a gap a physics
-ΔΔG readout, §8, would close). The standing **L − random** ipTM (+0.235)
+both); and these judges are inverse-folding models — proxies for binding, not experimental ΔΔG (a gap the physics
+ΔΔG readout below now closes). The standing **L − random** ipTM (+0.235)
 holds; what the naive control bounds is the *interpretation* of that fold gain, not the judge-level
 binding-specificity. → cfg_naive_summary.csv, iptm_summary_naive.csv, FINDINGS_naive.md.
+
+**The physics readout closes that gap — and adjudicates the ipTM divergence in our favor.** We ran **FoldX**
+(Guerois et al. 2002; Schymkowitz et al. 2005; Delgado et al. 2019) — a hand-fit physics energy function with an
+*explicit binding term*, from a modality entirely outside inverse folding — as the cross-check the judge/ipTM
+split demanded (pre-registered `PREREG_foldx.md`; falsifier: `L − naive` ΔΔG_bind favorability ≤ 0). On the
+60-complex steering set (favorability = −ΔΔG_bind, oriented so >0 = better binding; paired, complex-clustered 95%
+CI), **`L` beats the confidence tilt on physics**: `L − naive` **+1.24 kcal/mol [+0.14, +2.33]** (P(>0)=0.985),
+ordering **L > naive > random** (Fig. P; all steered arms bind worse than the native interface, as expected when
+~21 interface residues change — `L` degrades binding the *least*). **The pre-registered falsifier does not fire.**
+This is decisive precisely because FoldX is *physics, not an inverse-folding proxy*: it **sides with the
+inverse-folding judges (`L > naive`) against ipTM (naive ≳ `L`)**, so the binding-specific advantage of `L` over
+"just be more confident" is *real*, not a blind spot shared by the steered model and its inverse-folding judges —
+and the ipTM disagreement was exactly the foldability effect the frustration thesis predicts. As a *detector*
+(Lane A, SKEMPI single mutants, same mutations for both), the same physics run positions `L` honestly against the
+tool practitioners actually use: FoldX, purpose-built and fit to ΔΔG, is more accurate — but the **zero-shot `L`,
+with no binding-energy term and no fitting, recovers ~70% of its rank accuracy.**
+
+| Lane A — detection (n=2,948 mutants, 284 complexes) | Spearman vs experimental ΔΔG |
+|---|---|
+| FoldX ΔΔG_bind (physics; *fit* to ΔΔG) | **+0.434** |
+| `L` (zero-shot inverse-folding leverage) | **−0.301** |
+
+| Lane B — steering specificity (favorability = −ΔΔG_bind; paired 95% CI) | Δ (kcal/mol) | 95% CI | P(>0) |
+|---|---|---|---|
+| **`L` − naive** (decisive) | **+1.24** | **[+0.14, +2.33]** | 0.985 |
+| `L` − random | +7.40 | [+5.78, +9.12] | 1.000 |
+| naive − random | +6.48 | [+4.82, +8.24] | 1.000 |
+
+The `+α·L` steering benefit now holds across **inverse-folding judges, two structure predictors, and a physics
+energy function**. Three honest bounds. FoldX is an *approximate, fit* energy function, not ground truth — a
+cross-modality check, not an oracle; the claim is the *paired* favorability contrast, not absolute binding. The
+`L − naive` margin is *modest* (lower CI +0.14 kcal/mol) and consistent with the judge-level picture — the
+confidence tilt already captures most of the benefit and `L` adds a small, CI-excluding-zero increment. And
+FoldX's stochastic side-chain step left an *effective* 2.5–3.2 of the requested 5 runs per set on the harder
+multi-mutation interfaces (arm-ordered naive > L > random, tracking clash burden); each run is an unbiased sample,
+so the point estimates are not biased, but the added noise is one more reason to read `L − naive` as
+modest-but-clear rather than large. Coverage: Lane A 2,948/2,949; Lane B 511/540 sets → 59 complexes for
+`L − naive`, 57 for the random contrasts (random substitutions clash more and FoldX more often fails to build
+them — a bias *against* the already-large `L − random` / `naive − random`). Rosetta `flex_ddG` (the heavier
+gold-standard) was pre-registered as optional and not needed: the `L − naive` CI already excludes zero. →
+foldx_detection.csv, foldx_steer.csv, foldx_ddg_lane{A,B}.csv, FINDINGS_foldx.md; pre-registered PREREG_foldx.md.
 
 ## 5. On crystal backbones, the hotspot gap is a burial artifact
 
@@ -824,9 +866,11 @@ direction. **(iv)** *Frozen-model steering:* where RedNet retrains a decoder aro
 direction is already actionable as a drop-in `+α·L` tilt on a **frozen, off-the-shelf** inverse-folding model,
 with no retraining and native recovery preserved. **(v)** *Anti-circular, independent-predictor validation:* the
 steering is confirmed by a **different sequence model** (ESM-IF1 leverage rises specifically along `L`, while a
-matched-magnitude random direction lowers it) *and* by an **independent structure predictor** (AF2-multimer
-interface ipTM), against a random-direction specificity control — a validated leverage-steering intervention we
-are not aware of in prior work. We also differ in construction
+matched-magnitude random direction lowers it), by an **independent structure predictor** (AF2-multimer
+interface ipTM), *and* by an **independent physics energy function** (FoldX ΔΔG_bind — a binding readout from
+outside the inverse-folding family, on which `L` beats both a random and a *confidence* direction), against a
+random-direction specificity control — a validated leverage-steering intervention we are not aware of in prior
+work. We also differ in construction
 — per-position sequence-free marginals (design-time usable, decoding-order-free) versus their whole-sequence
 autoregressive likelihoods. **StaB-ddG** parameterises ΔΔG through a folding-energy difference on an overlapping
 fixture; a distinct question. **RedNet** independently operationalises exactly this leverage as a *design-time
@@ -840,15 +884,16 @@ proof that confidence, and every scalar of `P`, is blind to `L` (a question RedN
 *first beyond-geometry (and beyond-conservation) control* and the *feature-class law* (RedNet runs no
 burial/ΔSASA/CPI control and no scalar-vs-mixed split); (iii) show the direction is actionable on a **frozen,
 off-the-shelf** model with *no retraining*; (iv) *validate* it anti-circularly across four inverse-folding judges,
-two structure predictors, and both steering directions, plus a **confidence-tilt specificity control** — `L`
-beats a naive tilt of matched per-position magnitude toward the model's own confidence, at the judge level (§4),
-a specificity test no design method has run; and (v) frame the whole as the model's classifier-free-guidance
+two structure predictors, a physics energy function, and both steering directions, plus a **confidence-tilt
+specificity control** — `L` beats a naive tilt of matched per-position magnitude toward the model's own
+confidence, both at the judge level *and* on physics ΔΔG_bind (§4), a specificity test no design method has run; and (v) frame the whole as the model's classifier-free-guidance
 direction. (A terminological guard: RedNet's "decomposition" is the *thermodynamic* `ΔG_bind = ΔG_complex −
 Σ ΔG_partners`; ours splits the *model's likelihood* into a diagonal-confidence and a mixed-leverage derivative —
 a diagnostic, not a decoder objective.) A direct frozen-vs-retrained head-to-head is not runnable — RedNet's
 pipeline needs non-public packages and access-restricted weights — and would in any case be muddy, since the
 *direction* is shared; the sharp, runnable comparisons are the ones we report: `L` vs a random direction and `L`
-vs the confidence tilt. On the phenomenon itself, **ProBID-Net** reports interface blindness as a recovery deficit; we correct
+vs the confidence tilt — the latter now settled on an independent *physics* readout (FoldX ΔΔG_bind), not only on
+inverse-folding judges. On the phenomenon itself, **ProBID-Net** reports interface blindness as a recovery deficit; we correct
 the attribution — it is neither dynamics nor decoding but conditioning, and a burial confound on the crystal
 benchmark. The most telling piece of related practice is **BindCraft**, whose one-shot binder pipeline
 hard-codes a 4 Å interface freeze that forbids inverse folding at the interface — the field's implicit
@@ -871,7 +916,8 @@ benchmark antigen-aware antibody inverse folding and report "a very weak effect 
 structure validity acting as a statistical shortcut, with ProteinMPNN *losing* performance when the antigen
 chain is included — the same partner-insensitivity we quantify, from a group that did not compute the ablation.
 ⟨✎ external citations DOI-verified via the reference checker: BA-Cycle, RedNet, StaB-ddG, Frellsen, DeSAE,
-UMA-Inverse, Cagiada, Ferreiro/Freiberger, Watson–Wright, Berrett, Janusz, ProteinMPNN; full .bib at submission.⟩
+UMA-Inverse, Cagiada, Ferreiro/Freiberger, Watson–Wright, Berrett, Janusz, ProteinMPNN, FoldX (Guerois 2002 /
+Schymkowitz 2005 / Delgado 2019, all Crossref-verified 2026-09-08); full .bib at submission.⟩
 
 ## 9. Limitations
 
@@ -935,7 +981,11 @@ SKEMPI training leakage makes the predicted-backbone result *conservative*. The 
 underpowered by design; the verdict rests on higher-powered tiers declared in advance. One extension did not
 survive its control — a within-natural confidence-decay gradient (null) — which we report rather than bury; the
 generalisation to catalytic residues, by contrast, *does* survive its composition, burial, and chain-truncation
-controls (§4).
+controls (§4). The FoldX cross-modality check (§4) is an *approximate, fit* energy function, not ground truth, and
+on the hardest multi-mutation interface sets it averaged fewer than its five requested stochastic runs (effective
+2.5–3.2, arm-ordered by clash burden — noise, not point-estimate bias); we accordingly read its `L − naive`
+physics margin (+1.24 [+0.14, +2.33]) as modest-but-clear, in agreement with the judge-level result, rather than
+as a large effect.
 
 ## Appendix A. Pre-registered false-positive modes and their controls
 

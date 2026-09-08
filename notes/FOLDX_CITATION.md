@@ -11,10 +11,13 @@ add these to the manuscript **Methods** (name the exact version + the two refs) 
   (2019). *FoldX 5.0: working with RNA, small molecules and a new graphical interface.* **Bioinformatics** 35(20),
   4168–4170. doi:10.1093/bioinformatics/btz184. *(verified: academic.oup.com/bioinformatics/article/35/20/4168/5381539)*
 
-Optional foundational ΔΔG paper, often also cited (NOT independently verified here — the FoldX "how to cite" page
-`foldxsuite.crg.eu/node/196` did not render; **confirm before submission**): Guerois, R., Nielsen, J. E., &
+**Foundational ΔΔG-of-complexes paper — ADDED to the bib and cited in Methods** (this is the *most on-point*
+paper for our application: FoldX ΔΔG on mutations at protein–protein interfaces): Guerois, R., Nielsen, J. E., &
 Serrano, L. (2002). *Predicting changes in the stability of proteins and protein complexes: a study of more than
-1000 mutations.* J. Mol. Biol. 320(2), 369–387. doi:10.1016/S0022-2836(02)00442-4 — UNVERIFIED.
+1000 mutations.* J. Mol. Biol. 320(2), 369–387. doi:10.1016/S0022-2836(02)00442-4. *(VERIFIED 2026-09-08 via
+verify-references skill → Crossref: first-author/year/venue/volume/pages/title all ok, title ratio 1.000.)*
+The three together are the correct set: Guerois 2002 = the ΔΔG method we use; Schymkowitz 2005 = the force
+field/server; Delgado 2019 = the v5 binary we run. All three verified clean by Crossref.
 
 RRID (reported, verify at scicrunch.org before use): **RRID:SCR_008522**.
 
