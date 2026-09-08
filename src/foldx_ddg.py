@@ -31,9 +31,15 @@ WORKBASE = os.path.expandvars("$SCRATCH/ftax/foldx/work")
 WORKLIST = "results/foldx_worklist.csv"
 
 
+FOLDX_TIMEOUT = int(os.environ.get("FOLDX_TIMEOUT", "1800"))   # per-call cap; pathological structures -> NaN
+
+
 def run_foldx(args, cwd):
-    subprocess.run([os.path.join(cwd, "foldx")] + args, cwd=cwd,
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+    try:
+        subprocess.run([os.path.join(cwd, "foldx")] + args, cwd=cwd, stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL, check=False, timeout=FOLDX_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        pass   # e.g. 1KBH (~33k atoms): leave outputs absent -> the set resolves to NaN downstream
 
 
 def link_env(d):
