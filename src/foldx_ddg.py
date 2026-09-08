@@ -25,10 +25,12 @@ import pandas as pd
 
 FOLDX = os.environ.get("FOLDX_BIN", os.path.expandvars("$SCRATCH/ftax/foldx/v5_0/foldx_20261231"))
 MOLEC = os.path.join(os.path.dirname(FOLDX), "molecules")
-PDBS = os.path.expanduser("~/ftax/data/PDBs")
-REPAIR = os.path.expandvars("$SCRATCH/ftax/foldx/repaired")
+PDBS = os.environ.get("FOLDX_PDBS", os.path.expanduser("~/ftax/data/PDBs"))   # override for other fixtures (AB-Bind)
+# repair cache is keyed by pdb-id only, so a distinct fixture that shares a pdb-id (e.g. AB-Bind vs SKEMPI, same id
+# but a different / renumbered structure) MUST use a separate cache dir or it will silently reuse the wrong repair.
+REPAIR = os.environ.get("FOLDX_REPAIR", os.path.expandvars("$SCRATCH/ftax/foldx/repaired"))
 WORKBASE = os.path.expandvars("$SCRATCH/ftax/foldx/work")
-WORKLIST = "results/foldx_worklist.csv"
+WORKLIST = os.environ.get("FOLDX_WORKLIST", "results/foldx_worklist.csv")      # override to point at AB-Bind worklist
 
 
 FOLDX_TIMEOUT = int(os.environ.get("FOLDX_TIMEOUT", "1800"))   # per-call cap; pathological structures -> NaN

@@ -1,0 +1,4 @@
+metric,value,lo,hi,p_gt0,p_lt0,n,n_complex,redundancy_Spearman_L_FoldX,wt_gate_used,wt_gate_dropped,n_sets,n_foldx_finite,seed,nboot
+spearman_FoldX_vs_exp,0.2744,0.1225,0.4609,1.0,,341,22,-0.3944,341,0,341,341,20260803,5000
+spearman_L_vs_exp,-0.1798,-0.3237,-0.0758,,1.0,341,22,-0.3944,341,0,341,341,20260803,5000
+partial_L_given_FoldX,-0.0809,-0.1897,0.003,,0.9702,341,22,-0.3944,341,0,341,341,20260803,5000
