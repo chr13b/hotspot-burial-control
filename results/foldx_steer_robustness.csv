@@ -1,0 +1,7 @@
+agg,filter,contrast,sets_kept,n,delta,lo,hi,p_gt0,seed,nboot
+mean_over_k,runs>=1,L-naive,511,59,1.239,0.1435,2.3266,0.9848,20260803,5000
+mean_over_k,runs>=3,L-naive,254,35,1.1606,0.163,2.2041,0.9888,20260803,5000
+mean_over_k,runs>=5,L-naive,121,16,1.365,0.4017,2.348,0.9974,20260803,5000
+best_of_k,runs>=1,L-naive,511,59,1.8631,0.7229,3.0247,0.9994,20260803,5000
+best_of_k,runs>=1,L-random,511,57,6.2675,5.0263,7.4901,1.0,20260803,5000
+best_of_k,runs>=1,naive-random,511,57,4.7897,3.4584,6.1081,1.0,20260803,5000

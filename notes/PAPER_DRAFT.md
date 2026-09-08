@@ -733,8 +733,11 @@ cross-modality check, not an oracle; the claim is the *paired* favorability cont
 confidence tilt already captures most of the benefit and `L` adds a small, CI-excluding-zero increment. And
 FoldX's stochastic side-chain step left an *effective* 2.5–3.2 of the requested 5 runs per set on the harder
 multi-mutation interfaces (arm-ordered naive > L > random, tracking clash burden); each run is an unbiased sample,
-so the point estimates are not biased, but the added noise is one more reason to read `L − naive` as
-modest-but-clear rather than large. Coverage: Lane A 2,948/2,949; Lane B 511/540 sets → 59 complexes for
+so the point estimates are not biased — and restricting to the sets that kept **all five** runs leaves `L − naive`
+unchanged (**+1.37 [+0.40, +2.35]**, P=0.997, n=16; stable across the ≥1/≥3/≥5-run sweep), so the attrition is
+bounded noise, not a confound. Under the pre-registered **best-of-k** aggregation — what a designer sampling a few
+sequences and keeping the best actually gets — the `L − naive` advantage in fact *grows* to **+1.86 [+0.72,
++3.03]** (P=0.999). → foldx_steer_robustness.csv. Coverage: Lane A 2,948/2,949; Lane B 511/540 sets → 59 complexes for
 `L − naive`, 57 for the random contrasts (random substitutions clash more and FoldX more often fails to build
 them — a bias *against* the already-large `L − random` / `naive − random`). Rosetta `flex_ddG` (the heavier
 gold-standard) was pre-registered as optional and not needed: the `L − naive` CI already excludes zero. →
@@ -983,9 +986,9 @@ survive its control — a within-natural confidence-decay gradient (null) — wh
 generalisation to catalytic residues, by contrast, *does* survive its composition, burial, and chain-truncation
 controls (§4). The FoldX cross-modality check (§4) is an *approximate, fit* energy function, not ground truth, and
 on the hardest multi-mutation interface sets it averaged fewer than its five requested stochastic runs (effective
-2.5–3.2, arm-ordered by clash burden — noise, not point-estimate bias); we accordingly read its `L − naive`
-physics margin (+1.24 [+0.14, +2.33]) as modest-but-clear, in agreement with the judge-level result, rather than
-as a large effect.
+2.5–3.2, arm-ordered by clash burden — noise, not point-estimate bias: the margin is unchanged on the full-5-run
+subset and *larger* under best-of-k, §4); we accordingly read its `L − naive` physics margin (+1.24 [+0.14,
++2.33]) as modest-but-clear, in agreement with the judge-level result, rather than as a large effect.
 
 ## Appendix A. Pre-registered false-positive modes and their controls
 
