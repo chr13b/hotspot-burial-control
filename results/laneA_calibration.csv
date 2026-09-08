@@ -1,0 +1,3 @@
+predictor,slope_b,b_lo,b_hi,p_slope_gt0,intercept_a,oof_rmse,intercept_only_rmse,oof_pearson,oof_spearman,n,n_complex,kfold,seed,nboot
+minus_L,0.4213,0.3398,0.5235,1.0,0.9252,1.8156,1.9501,0.3574,0.2928,2948,284,10,20260803,5000
+FoldX_ddg_bind,0.4423,0.3696,0.5683,1.0,0.7637,1.7917,1.9456,0.3889,0.4323,2948,284,10,20260803,5000
