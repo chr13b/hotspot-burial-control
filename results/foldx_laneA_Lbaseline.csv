@@ -1,0 +1,2 @@
+metric,rho,p,n,n_complex,seed,note
+spearman_L_vs_expddG,-0.301,8.336635671092123e-63,2949,285,20260803,"Lane-A comparator (FoldX side pending binary); interface single mutants, ddG+L"
