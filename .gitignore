@@ -18,3 +18,10 @@ results/leverage_predicted_*_mutations.csv
 results/leverage_predicted_*_positions.csv
 # personal plain-language explainer (to share with non-experts) — not part of the paper
 notes/PLAIN_EXPLAINER.md
+# FoldX academic binary — LICENSE-RESTRICTED (non-transferable, no redistribution, one copy).
+# NEVER commit it; it lives at $SCRATCH/ftax/foldx (outside the repo). Safety net if placed in-repo:
+foldx
+foldx[0-9]*
+foldx*Linux*
+rotabase.txt
+*.rotabase
