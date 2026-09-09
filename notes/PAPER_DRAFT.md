@@ -53,11 +53,20 @@ score, so a pipeline that distrusts it at the interface (as the field's leading 
 freezing the interface) is right to — and can now do better. As a **training-free ranker**: the mixed derivative
 locates interface hotspots and adds on top of the exact feature set published predictors already use, at no
 training cost. As a **drop-in steering knob**: a `+α·L` tilt biases a *frozen, off-the-shelf* inverse-folding
-model toward higher-binding interface residues with no retraining, confirmed by both an independent sequence
-model and an independent structure predictor. And the recipe is not protein-specific — the mixed derivative is
-the model's **classifier-free-guidance direction**, so the same move (ablate the conditioner, read the mixed
-derivative, not the marginal) applies to any conditional generative model, which is what places the result at a
-representation-learning venue rather than a purely methodological one.
+model toward higher-binding interface residues with no retraining, confirmed by an independent sequence
+model, an independent structure predictor, *and* an independent physics energy function. And the recipe is not
+protein-specific — the mixed derivative is the model's **classifier-free-guidance direction**, so the same move
+(ablate the conditioner, read the mixed derivative, not the marginal) applies to any conditional generative model,
+which is what places the result at a representation-learning venue rather than a purely methodological one.
+
+A single principle runs through all of this: **confidence is not competence — and it recurs at every level of the
+modeling stack.** An inverse-folding model's confidence (any scalar of its bound distribution) is blind to binding
+*by construction*; a structure predictor's interface ipTM — confidence one level up — is blind to
+binding-*specificity* (it rewards a confidently-packed interface, which a mere foldability tilt achieves, so a
+"be-more-confident" tilt beats the binding direction *on ipTM* while losing to it under models with an explicit
+binding term); and it takes a readout with such a term — the mixed derivative, or a physics energy function — to
+see binding at all. The competence always lives in the response to *ablating the partner*, never in the
+bound-state confidence, whichever model does the reading. This is the paper's title thesis, and it holds fractally.
 
 There is a confound that no prior analysis controls, and it runs opposite to intuition. Hotspots are, on
 average, *more deeply buried* than other interface residues, and burial is precisely where inverse folding is
@@ -720,7 +729,12 @@ complex-clustered stack of the two edges past FoldX alone, |ρ| 0.449 vs 0.434, 
 suggestive). The zero-shot *mixed derivative* sees binding information the hand-fit physics misses — the **same
 beyond-geometry-and-conservation dissociation this paper establishes (§8), now extended to physics**. (Note this
 is the *mixed derivative*; the *scalar* KL, by contrast, *equals* ΔSASA and does **not** beat physics, §8 — so the
-scalar-vs-mixed split is reinforced, not contradicted.) → foldx_laneA_deepen.csv.
+scalar-vs-mixed split is reinforced, not contradicted.) → foldx_laneA_deepen.csv. **The direction replicates on a
+second, independent antibody–antigen fixture** (AB-Bind, 22 crystal complexes, 341 single mutants, WT-identity gate
+341/341): Spearman(FoldX, exp) **+0.27 [+0.12, +0.46]**, Spearman(`L`, exp) **−0.18 [−0.32, −0.08]** (both CIs
+clear of zero), and partial(`L`, exp | FoldX) **−0.08 [−0.19, +0.003]**, P(<0)=0.97 — the *same sign* as SKEMPI,
+attenuated and, at 22 complexes, **honestly underpowered** (CI grazes zero): we report it as directionally
+consistent, not as a second significant confirmation. → foldx_detection_abbind.csv, FINDINGS_laneA_deepen.md.
 
 | Lane A — detection (n=2,948 mutants, 284 complexes) | Spearman vs experimental ΔΔG (complex-clustered 95% CI) |
 |---|---|
@@ -875,8 +889,12 @@ first for an inverse-folding binding signal (BA-Cycle runs none — no burial/rS
 their paper, which we verified), built on the conditional predictive impact (Watson & Wright 2021) with a
 conditional permutation test (Berrett et al. 2018), so the fact that L survives geometry (and that scalar
 summaries do not) is new; and **(iii)** the *feature-class law* — every scalar of the bound distribution sits at the CPI placebo floor
-while only the mixed derivative clears it. Two further contributions concern *using* and *validating* the
-direction. **(iv)** *Frozen-model steering:* where RedNet retrains a decoder around this contrast, we show the
+while only the mixed derivative clears it. These add up to a **beyond-X ladder** — the mixed derivative carries
+binding signal that survives, in turn, **geometry** (burial/ΔSASA/contacts), **evolutionary conservation**, the
+**one-pass log-odds** (the full published feature set), and now a **fitted physics energy function** (FoldX;
+partial Spearman −0.17 [−0.23, −0.12], §4) — while *every scalar of `P`, at every rung, stays at the floor*: `L`
+clears every control anyone has proposed, and confidence clears none. Two further contributions concern *using*
+and *validating* the direction. **(iv)** *Frozen-model steering:* where RedNet retrains a decoder around this contrast, we show the
 direction is already actionable as a drop-in `+α·L` tilt on a **frozen, off-the-shelf** inverse-folding model,
 with no retraining and native recovery preserved. **(v)** *Anti-circular, independent-predictor validation:* the
 steering is confirmed by a **different sequence model** (ESM-IF1 leverage rises specifically along `L`, while a
@@ -967,8 +985,13 @@ leverage, but the two are weakly-to-moderately correlated and the correlation is
 from `P` in both families, → r2_leverage_from_P.csv), not statistical
 independence. (b) The leverage operator L *is* BA-Cycle (Jiao et al. 2024); we
 credit the score and claim the decomposition, the beyond-geometry control, and the feature-class law. (c) L
-estimates −ΔΔG_bind only up to an unknown temperature — no calibrated kcal/mol reading; all our readouts are
-scale-invariant. (d) The per-position log-Z argument (that L is better-posed than confidence) is ours; we do
+estimates −ΔΔG_bind only up to an unknown temperature, and all our *headline* readouts are deliberately
+scale-invariant (rank-based). A single global out-of-fold affine calibration (2 parameters, no per-position
+temperatures) does read one unit of `L` ≈ **0.42 kcal/mol** [0.34, 0.52], OOF RMSE **1.82 kcal/mol** — next to
+*fitted* FoldX's 1.79 and below the 1.95 intercept-only floor, so `L` is roughly *linear* in ΔΔG, not merely
+rank-monotonic. This 2-parameter post-hoc affine borrows label-derived scale/offset (it is **not** a fitted
+predictor and does **not** touch `L`'s zero-shot content or rankings); we keep it out of every headline and note it
+only as the bridge to the joint fold+bind cycle, where absolute energies are required. → laneA_calibration.csv. (d) The per-position log-Z argument (that L is better-posed than confidence) is ours; we do
 *not* lean on the free-energy interpretation of Frellsen et al. (2025), whose normaliser is global-per-sequence
 and whose quantity is ΔΔG_fold, not binding. (e) Rigid backbone: the monomer conditioning is the complex
 backbone minus partner. (f) The headline uses one inverse-folding model (ProteinMPNN, sequence-free
