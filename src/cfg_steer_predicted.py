@@ -58,6 +58,7 @@ def main():
     ap.add_argument("--subset", default="", help="file of complex_ids (the shared predicted-steer set)")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--K", type=int, default=64)
+    ap.add_argument("--batch", type=int, default=16, help="sampling sub-batch (K drawn in chunks; caps GPU memory)")
     ap.add_argument("--alphas", default="0,2")
     ap.add_argument("--temp", type=float, default=1.0)
     ap.add_argument("--dump-k", type=int, default=3)
@@ -87,9 +88,24 @@ def main():
     model = model.to(device)
     print(f"[pred-steer:{a.source}] {len(cids)} complexes, K={a.K}, alphas={alphas}, device={device}, "
           f"mif={'yes' if Lmif else 'no'}", flush=True)
-    rng = np.random.default_rng(SEED)
-    rows, seqrows = [], []
+    import zlib
+    done = set()
+    if os.path.exists(a.out):
+        try:
+            done = set(pd.read_csv(a.out, usecols=["complex_id"]).complex_id)
+        except Exception:
+            done = set()
+    if done:
+        print(f"[pred-steer:{a.source}] resuming, {len(done)} complexes already done", flush=True)
+
+    def append(path, recs):
+        if recs:
+            pd.DataFrame(recs).to_csv(path, mode="a", header=not os.path.exists(path), index=False)
+
+    n_done = 0
     for ci, cid in enumerate(cids):
+        if cid in done:
+            continue
         pdb, g1, g2 = cid.split("_")
         path = f"{pdbdir}/{pdb}.pdb"
         if not os.path.exists(path):
@@ -110,7 +126,8 @@ def main():
         if nu < 3:
             continue
         noni = (~usable) & (wt >= 0)
-        Rperm = np.array([rng.permutation(Lm_pos[i]) for i in range(cx.n)])       # matched-magnitude random direction
+        crng = np.random.default_rng(SEED + zlib.crc32(cid.encode()))             # per-complex: order/resume-independent
+        Rperm = np.array([crng.permutation(Lm_pos[i]) for i in range(cx.n)])      # matched-magnitude random direction
         conf = lP_pos[usable] - lP_pos[usable].mean(1, keepdims=True)             # naive = confidence dir, matched |L_i|
         cn = np.linalg.norm(conf, axis=1, keepdims=True)
         u = conf / np.where(cn > 1e-8, cn, 1.0)
@@ -119,13 +136,14 @@ def main():
         judges = {"mpnn": Lm_pos, "esmif": Le_pos}
         if Lmif and cid in Lmif:
             judges["mif"] = Lmif_pos
-        seqrows.append(dict(complex_id=cid, direction="wt", alpha=float("nan"), k=-1,
-                            chains=cs.seq_to_chains(cx, wt)))
+        crows, cseqs = [], []
+        cseqs.append(dict(complex_id=cid, direction="wt", alpha=float("nan"), k=-1,
+                          chains=cs.seq_to_chains(cx, wt)))
         for direction, D in [("L", Lm_pos), ("random", Rperm), ("naive", naive_pos)]:
             for al in alphas:
                 B = np.zeros((cx.n, 21), np.float32)
                 B[usable, :20] = (al * D[usable]).astype(np.float32)
-                S, _ = ms.draw(model, cx, a.K, a.K, order=None, temperature=a.temp, seed=SEED,
+                S, _ = ms.draw(model, cx, a.K, a.batch, order=None, temperature=a.temp, seed=SEED,
                                use_patch=False, featurize=fc.featurize, bias_by_res=B)      # [K, L]
                 Su = S[:, usable]
                 int_rec = float((Su == wt[usable][None]).mean())
@@ -139,16 +157,16 @@ def main():
                            int_recovery=round(int_rec, 4), noninterface_recovery=round(noni_rec, 4))
                 for jk, Lp in judges.items():
                     row[f"meanL_{jk}"] = round(meanL(Lp), 4)
-                rows.append(row)
+                crows.append(row)
                 if al == alphas[-1]:
                     for k in range(min(a.dump_k, S.shape[0])):
                         s = wt.copy(); s[usable] = S[k, usable]
-                        seqrows.append(dict(complex_id=cid, direction=direction, alpha=al, k=k,
-                                            chains=cs.seq_to_chains(cx, s)))
+                        cseqs.append(dict(complex_id=cid, direction=direction, alpha=al, k=k,
+                                          chains=cs.seq_to_chains(cx, s)))
+        append(a.out, crows); append(a.seqs_out, cseqs)          # incremental + resumable (survives a walltime kill)
+        n_done += 1
         print(f"[pred-steer:{a.source}] {ci+1}/{len(cids)} {cid} n_int={nu}", flush=True)
-    pd.DataFrame(rows).to_csv(a.out, index=False)
-    pd.DataFrame(seqrows).to_csv(a.seqs_out, index=False)
-    print(f"[pred-steer:{a.source}] wrote {len(rows)} rows -> {a.out}; {len(seqrows)} seqs -> {a.seqs_out}", flush=True)
+    print(f"[pred-steer:{a.source}] done: {n_done} new complexes this run -> {a.out}", flush=True)
 
 
 if __name__ == "__main__":

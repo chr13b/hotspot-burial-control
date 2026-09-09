@@ -1,0 +1,10 @@
+source,direction,int_recovery
+of3,L,0.2884
+of3,naive,0.3579
+of3,random,0.22
+af2,L,0.2799
+af2,naive,0.3443
+af2,random,0.2161
+crystal,L,0.2902
+crystal,naive,0.3656
+crystal,random,0.2067
