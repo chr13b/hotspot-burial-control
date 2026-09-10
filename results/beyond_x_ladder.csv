@@ -1,0 +1,5 @@
+rung,controls,partial,lo,hi,p_lt0,n,n_complex,seed,nboot
+geometry,drsasa+rsasa_complex+nbr+burial,-0.2625,-0.3194,-0.2084,1.0,2949,285,20260803,5000
+conservation,blosum+dvol+dhydro,-0.2828,-0.3396,-0.2229,1.0,2949,285,20260803,5000
+one-pass log-odds,logP_mut+r_mut+conf,-0.1392,-0.1873,-0.0886,1.0,2949,285,20260803,5000
+fitted physics (FoldX),foldx_ddg_bind,-0.1727,-0.2285,-0.1173,1.0,2948,284,20260803,5000
