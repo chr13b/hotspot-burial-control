@@ -28,11 +28,13 @@ for (( i=start; i<start+STRIDE && i<N; i++ )); do
   if ls "$OUT/$fid/${fid}_unrelaxed_rank_001_"*.pdb >/dev/null 2>&1; then echo "skip $fid (done)"; continue; fi
   mkdir -p "$OUT/$fid"
   echo "=== [$i/$N] $fid $(date) ==="
-  apptainer exec --nv -B $SCRATCH:$SCRATCH \
+  # timeout: the ColabFold mmseqs2 MSA server intermittently strands a request in PENDING forever (seen at 2h+);
+  # cap each fold at 30 min so a stuck MSA is killed and the loop continues — a later (idempotent) resubmit retries it.
+  timeout 1800 apptainer exec --nv -B $SCRATCH:$SCRATCH \
      --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 \
      "$SIF" colabfold_batch "$fa" "$OUT/$fid" \
         --data "$PARAMS" --model-type alphafold2_multimer_v3 \
         --msa-mode mmseqs2_uniref_env --num-models 1 --num-recycle 3 --num-seeds 1 --rank auto \
-     || echo "FAILED $fid rc=$?"
+     || echo "FAILED/timeout $fid rc=$? $(date)"
 done
 echo "iptm_fold_pred task $SLURM_ARRAY_TASK_ID DONE $(date)"
