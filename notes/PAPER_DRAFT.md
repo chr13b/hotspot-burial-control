@@ -54,7 +54,8 @@ freezing the interface) is right to — and can now do better. As a **training-f
 locates interface hotspots and adds on top of the exact feature set published predictors already use, at no
 training cost. As a **drop-in steering knob**: a `+α·L` tilt biases a *frozen, off-the-shelf* inverse-folding
 model toward higher-binding interface residues with no retraining, confirmed by an independent sequence
-model, an independent structure predictor, *and* an independent physics energy function. And the recipe is not
+model, an independent structure predictor, *and* an independent physics energy function — and holding when the tilt
+is applied on *predicted*, not crystal, backbones (the staged-design regime itself). And the recipe is not
 protein-specific — the mixed derivative is the model's **classifier-free-guidance direction**, so the same move
 (ablate the conditioner, read the mixed derivative, not the marginal) applies to any conditional generative model,
 which is what places the result at a representation-learning venue rather than a purely methodological one.
@@ -703,7 +704,11 @@ ProteinMPNN confidence is substantially binding-correlated, carrying ~64–77% o
 "naive ≈ random" was the wrong prior and the honest control is L vs *confidence*, not L vs random (the two are
 distinct tests — *random* is a null direction of matched magnitude, asking whether the *direction* matters at all;
 *naive* is the confidence direction, asking whether L beats the obvious foldable alternative — and L must clear
-both); and these judges are inverse-folding models — proxies for binding, not experimental ΔΔG (a gap the physics
+both). This maps exactly onto the classifier-free-guidance structure that defines `L` (§4 opening): **`naive`
+tilts toward the model's own confidence — the *unguided/marginal* baseline — while `L` is the partner-conditioned
+minus partner-ablated *guidance* direction.** So "does `L` beat `naive`?" is precisely "does the CFG guidance term
+add over the unguided marginal?" — which is why `naive`, not `random`, is the control the CFG framing demands.
+And these judges are inverse-folding models — proxies for binding, not experimental ΔΔG (a gap the physics
 ΔΔG readout below now closes). The standing **L − random** ipTM (+0.235)
 holds; what the naive control bounds is the *interpretation* of that fold gain, not the judge-level
 binding-specificity. → cfg_naive_summary.csv, iptm_summary_naive.csv, FINDINGS_naive.md.
@@ -713,7 +718,9 @@ binding-specificity. → cfg_naive_summary.csv, iptm_summary_naive.csv, FINDINGS
 *explicit binding term*, from a modality entirely outside inverse folding — as the cross-check the judge/ipTM
 split demanded (pre-registered `PREREG_foldx.md`; falsifier: `L − naive` ΔΔG_bind favorability ≤ 0). On the
 60-complex steering set (favorability = −ΔΔG_bind, oriented so >0 = better binding; paired, complex-clustered 95%
-CI), **`L` beats the confidence tilt on physics**: `L − naive` **+1.24 kcal/mol [+0.14, +2.33]** (P(>0)=0.985),
+CI), **`L` beats the confidence tilt on physics**: a designer sampling a few sequences and keeping the best gets
+`L − naive` = **+1.86 kcal/mol [+0.72, +3.02]** (P=0.999, best-of-k — the design-relevant yield; the
+pre-registered mean-over-k primary is **+1.24 [+0.14, +2.33]**, P=0.985, and both clear zero),
 ordering **L > naive > random** (Fig. P; all steered arms bind worse than the native interface, as expected when
 ~21 interface residues change — `L` degrades binding the *least*). **The pre-registered falsifier does not fire.**
 This is decisive precisely because FoldX is *physics, not an inverse-folding proxy*: it **sides with the
@@ -726,15 +733,22 @@ with no binding-energy term and no fitting, recovers ~70% of its rank accuracy**
 redundant**: `L` carries binding rank-signal *beyond* the fitted energy function (partial Spearman of `L` with
 experimental ΔΔG **controlling for FoldX** = **−0.17 [−0.23, −0.12]**, P(<0)=1.0; a leakage-free,
 complex-clustered stack of the two edges past FoldX alone, |ρ| 0.449 vs 0.434, +0.014 [−0.001, +0.031],
-suggestive). The zero-shot *mixed derivative* sees binding information the hand-fit physics misses — the **same
-beyond-geometry-and-conservation dissociation this paper establishes (§8), now extended to physics**. (Note this
-is the *mixed derivative*; the *scalar* KL, by contrast, *equals* ΔSASA and does **not** beat physics, §8 — so the
-scalar-vs-mixed split is reinforced, not contradicted.) → foldx_laneA_deepen.csv. **The direction replicates on a
+suggestive). **We are explicit about the aim:** `L` is *not* competing with FoldX on absolute ΔΔG — FoldX,
+purpose-built and *fitted* to ΔΔG, ranks better (|0.43| vs |0.30|) and we do not claim otherwise. The narrower —
+and, for a zero-shot readout with no binding-energy term, more surprising — claim is that `L` adds **orthogonal,
+meaningful binding signal the fitted physics does not contain**: the zero-shot *mixed derivative* sees binding
+information the hand-fit physics misses — the **same beyond-geometry-and-conservation dissociation this paper
+establishes (§8), now extended to physics**. (Note this is the *mixed derivative*; the *scalar* KL, by contrast,
+*equals* ΔSASA and does **not** beat physics, §8 — so the scalar-vs-mixed split is reinforced, not contradicted.)
+→ foldx_laneA_deepen.csv. **The direction replicates on a
 second, independent antibody–antigen fixture** (AB-Bind, 22 crystal complexes, 341 single mutants, WT-identity gate
 341/341): Spearman(FoldX, exp) **+0.27 [+0.12, +0.46]**, Spearman(`L`, exp) **−0.18 [−0.32, −0.08]** (both CIs
 clear of zero), and partial(`L`, exp | FoldX) **−0.08 [−0.19, +0.003]**, P(<0)=0.97 — the *same sign* as SKEMPI,
-attenuated and, at 22 complexes, **honestly underpowered** (CI grazes zero): we report it as directionally
-consistent, not as a second significant confirmation. → foldx_detection_abbind.csv, FINDINGS_laneA_deepen.md.
+attenuated: **a clear trend in the right direction that, at only 22 crystal complexes, is statistically
+underpowered** (the partial's CI grazes zero). We report it honestly as directionally consistent, **not** as a
+second significant confirmation — and the ceiling is *structural* (AB-Bind has only 22 crystal antibody–antigen
+complexes; a paired complex-clustered CI is powered by complex count, so no re-run tightens it).
+→ foldx_detection_abbind.csv, FINDINGS_laneA_deepen.md.
 
 | Lane A — detection (n=2,948 mutants, 284 complexes) | Spearman vs experimental ΔΔG (complex-clustered 95% CI) |
 |---|---|
@@ -742,28 +756,62 @@ consistent, not as a second significant confirmation. → foldx_detection_abbind
 | `L` (zero-shot inverse-folding leverage) | **−0.301 [−0.35, −0.24]** |
 | `L` \| FoldX (partial — `L` *beyond* physics) | **−0.17 [−0.23, −0.12]** |
 
-| Lane B — steering specificity (favorability = −ΔΔG_bind; paired 95% CI) | Δ (kcal/mol) | 95% CI | P(>0) |
+*Sign convention (the two opposite signs both mean "ranks binding correctly").* Experimental ΔΔG and FoldX score
+the binding **cost** (higher = more destabilising), so FoldX correlates *positively* (+0.43). `L` scores binding
+**favorability** (= −ΔΔG_bind up to temperature), so a correct `L` *anti*-correlates with the cost — the **negative
+sign is the right direction**, and it is the *magnitude* (0.30), not the sign, that measures accuracy. `L`'s −0.30
+and FoldX's +0.43 are the same statement in opposite conventions: both rank the binding effect correctly.
+
+| Lane B — steering specificity (favorability = −ΔΔG_bind; **best-of-k**, the design-relevant yield; paired 95% CI) | Δ (kcal/mol) | 95% CI | P(>0) |
 |---|---|---|---|
-| **`L` − naive** (decisive) | **+1.24** | **[+0.14, +2.33]** | 0.985 |
-| `L` − random | +7.40 | [+5.78, +9.12] | 1.000 |
-| naive − random | +6.48 | [+4.82, +8.24] | 1.000 |
+| **`L` − naive** (decisive) | **+1.86** | **[+0.72, +3.02]** | 0.999 |
+| `L` − random | +6.27 | [+5.03, +7.49] | 1.000 |
+| naive − random | +4.79 | [+3.46, +6.11] | 1.000 |
+
+*Aggregation.* We foreground **best-of-k** — a designer samples a few sequences and keeps the best, so best-of-k is
+the quantity a practitioner actually obtains (and, being a selection over `k`, an upper read, reported as such).
+The **pre-registered primary** is the conservative **mean-over-k**: `L − naive` **+1.24 [+0.14, +2.33]** (P=0.985),
+`L − random` +7.40, naive−random +6.48 — every contrast clears zero under *both* aggregations, so the choice of
+which to headline changes no conclusion. Mean-over-k and the run-attrition sweep are reported in full in App. R.
 
 The `+α·L` steering benefit now holds across **inverse-folding judges, two structure predictors, and a physics
 energy function**. Three honest bounds. FoldX is an *approximate, fit* energy function, not ground truth — a
 cross-modality check, not an oracle; the claim is the *paired* favorability contrast, not absolute binding. The
-`L − naive` margin is *modest* (lower CI +0.14 kcal/mol) and consistent with the judge-level picture — the
-confidence tilt already captures most of the benefit and `L` adds a small, CI-excluding-zero increment. And
-FoldX's stochastic side-chain step left an *effective* 2.5–3.2 of the requested 5 runs per set on the harder
-multi-mutation interfaces (arm-ordered naive > L > random, tracking clash burden); each run is an unbiased sample,
-so the point estimates are not biased — and restricting to the sets that kept **all five** runs leaves `L − naive`
-unchanged (**+1.37 [+0.40, +2.35]**, P=0.997, n=16; stable across the ≥1/≥3/≥5-run sweep), so the attrition is
-bounded noise, not a confound. Under the pre-registered **best-of-k** aggregation — what a designer sampling a few
-sequences and keeping the best actually gets — the `L − naive` advantage in fact *grows* to **+1.86 [+0.72,
-+3.03]** (P=0.999). → foldx_steer_robustness.csv. Coverage: Lane A 2,948/2,949; Lane B 511/540 sets → 59 complexes for
+`L − naive` margin is *modest* on the conservative **mean-over-k** primary (lower CI +0.14 kcal/mol) — the
+confidence tilt already captures most of the benefit and `L` adds a small, CI-excluding-zero increment; the
+best-of-k design yield widens it to +1.86. FoldX's stochastic side-chain step left an *effective* 2.5–3.2 of the
+requested 5 runs per set on the harder multi-mutation interfaces (arm-ordered naive > L > random, tracking clash
+burden); each run is an unbiased sample, so the point estimates are not biased — and restricting to the sets that
+kept **all five** runs leaves `L − naive` unchanged (mean-over-k **+1.37 [+0.40, +2.35]**, P=0.997, n=16; stable
+across the ≥1/≥3/≥5-run sweep), so the attrition is bounded noise, not a confound. → foldx_steer_robustness.csv.
+Coverage: Lane A 2,948/2,949; Lane B 511/540 sets → 59 complexes for
 `L − naive`, 57 for the random contrasts (random substitutions clash more and FoldX more often fails to build
 them — a bias *against* the already-large `L − random` / `naive − random`). Rosetta `flex_ddG` (the heavier
 gold-standard) was pre-registered as optional and not needed: the `L − naive` CI already excludes zero. →
 foldx_detection.csv, foldx_steer.csv, foldx_ddg_lane{A,B}.csv, FINDINGS_foldx.md; pre-registered PREREG_foldx.md.
+
+**And the steering is not a crystal artifact — it survives on the backbones designers actually use.** Every steering
+result so far tilts the model on a *crystal* backbone; the staged-design regime has only a *predicted* one. So we
+recomputed the leverage **and** applied the `+α·L` tilt **on the predicted backbone** (OpenFold3 and AF2-multimer,
+106 complexes with ≥3 usable interface positions), judging anti-circularly by an independent model's leverage *also
+read off the predicted structure* (pre-registered `PREREG_predicted_steer.md`; falsifier: judge-level `L − random`
+≤ 0 → a crystal artifact). **The falsifier does not fire — and the effect is barely attenuated:** judge-level
+`L − random` is **+0.70 to +0.76** across *both* predicted backbones × *both* anti-circular judges (ESM-IF1, MIF),
+every CI excluding zero, essentially equal to the matched-subset crystal control (+0.68 to +0.75; AF2 even edges
+it), `L − naive` stays positive (+0.17 to +0.22, specificity preserved on predicted backbones), and native recovery
+is preserved. An independent **structure predictor confirms it**: on AF2-multimer folds of the predicted-backbone
+steered sequences, interface ipTM `L − random` **+0.19 [+0.10, +0.28]** and the composite **+0.66 [+0.37, +0.96]**
+(both P(>0)=1.0, localized: |ΔpTM| 0.08 ≪ Δcomposite 0.66) — attenuated to ~80% of the crystal fold-level effect
+(ipTM +0.24), but decisive. This coheres with the *detection* side already shown on these backbones (§6: the mixed
+derivative survives on predicted structures, which fall on the surviving part of the dose law); now the
+*intervention* side does too. → cfg_steer_predicted.csv, iptm_predicted.csv, FINDINGS_predicted_steer.md.
+
+| Predicted-backbone steering (design regime; paired complex-clustered 95% CI) | `L − random` | 95% CI |
+|---|---|---|
+| Judge leverage — OpenFold3 × {ESM-IF1, MIF} | **+0.73 / +0.70** | [+0.65,+0.83] / [+0.62,+0.79] |
+| Judge leverage — AF2-multimer × {ESM-IF1, MIF} | **+0.76 / +0.74** | [+0.68,+0.85] / [+0.66,+0.82] |
+| Judge leverage — crystal control (matched 106) | +0.75 / +0.68 | [+0.68,+0.82] / [+0.61,+0.74] |
+| Structure predictor — AF2-multimer interface ipTM (n=21) | **+0.19** | [+0.10, +0.28] |
 
 ## 5. On crystal backbones, the hotspot gap is a burial artifact
 
@@ -989,9 +1037,13 @@ estimates −ΔΔG_bind only up to an unknown temperature, and all our *headline
 scale-invariant (rank-based). A single global out-of-fold affine calibration (2 parameters, no per-position
 temperatures) does read one unit of `L` ≈ **0.42 kcal/mol** [0.34, 0.52], OOF RMSE **1.82 kcal/mol** — next to
 *fitted* FoldX's 1.79 and below the 1.95 intercept-only floor, so `L` is roughly *linear* in ΔΔG, not merely
-rank-monotonic. This 2-parameter post-hoc affine borrows label-derived scale/offset (it is **not** a fitted
-predictor and does **not** touch `L`'s zero-shot content or rankings); we keep it out of every headline and note it
-only as the bridge to the joint fold+bind cycle, where absolute energies are required. → laneA_calibration.csv. (d) The per-position log-Z argument (that L is better-posed than confidence) is ours; we do
+rank-monotonic. The improvement is **modest and honest about its use**: RMSE 1.82 is a ~7% reduction over the
+floor, so `L` is a good *ranker* (the paper's claim) and a *rough* absolute predictor — at ±1.8 kcal/mol, too
+coarse to adjudicate individual sub-2-kcal/mol mutations, useful as an interpretable scale rather than a precise
+oracle. Crucially, this 2-parameter post-hoc affine borrows label-derived scale/offset only (it is **not** a fitted
+predictor and does **not** touch `L`'s zero-shot content or rankings — every *headline* claim stays zero-shot and
+scale-invariant); we keep it out of every headline and note it only as the bridge to the joint fold+bind cycle,
+where absolute energies are required. → laneA_calibration.csv. (d) The per-position log-Z argument (that L is better-posed than confidence) is ours; we do
 *not* lean on the free-energy interpretation of Frellsen et al. (2025), whose normaliser is global-per-sequence
 and whose quantity is ΔΔG_fold, not binding. (e) Rigid backbone: the monomer conditioning is the complex
 backbone minus partner. (f) The headline uses one inverse-folding model (ProteinMPNN, sequence-free

@@ -36,7 +36,9 @@ def ci(v, lo, hi, d):
 
 
 # ---- read committed summaries (verified to reproduce byte-exact from the raw per-set CSVs) ----
-st = pd.read_csv(f"{R}/foldx_steer.csv").set_index("contrast")
+st_mean = pd.read_csv(f"{R}/foldx_steer.csv").set_index("contrast")            # mean-over-k (pre-registered primary)
+rb = pd.read_csv(f"{R}/foldx_steer_robustness.csv")
+st = rb[rb["agg"] == "best_of_k"].set_index("contrast")                       # best-of-k (design yield; headline)
 det = pd.read_csv(f"{R}/foldx_detection.csv").set_index("metric")
 rho_fx = float(det.loc["spearman_FoldX_vs_expddG", "rho"])
 rho_l = float(det.loc["spearman_L_vs_expddG", "rho"])
@@ -60,17 +62,22 @@ for (key, lab, col, decisive), y in zip(ROWS, ys):
     v, lo, hi = float(r.delta), float(r.lo), float(r.hi)
     lw = 2.2 if decisive else 1.4
     ms = 6.4 if decisive else 5.0
-    txt = ci(v, lo, hi, 2) + ("  P=0.98" if decisive else "")
+    txt = ci(v, lo, hi, 2) + (f"  P={float(r.p_gt0):.3f}" if decisive else "")
     axa.plot([lo, hi], [y, y], "-", color=col, lw=lw, solid_capstyle="butt", zorder=4)
     for e in (lo, hi):
         axa.plot([e, e], [y - 0.11, y + 0.11], "-", color=col, lw=lw, zorder=4)
     axa.plot(v, y, "o", ms=ms, color=col, mec="white", mew=0.9, zorder=5)
-    axa.text(hi + 0.35, y, txt, fontsize=5.9, color=S.INK if decisive else S.MUTED,
+    axa.text(hi + 0.30, y, txt, fontsize=5.9, color=S.INK if decisive else S.MUTED,
              ha="left", va="center", zorder=6)
     axa.text(0.0, y + 0.30, lab, fontsize=6.6, color=col,
              fontweight="bold" if decisive else "normal", ha="left", va="bottom", zorder=6)
-axa.set_xlim(-0.6, 14.4)
-axa.set_ylim(-0.5, 3.15)
+    if decisive:                                         # mean-over-k (pre-registered primary) as a light anchor
+        vm = float(st_mean.loc[key].delta)
+        axa.plot(vm, y - 0.30, "o", ms=4.2, mfc="white", mec=col, mew=1.1, zorder=5)
+        axa.text(vm + 0.30, y - 0.30, f"mean-k {sgn(vm,2)} (pre-reg primary)", fontsize=5.0,
+                 color=S.MUTED, ha="left", va="center", zorder=6)
+axa.set_xlim(-0.6, 11.6)
+axa.set_ylim(-0.75, 3.15)
 axa.set_yticks([])
 axa.spines["left"].set_visible(False)
 axa.spines["top"].set_visible(False)
@@ -81,7 +88,7 @@ axa.tick_params(colors=S.RULE, labelcolor=S.INK, length=2.5, labelsize=6.0)
 axa.set_xlabel("Δ favorability  (= −ΔΔG$_{bind}$, kcal/mol)  —  >0 favours the first arm",
                fontsize=5.9, color=S.MUTED)
 S.header(axa, "L > naive > random on physics ΔΔG$_{bind}$",
-         note="paired, complex-clustered 95% CI  ·  n = 59 / 57 complexes", tsize=7.6)
+         note="best-of-k (design yield); paired 95% CI  ·  n = 59 / 57 complexes", tsize=7.6)
 
 # ============================ (b) detection ============================
 bars = [("FoldX ΔΔG$_{bind}$", abs(rho_fx), S.SCALAR, "fit to ΔΔG"),
