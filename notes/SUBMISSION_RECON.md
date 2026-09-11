@@ -9,6 +9,9 @@
   proceedings (non-archival), does NOT violate** ICLR's dual-submission policy. So we MAY put this work in a
   non-archival workshop concurrently with the ICLR 2027 main submission. Rejected ICLR papers become non-archival
   and may be submitted elsewhere. *(sources: iclr.cc/Conferences/2027/CallForPapers, /AuthorGuidelines, /2025/FAQ)*
+- **New ICLR 2027 rules to honor (TO-VERIFY on the final CfP; secondary source aiweekly.co):** a **mandatory
+  AI-use statement** and an author cap (~20 papers/author). We already have a "Reproducibility and LLM-usage
+  disclosure" section — confirm it matches the mandated format when the template lands. See [[submission-hygiene]].
 - **Caveats to respect:** (1) the workshop must be **non-archival** (MLSB, GEM, ICBINB all are/have been). (2)
   Double-blind: a non-anonymous workshop version can de-anonymize; ICLR tolerates public arXiv/workshop versions,
   but do NOT cite our own workshop paper non-anonymously in the ICLR submission. (3) Re-confirm on the final CfP
@@ -19,9 +22,11 @@ NeurIPS 2026 workshops announced 2026-08-10 (Sydney/Paris/Atlanta hubs); **sugge
 2026 has already passed**, individual deadlines vary — many NeurIPS 2026 workshop deadlines are likely closed, so
 the practical routes are ICLR 2027 workshops (deadlines ~Feb 2027, natural soft-landing) or a late-deadline NeurIPS
 one. Verify each deadline before committing.
-1. **GEM — Integrating Generative and Experimental Platforms for Biomolecular Design** (NeurIPS 2026, Atlanta).
-   **Best fit:** generative (inverse-folding) models + experimental/physics validation for binder design — exactly
-   our steering + ΔΔG/FoldX story. Non-archival (has been). *(neurips.cc 2026 workshops blog)*
+1. **GEM — Integrating Generative and Experimental Platforms for Biomolecular Design** (NeurIPS 2026, Dec 13,
+   Atlanta). **Best fit AND still open: deadline Sep 30 2026 (AoE)** — the earliest actionable route, five days
+   after the ICLR paper deadline; dry-lab + wet-lab tracks (we fit the dry-lab track). Generative (inverse-folding)
+   models + experimental/physics validation for binder design — exactly our steering + ΔΔG/FoldX story.
+   Non-archival. *(gembio.ai; neurips.cc 2026 workshops blog, fetched 2026-09-11)*
 2. **MLSB — Machine Learning for Structural Biology.** The canonical home for ProteinMPNN/ESM-IF-class work; 2025
    was NeurIPS-co-located, non-archival, deadline ~26 Sept/1 Oct 2025. **2026 edition NOT yet confirmed on
    mlsb.io** (site still shows 2025) — verify; historically runs yearly. *(mlsb.io)*
@@ -32,6 +37,10 @@ one. Verify each deadline before committing.
    a distinctive surprising-failure story that would stand out here.
 5. **Simbiochem — ML for Simulations in Biology and Chemistry** (NeurIPS 2026, Sydney). Decent — the physics/FoldX
    energy-function angle; more simulation-centric than our ML-diagnostic core. (Runner-up: ML4Molecules, weaker.)
+- Also: **LMRL — Learning Meaningful Representations of Life** (NeurIPS 2026) — fits the representation-learning
+  framing ("what does the model represent about binding") but is less design-specific than MLSB/GEM.
+- **Correction to the pessimism above:** GEM is *open* (Sep 30). So a NeurIPS-2026 non-archival companion IS still
+  actionable this cycle via GEM; MLSB 2026 date TBD (verify mlsb.io).
 
 Recommendation: prioritize the **ICLR 2027 main** submission (25 Sept). A non-archival workshop is a low-risk
 bonus (feedback + visibility) and policy-clean; if we do one, **GEM** or **MLSB** are the natural homes, **ICBINB**
