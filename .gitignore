@@ -25,3 +25,6 @@ foldx[0-9]*
 foldx*Linux*
 rotabase.txt
 *.rotabase
+
+# agent worktrees / local session state
+.claude/
