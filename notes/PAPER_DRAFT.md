@@ -941,7 +941,9 @@ while only the mixed derivative clears it. These add up to a **beyond-X ladder**
 binding signal that survives, in turn, **geometry** (burial/ΔSASA/contacts), **evolutionary conservation**, the
 **one-pass log-odds** (the full published feature set), and now a **fitted physics energy function** (FoldX;
 partial Spearman −0.17 [−0.23, −0.12], §4) — while *every scalar of `P`, at every rung, stays at the floor*: `L`
-clears every control anyone has proposed, and confidence clears none. Two further contributions concern *using*
+clears every control anyone has proposed, and confidence clears none. (A single matched metric — partial
+rank-correlation of `L` with experimental ΔΔG controlling for each class — makes the rungs directly comparable,
+Fig. L. → beyond_x_ladder.csv.) Two further contributions concern *using*
 and *validating* the direction. **(iv)** *Frozen-model steering:* where RedNet retrains a decoder around this contrast, we show the
 direction is already actionable as a drop-in `+α·L` tilt on a **frozen, off-the-shelf** inverse-folding model,
 with no retraining and native recovery preserved. **(v)** *Anti-circular, independent-predictor validation:* the
