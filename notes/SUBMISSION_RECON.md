@@ -23,10 +23,11 @@ NeurIPS 2026 workshops announced 2026-08-10 (Sydney/Paris/Atlanta hubs); **sugge
 the practical routes are ICLR 2027 workshops (deadlines ~Feb 2027, natural soft-landing) or a late-deadline NeurIPS
 one. Verify each deadline before committing.
 1. **GEM — Integrating Generative and Experimental Platforms for Biomolecular Design** (NeurIPS 2026, Dec 13,
-   Atlanta). **Best fit AND still open: deadline Sep 30 2026 (AoE)** — the earliest actionable route, five days
-   after the ICLR paper deadline; dry-lab + wet-lab tracks (we fit the dry-lab track). Generative (inverse-folding)
-   models + experimental/physics validation for binder design — exactly our steering + ΔΔG/FoldX story.
-   Non-archival. *(gembio.ai; neurips.cc 2026 workshops blog, fetched 2026-09-11)*
+   Atlanta). **Best fit:** generative (inverse-folding) models + experimental/physics validation for binder design
+   — exactly our steering + ΔΔG/FoldX story; **non-archival** (OpenReview, opt-out), **dry-lab track, ≤5 pages**
+   (we fit dry-lab). **DEADLINE AMBIGUOUS — likely already closed:** gembio.ai (fetched 2026-09-11) shows a
+   **final deadline of 30 August 2026 AoE** with crossed-out early-September dates — NOT the "Sep 30" an earlier
+   pass claimed. Treat GEM-2026 as probably closed; **verify directly** before relying on it. *(gembio.ai; neurips.cc 2026 workshops blog)*
 2. **MLSB — Machine Learning for Structural Biology.** The canonical home for ProteinMPNN/ESM-IF-class work; 2025
    was NeurIPS-co-located, non-archival, deadline ~26 Sept/1 Oct 2025. **2026 edition NOT yet confirmed on
    mlsb.io** (site still shows 2025) — verify; historically runs yearly. *(mlsb.io)*
@@ -39,8 +40,10 @@ one. Verify each deadline before committing.
    energy-function angle; more simulation-centric than our ML-diagnostic core. (Runner-up: ML4Molecules, weaker.)
 - Also: **LMRL — Learning Meaningful Representations of Life** (NeurIPS 2026) — fits the representation-learning
   framing ("what does the model represent about binding") but is less design-specific than MLSB/GEM.
-- **Correction to the pessimism above:** GEM is *open* (Sep 30). So a NeurIPS-2026 non-archival companion IS still
-  actionable this cycle via GEM; MLSB 2026 date TBD (verify mlsb.io).
+- **Net on NeurIPS-2026 timing:** GEM's deadline is ambiguous/likely-closed (30 Aug 2026 final per gembio.ai), and
+  the suggested NeurIPS-2026 date (29 Aug) has passed — so a NeurIPS-2026 non-archival companion is probably NOT
+  actionable this cycle. The clean practical route is an **ICLR 2027 workshop** (~Feb 2027 deadline, natural
+  soft-landing) or **MLSB 2026** if it runs (date TBD, verify mlsb.io). Verify any deadline before committing.
 
 Recommendation: prioritize the **ICLR 2027 main** submission (25 Sept). A non-archival workshop is a low-risk
 bonus (feedback + visibility) and policy-clean; if we do one, **GEM** or **MLSB** are the natural homes, **ICBINB**
