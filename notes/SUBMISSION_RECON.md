@@ -60,15 +60,20 @@ landing if the main is rejected.
 - Session/attribution strings (Claude-Session URL, Co-Authored-By) are in commit messages → fresh init also
   removes these from the shipped history.
 
-## Submission-repo checklist (packaging phase)
-- [ ] Fresh `git init` (no identifying history) for the anon mirror.
+## Submission-repo checklist (packaging phase)  → run `notes/AUDIT_PROMPT.md` for the full audit
+- [ ] Fresh `git init` (no identifying history) for the anon mirror. **66 tracked files carry `bertsch`/`cbertsch`
+      + git-history author = real name/email → history CANNOT ship; fresh init only.**
 - [ ] Scrub `bertsch`/`cbertsch`/email/scratch paths from all files (env scripts, latex, any hardcoded paths).
-- [ ] `INDEX.md`: paper claim → CSV → script that produced it (reproducibility map).
+- [ ] **Load-bearing-ONLY (explicit requirement): ship only files actually used for the paper.** Walk every
+      `results/*.csv` (269) + `src/*.py`; keep only what an `INDEX.md` row or a reproduce step needs; exclude
+      pilot/scratch (`_*.csv`, `*_audit2`), superseded shards where a consolidated file exists, and orphan
+      intermediates. No unused overhead in the anon repo.
+- [ ] **Directory structure** for the anon repo: `paper/` (draft + built PDF), `src/`, `results/` (or `data/`,
+      load-bearing CSVs only), `figures/`, `README.md`, `INDEX.md`, `reproduce.sh`.
+- [ ] `INDEX.md`: paper claim → CSV → script that produced it (reproducibility map). Seed from `FOLDED_STATUS.md`.
 - [ ] Strong `README.md`: what/why, install, one command per figure/table, data provenance, license.
-- [ ] Numbers-vs-CSV full audit (every bolded number in the paper traces to a committed CSV).
+- [ ] Numbers-vs-CSV full audit (every bolded number in the paper traces to a committed CSV) — `AUDIT_PROMPT.md` Ph.1.
 - [ ] verify-references on the .bib; ensure no self-identifying citations.
-- [ ] Remove pilot/scratch CSVs not needed for reproduction (e.g. `_pilot_*`, `*_audit2`, raw shards if a
-      consolidated file exists).
 - [ ] Zenodo archive before ~Oct 9 (data-archival memory deadline).
 
 ## OpenReview recon — PLAN (deep pass queued)
