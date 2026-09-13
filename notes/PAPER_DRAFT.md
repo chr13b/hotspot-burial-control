@@ -699,8 +699,13 @@ inverse-folding-*judge* level, where L beats the confidence tilt (ESM-IF1 **+0.1
 **+0.242 [+0.191, +0.292]**): a *substantial* separation between two tilts that are identical but for their
 direction, on top of a confidence baseline that is itself already strong. Binding-favorable residues are
 frequently *frustrated* (in the confidence tail), so a structure predictor under-credits them while a
-binding-sensitive judge does not. (Two honesties bound this: the confidence tilt is *far* from a null —
-ProteinMPNN confidence is substantially binding-correlated, carrying ~64–77% of L−random at the judge level, so
+binding-sensitive judge does not. (Two honesties bound this. First, **a finding in its own right, and not a
+contradiction of our thesis:** the confidence tilt is *far* from a null — ProteinMPNN confidence is substantially
+binding-correlated, carrying **~64–77% of L−random** at the judge level, a *surprisingly strong* binding baseline
+because a confidently-packed, foldable interface is a **prerequisite** for binding. This does not soften "confidence
+is not competence": confidence as a **readout** is still at chance (§3, hotspot AUROC 0.51), and even confidence as
+a **direction** is beaten by the binding-specific `L` at the judge level *and* on physics — foldability gets you
+most of the way, but the binding-specific increment lives only in the mixed derivative. So
 "naive ≈ random" was the wrong prior and the honest control is L vs *confidence*, not L vs random (the two are
 distinct tests — *random* is a null direction of matched magnitude, asking whether the *direction* matters at all;
 *naive* is the confidence direction, asking whether L beats the obvious foldable alternative — and L must clear
@@ -802,9 +807,10 @@ it), `L − naive` stays positive (+0.17 to +0.22, specificity preserved on pred
 is preserved. An independent **structure predictor confirms it**: on AF2-multimer folds of the predicted-backbone
 steered sequences, interface ipTM `L − random` **+0.19 [+0.10, +0.28]** and the composite **+0.66 [+0.37, +0.96]**
 (both P(>0)=1.0, localized: |ΔpTM| 0.08 ≪ Δcomposite 0.66) — attenuated to ~80% of the crystal fold-level effect
-(ipTM +0.24), but decisive. This coheres with the *detection* side already shown on these backbones (§6: the mixed
-derivative survives on predicted structures, which fall on the surviving part of the dose law); now the
-*intervention* side does too. → cfg_steer_predicted.csv, iptm_predicted.csv, FINDINGS_predicted_steer.md.
+(ipTM +0.24), but decisive. This is **one dose law spanning both uses of the direction**: the predicted backbones
+that fall on the *surviving* part of the dose law preserve the mixed derivative as a *readout* (§6, detection)
+**and** as an *intervention* (steering, here) — **the same design regime that preserves the readout preserves the
+knob**. → cfg_steer_predicted.csv, iptm_predicted.csv, FINDINGS_predicted_steer.md.
 
 | Predicted-backbone steering (design regime; paired complex-clustered 95% CI) | `L − random` | 95% CI |
 |---|---|---|
@@ -943,7 +949,11 @@ binding signal that survives, in turn, **geometry** (burial/ΔSASA/contacts), **
 partial Spearman −0.17 [−0.23, −0.12], §4) — while *every scalar of `P`, at every rung, stays at the floor*: `L`
 clears every control anyone has proposed, and confidence clears none. (A single matched metric — partial
 rank-correlation of `L` with experimental ΔΔG controlling for each class — makes the rungs directly comparable,
-Fig. L. → beyond_x_ladder.csv.) Two further contributions concern *using*
+Fig. L. → beyond_x_ladder.csv.) **The ladder and the fractal motif (§1) are two axes of one dissociation:** across
+*controls*, `L` clears every one while every scalar of `P` stays at the floor (this ladder); across *levels of the
+modeling stack*, a confidence-type scalar is blind at each — an inverse-folding model's confidence, then a
+structure predictor's interface ipTM one level up. A scalar of *anything* is blind to binding-specificity; the
+mixed derivative carries it — past every control, and at every level. Two further contributions concern *using*
 and *validating* the direction. **(iv)** *Frozen-model steering:* where RedNet retrains a decoder around this contrast, we show the
 direction is already actionable as a drop-in `+α·L` tilt on a **frozen, off-the-shelf** inverse-folding model,
 with no retraining and native recovery preserved. **(v)** *Anti-circular, independent-predictor validation:* the
@@ -952,7 +962,10 @@ matched-magnitude random direction lowers it), by an **independent structure pre
 interface ipTM), *and* by an **independent physics energy function** (FoldX ΔΔG_bind — a binding readout from
 outside the inverse-folding family, on which `L` beats both a random and a *confidence* direction), against a
 random-direction specificity control — a validated leverage-steering intervention we are not aware of in prior
-work. We also differ in construction
+work. Counted up, the `+α·L` direction is confirmed by **seven independent readouts across three modalities** —
+four inverse-folding judges (ProteinMPNN, ESM-IF1, MIF, PiFold), two structure predictors (AF2-multimer, Boltz-2),
+and one physics energy function (FoldX) — every one agreeing on its sign, on crystal *and* predicted backbones.
+We also differ in construction
 — per-position sequence-free marginals (design-time usable, decoding-order-free) versus their whole-sequence
 autoregressive likelihoods. **StaB-ddG** parameterises ΔΔG through a folding-energy difference on an overlapping
 fixture; a distinct question. **RedNet** independently operationalises exactly this leverage as a *design-time
@@ -1016,7 +1029,18 @@ measurement modality or biological scope. We *did* test the cleanest, **ATLAS** 
 WT-identity mapping gate (91% of substitutions map cleanly; atypical class-II structures are dropped, not
 force-mapped): the leverage rank-direction replicates in both models — Spearman(L, ΔΔG) = **−0.22** (ProteinMPNN)
 / **−0.32** (ESM-IF1), CIs excluding zero and bracketing SKEMPI's −0.30 — and confidence stays blind while the
-*scalar* readouts point the wrong way. But ATLAS is substantially a SKEMPI subset (only 3 non-overlapping
+*scalar* readouts point the wrong way. **The direction thus generalizes across interface biology** — the three
+natural interface classes we can test all give a same-signed Spearman(`L`, ΔΔG):
+
+| interface class | fixture | Spearman(`L`, ΔΔG) |
+|---|---|---|
+| protein–protein | SKEMPI (primary) | **−0.30** |
+| antibody–antigen | AB-Bind | **−0.18** |
+| TCR–pMHC | ATLAS | **−0.22 / −0.32** |
+
+— and the confidence-blindness itself extends *beyond binding*, to **catalytic residues** (M-CSA, §4). The
+dissociation is a property of the inverse-folding class, not of one interface type. But ATLAS is substantially a
+SKEMPI subset (only 3 non-overlapping
 complexes), so the geometry-controlled CPI cannot be powered there (its placebo floor is ~60× SKEMPI's, above any
 SKEMPI-sized effect). This is a **bounded generalization**: the leverage direction and the confidence-blindness
 carry to TCR–pMHC; the geometry-controlled add-on is indeterminate there, not absent. Tellingly, this is the
