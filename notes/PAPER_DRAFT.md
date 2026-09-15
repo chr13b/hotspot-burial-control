@@ -96,9 +96,9 @@ was invisible to every scalar readout the field has used. → leverage_decomposi
 **(ii) Confidence is not competence — a property of inverse folding, with a practical consequence.** The
 diagonal is blind across five architectures (interface-hotspot AUROC 0.50–0.54; conditionally independent of
 hotspot-ness given geometry, position-level CPI 0.000; the mutation-level confidence CPI is small but nonzero,
-+0.010, so the blindness claim is specifically about *position-level* scalars). This measures the field's implicit BindCraft interface-freeze: ranking
++0.010, so the blindness claim is specifically about *position-level* scalars). This justifies the field's implicit BindCraft interface-freeze: ranking
 interface positions by confidence captures *fewer* hotspots than random (capture@3 0.064 vs 0.084, overlapping intervals; a trend, not yet significant), while free
-ΔSASA captures ~3× more (0.233) — so rank by geometry — or, better, by the mixed derivative itself, the
+ΔSASA captures ~3× more (0.233) — so rank by geometry — or, better, by the mixed derivative itself,
 among the strongest single features for interface triage (AUROC 0.69, level with the learned KL detector, vs confidence's 0.51; §4) — not by confidence. De-novo designs corroborate the positive
 of (i) with even the scalar distribution: it beats substitution baselines (0.615), dissociates stability from
 binding, and adds +0.018 beyond an all-atom rotamer-repacked occlusion baseline, reproduced by a non-parent
@@ -109,7 +109,7 @@ confidence is blind (within-amino-acid-type AUROC ≈ 0.44–0.50) while a seque
 predicts them (0.77) — a dissociation surviving composition, burial, and chain-truncation controls.
 Inverse-folding confidence is blind to functional importance in general, not only binding. → catalytic_audit.csv.
 
-**(iv) The published deficit is largely a burial confound.** Under a pre-registered burial-matched matched-pair
+**(iv) The published deficit is largely a burial confound.** Under a pre-registered matched-pair
 design (matching within-complex on relative SASA, secondary-structure class, and neighbour count), the
 crystal-backbone hotspot deficit attenuates sharply across five inverse-folding architectures — most of the gap
 is burial, and no architecture retains a deficit under matching — two (MIF, PiFold) even flip to a hotspot
