@@ -1,7 +1,7 @@
 # Confidence is not competence: inverse-folding models know binding in the mixed derivative
 
-*Working prose draft, 2026-08-14. Expands notes/PAPER_OUTLINE.md (Spine B). Every quantitative claim carries
-a `→ file.csv` trace to a committed result. Sections marked ⟨PENDING …⟩ await a running analysis.*
+*Working prose draft, 2026-09-15. Expands notes/PAPER_OUTLINE.md (Spine B). Every quantitative claim carries
+a `→ file.csv` trace to a committed result.*
 
 ---
 
@@ -22,7 +22,7 @@ architectures; the published deficit is largely a burial confound. And the direc
 `+α·L` tilt on a *frozen* ProteinMPNN steers it toward higher binding-favorability — confirmed against a matched
 random control by independent sequence models, structure predictors, **and a physics energy function** (FoldX),
 the last also showing the tilt beats a same-magnitude *confidence* direction, isolating a binding-specific effect
-(four judges, two folders, both steering directions, 120 complexes). The leverage operator is BA-Cycle; ours is the decomposition, the
+(four judges, two folders, both steering directions, 120 folded complexes). The leverage operator is BA-Cycle; ours is the decomposition, the
 identifiability no-go, the first beyond-geometry-and-conservation control on an inverse-folding binding signal,
 the feature-class law, and frozen-model steering. `L` is the model's **classifier-free-guidance direction**: to
 read an un-trained quantity off a conditional generative model, ablate the conditioner and take the mixed
@@ -99,7 +99,7 @@ hotspot-ness given geometry, position-level CPI 0.000; the mutation-level confid
 +0.010, so the blindness claim is specifically about *position-level* scalars). This justifies the field's implicit BindCraft interface-freeze: ranking
 interface positions by confidence captures *fewer* hotspots than random (capture@3 0.064 vs 0.084, overlapping intervals; a trend, not yet significant), while free
 ΔSASA captures ~3× more (0.233) — so rank by geometry — or, better, by the mixed derivative itself,
-among the strongest single features for interface triage (AUROC 0.69, level with the learned KL detector, vs confidence's 0.51; §4) — not by confidence. De-novo designs corroborate the positive
+among the strongest single features for interface triage (AUROC 0.69, level with the learned KL detector, vs confidence's 0.51; §8) — not by confidence. De-novo designs corroborate the positive
 of (i) with even the scalar distribution: it beats substitution baselines (0.615), dissociates stability from
 binding, and adds +0.018 beyond an all-atom rotamer-repacked occlusion baseline, reproduced by a non-parent
 scorer. → xmodel_confidence.csv, baseline_audit.csv, bindcraft_triage.csv, bennett_occlusion_allatom.csv, bennett_nonparent.csv.
@@ -176,7 +176,8 @@ The quantity a practitioner is most tempted to trust — the model's own confide
 belongs at a position — is useless for locating hotspots. On SKEMPI interface positions, ProteinMPNN's
 per-residue confidence attains an AUROC of 0.538 for hotspots, barely above chance, and for a fixed-budget
 triage (the top-3 interface positions per complex) it captures *fewer* hotspots than random selection
-(0.064 vs 0.084). → baseline_audit.csv, confidence_antipredicts.csv.
+(0.064 vs 0.084 — overlapping intervals, so a trend rather than a significant deficit; the point is that
+confidence buys *nothing* over random here). → baseline_audit.csv, confidence_antipredicts.csv.
 
 One might object that any single scalar can be rescued by combining it with structure. It cannot. We apply a
 conditional predictive impact (CPI) test: cross-fit a model of hotspot-ness on cheap geometry (burial,
@@ -495,7 +496,10 @@ a few points of real sign information rather than the fifteen a naïve accuracy 
 nonetheless unambiguous, and it is the first direct empirical test of that expressivity property: what the model knows about
 binding reaches past single-residue effects to their epistatic couplings, and lives — at both orders of the
 mixed derivative, the first (single-residue ΔΔG) and the second (epistasis) — in the structure of the
-distribution, not in the confidence. → p3_coupling.csv, p3_sign_verify.csv,
+distribution, not in the confidence. **Read together with the first-order reciprocity result above (the leverage
+is *shared across a contact*, +0.094, not a per-chain quantity), this is a coherent two-body interface energy at
+both orders — reciprocal across a contact at first order, carrying the correct epistatic direction at second — and
+a per-chain scoring artifact, the natural null, would fail *both* tests.** → p3_coupling.csv, p3_sign_verify.csv,
 FINDINGS_p3_coupling.md.
 
 **De-novo designs corroborate — there, even the scalar distribution shows it.** Where selection is
@@ -590,7 +594,12 @@ and neighbour-count bins): +0.234 [+0.179, +0.290] on all enzymes, and +0.176 [+
 truncation controlled jointly. (The fully-crossed within-complex cell retains only 39 of 119 catalytic residues
 and is not significant, +0.14 [−0.13, +0.43]; we report it rather than rest on it.)
 Inverse-folding confidence is thus blind to functional importance across function types; what predicts
-function is free geometry (for binding) or sequence conservation (for catalysis). We are deliberate about
+function is free geometry (for binding) or sequence conservation (for catalysis). **This is the same lesson as our
+decomposition, one function over: the competence-carrying signal lives *outside* the model's bound-structure
+distribution `P` in both cases — for binding, in the partner-ablated mixed derivative (the response to removing the
+conditioner); for catalysis, in cross-species conservation (the sequence ensemble).** Reading an untrained
+functional property off a conditional generative model needs a quantity its conditional marginal cannot express
+(Proposition 1) — the blindness is a general property, not special to binding. We are deliberate about
 mechanism: the model's confidence is *blind* (at chance), not actively *frustrated* — the raw anti-prediction
 we first observed was an amino-acid-composition and single-chain-truncation artifact, not a determinacy
 signal. → catalytic_audit.csv, FINDINGS_catalytic.md. (Methodological note for the appendix: the effect is
@@ -701,8 +710,9 @@ direction, on top of a confidence baseline that is itself already strong. Bindin
 frequently *frustrated* (in the confidence tail), so a structure predictor under-credits them while a
 binding-sensitive judge does not. (Two honesties bound this. First, **a finding in its own right, and not a
 contradiction of our thesis:** the confidence tilt is *far* from a null — ProteinMPNN confidence is substantially
-binding-correlated, carrying **~64–77% of L−random** at the judge level, a *surprisingly strong* binding baseline
-because a confidently-packed, foldable interface is a **prerequisite** for binding. This does not soften "confidence
+binding-correlated, carrying **~64–77% of L−random** at the judge level — a *surprisingly strong* but
+binding-**correlated**, not binding-**specific**, baseline, because a confidently-packed, foldable interface is a
+**prerequisite** for binding (foldability rides along with binding without being it). This does not soften "confidence
 is not competence": confidence as a **readout** is still at chance (§3, hotspot AUROC 0.51), and even confidence as
 a **direction** is beaten by the binding-specific `L` at the judge level *and* on physics — foldability gets you
 most of the way, but the binding-specific increment lives only in the mixed derivative. So
@@ -962,9 +972,10 @@ matched-magnitude random direction lowers it), by an **independent structure pre
 interface ipTM), *and* by an **independent physics energy function** (FoldX ΔΔG_bind — a binding readout from
 outside the inverse-folding family, on which `L` beats both a random and a *confidence* direction), against a
 random-direction specificity control — a validated leverage-steering intervention we are not aware of in prior
-work. Counted up, the `+α·L` direction is confirmed by **seven independent readouts across three modalities** —
-four inverse-folding judges (ProteinMPNN, ESM-IF1, MIF, PiFold), two structure predictors (AF2-multimer, Boltz-2),
-and one physics energy function (FoldX) — every one agreeing on its sign, on crystal *and* predicted backbones.
+work. Counted up, the `+α·L` direction is confirmed by **seven independent readouts across three modalities** on
+crystal backbones — four inverse-folding judges (ProteinMPNN, ESM-IF1, MIF, PiFold), two structure predictors
+(AF2-multimer, Boltz-2), and one physics energy function (FoldX), every one agreeing on its sign — and **three of
+them (ESM-IF1, MIF, AF2-multimer) also agree on predicted backbones** (the design regime).
 We also differ in construction
 — per-position sequence-free marginals (design-time usable, decoding-order-free) versus their whole-sequence
 autoregressive likelihoods. **StaB-ddG** parameterises ΔΔG through a folding-energy difference on an overlapping
@@ -1018,7 +1029,13 @@ Schymkowitz 2005 / Delgado 2019, all Crossref-verified 2026-09-08); full .bib at
 
 We evaluate on three fixtures — SKEMPI (natural, primary), Bennett de-novo designs, and AB-Bind
 (antibody–antigen) — none a full generate→design→wet-lab loop; the de-novo evidence is four targets and
-AB-Bind's 27 complexes are indeterminate for the leverage test. The primary claims rest on one natural fixture;
+AB-Bind's 27 complexes are indeterminate for the leverage test. **We are explicit about which half rests on what.**
+The *detection* claim is experiment-anchored: `L` correlates with experimental ΔΔG (Spearman −0.30) and adds
+*beyond* a fitted physics function (partial −0.17), both against real measurements. The *steering* claim's
+binding-**specificity** (L beats the confidence tilt, not just a random direction) is anchored, out-of-family, by a
+single approximate-physics readout — FoldX (pre-registered mean-over-k L−naive +1.24, lower CI +0.14); the
+inverse-folding judges are model proxies and ipTM is a foldability metric. We therefore scope it as
+*physics-supported, pending a wet-lab test* rather than experimentally proven, and do not overclaim it. The primary claims rest on one natural fixture;
 we mitigate this with the two further fixtures, four inverse-folding architectures, and a catalytic-site
 replication, but a second large natural binding fixture would strengthen them — though none cleanly exists:
 SKEMPI 2.0's curators already re-verified and absorbed the non-redundant content of the other curated
@@ -1038,7 +1055,10 @@ natural interface classes we can test all give a same-signed Spearman(`L`, ΔΔG
 | antibody–antigen | AB-Bind | **−0.18** |
 | TCR–pMHC | ATLAS | **−0.22 / −0.32** |
 
-— and the confidence-blindness itself extends *beyond binding*, to **catalytic residues** (M-CSA, §4). The
+*(Marginal Spearman; only SKEMPI is powered — AB-Bind (22 crystal complexes) and ATLAS (mostly a SKEMPI subset)
+are same-signed but underpowered, as detailed above/below. The claim is a replicated **direction**, not three
+independent powered fixtures.)* — and the confidence-blindness itself extends *beyond binding*, to **catalytic
+residues** (M-CSA, §4). The
 dissociation is a property of the inverse-folding class, not of one interface type. But ATLAS is substantially a
 SKEMPI subset (only 3 non-overlapping
 complexes), so the geometry-controlled CPI cannot be powered there (its placebo floor is ~60× SKEMPI's, above any
@@ -1135,5 +1155,5 @@ responsible for the contents of this submission; no result or citation is includ
 committed code and data or to a source we fetched and checked.
 
 ---
-*Draft status: §1–9 in prose. Pending: fold in the Fable-5 catalytic audit (§4 note); a figure pass;
-external-citation URL verification; final length trim to 9 pages.*
+*Draft status: §1–9 in prose, all results folded. Remaining before submission: external-citation URL
+verification (verify-references), final length trim to 9 pages, LaTeX build, and de-identified submission repo.*
