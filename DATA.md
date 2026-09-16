@@ -67,7 +67,10 @@ files after ~1 pull/month. → **This is why Zenodo (below) is now the priority,
 (license-gated, free re-download), the RepairPDB'd crystals (CPU-regenerable), and the gitignored per-position
 leverage caches (`leverage_pq_*`, `leverage_pq_predicted_*`, `atlas_pq_*` — GPU-regenerable via `leverage*.py
 --stage score`). Nothing here is a *result*; the results are the committed CSVs. Re-deriving needs weights + inputs
-+ GPU, but no unique Sherlock state.
++ GPU, but no unique Sherlock state. **Note (audit lead):** the steering scripts read `leverage_pq_skempi*.csv` as
+their per-position *input* — gitignored derivable caches (regenerate with `leverage_decomposition.py --stage
+score`), so a from-scratch re-run regenerates them first. The steering *numbers* still trace to the committed
+summary CSV (`cfg_steer_summary.csv`), so "every number → committed CSV" holds; only the re-run needs the cache.
 
 **Hedge actions (prioritized, given the allocation is uncertain):**
 1. **Zenodo NOW** (was "at submission"): deposit the LFS big artifacts (backbones + scored tables) as a Zenodo

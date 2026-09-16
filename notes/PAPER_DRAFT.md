@@ -197,8 +197,8 @@ obvious learned alternative is the sequence-free divergence between the model's 
 monomer-conditioned distributions (a KL detector), which one might hope captures partner-induced frustration
 beyond geometry. It captures a *small* one: under a combiner-free conditional test, KL adds CPI = +0.002
 [+0.0006, +0.0034], P=0.998 beyond full geometry, and its within-geometry-stratum AUROC is 0.60 (vs 0.50
-leakage) — a genuine learned-frustratometer signal, but ~6× smaller than ΔSASA's contribution and not worth
-the network as a standalone ranker. It is the same signal §4 reads *at the placebo floor*: the scalar KL is a
+leakage) — a small, near-floor learned-frustratometer signal (§4 reads the same scalar *at* the floor on the full
+sample), ~6× smaller than ΔSASA's contribution and not worth the network as a standalone ranker. It is the same signal §4 reads *at the placebo floor*: the scalar KL is a
 contraction of the leverage vector (`E_P[L]` up to a constant) — the single best scalar summary of the two-pass
 signal — and even it captures only a sliver, a hair above the floor on this matched 5,742-position sample and
 sitting on it on the full 13,401-position sample, an order of magnitude below the full mixed derivative it
@@ -229,6 +229,8 @@ backbone error* in a measured dose law but survives on the predicted backbones d
 structure predictors, and a physics function, on crystal *and* predicted backbones. (§5's ProBID-Net, §8's
 BindCraft, and the KL detector are three scalars-of-`P` the field met separately — each blind for exactly this
 reason.)
+
+#### 4.1 The decomposition and the no-go
 
 **The decomposition.** Write the model's per-position information as two orthogonal terms of the
 inverse-folding log-likelihood's interaction expansion in the partner. **Confidence** is the *diagonal* term —
@@ -305,6 +307,8 @@ model(X_monomer)` costs a second forward pass, which by (ii) no function of `P` 
 
 The empirical sections instantiate the proposition (the arc is in the roadmap above). The feature-class law below
 is (ii) measured on natural complexes; the no-go for scalar readouts is its immediate corollary.
+
+#### 4.2 The feature-class law on natural complexes
 
 **The feature-class law (on the main fixture, natural complexes).** On SKEMPI, the mixed derivative adds
 binding information beyond cheap geometry where every scalar summary does not. Per interface position
@@ -416,6 +420,8 @@ energy should be reciprocal across a contact, a per-chain confidence artifact wo
 per-*pair* statistic deliberately: a per-complex sum of |L| over both sides is dominated by a shared
 interface-size multiplier and is not evidence of reciprocity.) → leverage_reciprocity.csv.
 
+#### 4.3 A dose law: fragility to backbone error
+
 **But this knowledge is fragile to backbone error — a dose law.** The mixed derivative is read off a backbone,
 and it does not survive a large perturbation of one. Jittering the crystal backbone to a target interface RMSD
 and re-scoring (the monomer inheriting the *same* jitter, so the partner ablation stays clean; σ=0 reproduces
@@ -465,6 +471,8 @@ teacher-forced on native sequence context that jitter leaves intact; we flag thi
 → leverage_noise_ladder.csv, leverage_noise_ladder_075full.csv, leverage_noise_ladder_esmif.csv,
 leverage_noise_ladder_esmif_{all285,redraw,tail}.csv, FINDINGS_esmif_dose_law.md.
 
+#### 4.4 Second-order couplings (epistasis)
+
 **And the knowledge extends past single effects to their *couplings* — the second mixed derivative.** If
 the single-mutant leverage is the model's first mixed derivative (partner ablation × one mutation), the
 natural next object is the second: the partner-ablated pairwise coupling `C_ij(a,b)` — the finite change in
@@ -509,6 +517,8 @@ is *shared across a contact*, +0.094, not a per-chain quantity), this is a coher
 both orders — reciprocal across a contact at first order, carrying the correct epistatic direction at second — and
 a per-chain scoring artifact, the natural null, would fail *both* tests.** → p3_coupling.csv, p3_sign_verify.csv,
 FINDINGS_p3_coupling.md.
+
+#### 4.5 De-novo design corroboration
 
 **De-novo designs corroborate — there, even the scalar distribution shows it.** Where selection is
 binding-dominated, the signal is accessible to blunter probes too. On Bennett-2023 de-novo binders with
@@ -588,6 +598,8 @@ point estimate whose CI spans zero (conditionally independent). AB-Bind's 27 com
 decide it either way, so we do not lean on it; SKEMPI, where the same readout adds +0.059 with the CI far from
 zero, is where the question is settled. → abbind_cpi.csv, abbind_bigidea1.csv, leverage_decomposition.csv.
 
+#### 4.6 Generalization beyond binding: catalytic residues
+
 **The blindness generalises beyond binding — to catalytic residues.** "Confidence is not competence" is not
 specific to binding hotspots. (The premise that a *functional*-site signal can be disentangled from a
 *stability* signal on this M-CSA benchmark is Cagiada et al.'s, 2023 — with sequence statistics plus a
@@ -618,6 +630,8 @@ invisible to a ΔAUROC-over-amino-acid-identity control, whose detection floor i
 gradient, binned by binding affinity, is null on 141 complexes; the natural regime does not furnish an
 obligate endpoint (it is defined by measurable dissociation), so a transient→obligate gradient is not
 constructible here. → confidence_gradient{,_affinity}.csv.
+
+#### 4.7 Steering a frozen model
 
 **The named direction is actionable.** If `L` is the classifier-free-guidance direction, the direct test is to
 *guide* with it. Biasing a **frozen, off-the-shelf** ProteinMPNN's interface logits by `+α·L` and sampling
@@ -738,6 +752,8 @@ Second, these judges are inverse-folding models — proxies for binding, not exp
 holds; what the naive control bounds is the *interpretation* of that fold gain, not the judge-level
 binding-specificity. → cfg_naive_summary.csv, iptm_summary_naive.csv, FINDINGS_naive.md.
 
+#### 4.8 Physics adjudication (FoldX)
+
 **The physics readout closes that gap — and adjudicates the ipTM divergence in our favor.** We ran **FoldX**
 (Guerois et al. 2002; Schymkowitz et al. 2005; Delgado et al. 2019) — a hand-fit physics energy function with an
 *explicit binding term*, from a modality entirely outside inverse folding — as the cross-check the judge/ipTM
@@ -814,6 +830,8 @@ Coverage: Lane A 2,948/2,949; Lane B 511/540 sets → 59 complexes for
 them — a bias *against* the already-large `L − random` / `naive − random`). Rosetta `flex_ddG` (the heavier
 gold-standard) was pre-registered as optional and not needed: the `L − naive` CI already excludes zero. →
 foldx_detection.csv, foldx_steer.csv, foldx_ddg_lane{A,B}.csv, FINDINGS_foldx.md; pre-registered PREREG_foldx.md.
+
+#### 4.9 Predicted-backbone steering (the design regime)
 
 **And the steering is not a crystal artifact — it survives on the backbones designers actually use.** Every steering
 result so far tilts the model on a *crystal* backbone; the staged-design regime has only a *predicted* one. So we

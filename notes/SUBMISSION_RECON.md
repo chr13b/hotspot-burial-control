@@ -74,6 +74,10 @@ landing if the main is rejected.
 - [ ] Strong `README.md`: what/why, install, one command per figure/table, data provenance, license.
 - [ ] Numbers-vs-CSV full audit (every bolded number in the paper traces to a committed CSV) — `AUDIT_PROMPT.md` Ph.1.
 - [ ] verify-references on the .bib; ensure no self-identifying citations.
+- [ ] **Delete the working marker `⟨✎ external citations DOI-verified …⟩` in §8 (PAPER_DRAFT.md ~line 1038)** — it
+      is a to-self note, must NOT appear in the built PDF.
+- [ ] Remaining readability (audit-flagged): §4 subsection headers (done), dose-law σ-ladders → table, Tier-2/3
+      sentence splits.
 - [ ] Zenodo archive before ~Oct 9 (data-archival memory deadline).
 
 ## OpenReview recon — PLAN (deep pass queued)
