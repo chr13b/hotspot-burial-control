@@ -56,37 +56,43 @@ confidence direction). Steering does not wreck recovery on predicted backbones.
 - Predicted PDBs carry the crystal chain IDs + native sequence (align position-for-position), so the interface keys
   transfer directly; the crystal source is a true matched control.
 
-## Phase 2 — CONFIRMATION (GPU): AF2-multimer on the predicted-backbone steered sequences → H1 PASS
-Pre-authorized because Phase 1 cleared zero. Folded the OF3-steered sequences (wt / L / random, k0-2) for the 21
-overlap complexes with **AF2-multimer** (ColabFold, templates off, 1 model, 3 recycles — identical to the crystal
-ipTM pipeline). 147/147 folds; wt interface ipTM median 0.840 (healthy). Paired complex-clustered bootstrap,
-mean-over-k (best-of-k in the CSV):
+## Phase 2 — CONFIRMATION (GPU): AF2-multimer on the predicted-backbone steered sequences → H1 PASS (n=93)
+Pre-authorized because Phase 1 cleared zero. Folded the OF3-steered sequences (wt / L / random, k0-2) with
+**AF2-multimer** (ColabFold, templates off, 1 model, 3 recycles — identical to the crystal ipTM pipeline). Extended
+from the original 21 overlap complexes to the **full n=93** predicted-steer set (651/651 folds; 13 of the 106
+steered complexes excluded at max-res 600, matching the filter; wt interface ipTM median ~0.84, healthy). Paired
+complex-clustered bootstrap, mean-over-k primary (best-of-k in the CSV):
 
-| metric | **L − random** | 95% CI | P(>0) | crystal anchor |
+| metric | **L − random** (n=93) | 95% CI | P(>0) | crystal anchor |
 |---|---|---|---|---|
-| **ipTM** | **+0.188** | [+0.099, +0.279] | 1.00 | +0.235 |
-| interface pAE (↓ better) | −5.21 | [−7.60, −2.91] | 0.00 | — |
-| interface pLDDT | +7.33 | [+3.44, +11.59] | 1.00 | — |
-| **composite** (z-mean ipTM, −pAE, pLDDT) | **+0.662** | [+0.368, +0.955] | 1.00 | +0.82 |
-| global pTM (localization control) | +0.079 | [+0.040, +0.122] | 1.00 | — |
+| **ipTM** | **+0.181** | [+0.144, +0.220] | 1.00 | +0.235 |
+| interface pAE (↓ better) | −5.13 | [−6.26, −4.08] | 0.00 | — |
+| interface pLDDT | +8.28 | [+6.56, +10.01] | 1.00 | — |
+| **composite** (z-mean ipTM, −pAE, pLDDT) | **+0.681** | [+0.553, +0.815] | 1.00 | +0.82 |
+| global pTM (localization control) | +0.076 | [+0.059, +0.094] | 1.00 | — |
 
-**H1 PASS** — composite(L) > random AND ipTM(L) > random, both CI>0. **H3 PASS** — localized: |ΔpTM| 0.079 ≪
-Δcomposite 0.662, so the effect is at the interface, not a global foldability change. **H2** — L−wt ipTM −0.174,
-composite −0.663: ordering **wt (0.84) > L (0.67) > random (0.48)**; L sits well above random and below the native wt
-(steering ~21 interface residues), no catastrophic collapse — the same pattern as the crystal run (wt>L>random).
-**Attenuated vs crystal (~80%: ipTM +0.19 vs +0.24, composite +0.66 vs +0.82)** — unlike the judge level (barely
+**H1 PASS** — composite(L) > random AND ipTM(L) > random, both CI>0. **H3 PASS** — localized: |ΔpTM| 0.076 ≪
+Δcomposite 0.681, so the effect is at the interface, not a global foldability change. **H2** — L−wt ipTM −0.110,
+composite −0.450: ordering **wt > L > random**, no catastrophic collapse (same pattern as the crystal run).
+**Attenuated vs crystal (~77–83%: ipTM +0.18 vs +0.24, composite +0.68 vs +0.82)** — unlike the judge level (barely
 attenuated), the *fold* level attenuates, but stays decisively CI>0. Standing caveat (crystal/naive work): the ipTM
 gain is partly a foldability effect, so Phase 2 confirms the effect **transfers** to predicted backbones; the
 binding-*specific* isolation is the judge level (Phase 1, L−naive>0) + the FoldX physics result. →
 `results/iptm_predicted{,_steer}.csv`.
 
-Operational note: the ColabFold mmseqs2 MSA server stranded ~24 folds in `PENDING` (the known hang); a 30-min
-per-fold timeout + an idempotent resubmit round recovered them to 147/147 (`jobs_iptm_fold_pred.sbatch`).
+**Before/after (auditable record):** the original **n=21** overlap subset gave ipTM L−random **+0.188** [+0.099,
++0.279], composite **+0.662** [+0.368, +0.955] (H1 PASS). Extending to **n=93** leaves the point estimates
+essentially unchanged (ipTM +0.181, composite +0.681) and **tightens the CIs ~2×** — the fold-level confirmation is
+not a small-n artifact.
+
+Operational note: the ColabFold mmseqs2 MSA server intermittently strands folds in `PENDING` (the known hang); a
+30-min per-fold timeout + idempotent resubmit rounds driven by a **connection-independent Slurm manager**
+(`jobs_pred_fold_manager.sbatch`) recovered all 651/651 (`jobs_iptm_fold_pred.sbatch`).
 
 ## Bottom line
 On **predicted (OF3 and AF2) backbones** — the staged-design regime — a `+α·L` tilt on a frozen ProteinMPNN raises
 an independent model's binding-leverage **essentially as much as on crystals** (L−random +0.70 to +0.76 across two
 judges × two predictors, all CI>0), beats the confidence tilt (L−naive > 0), and preserves recovery. An independent
-**structure predictor** (AF2-multimer) confirms it (Phase 2: ipTM L−random +0.19, composite +0.66, both CI>0, H1
-PASS), attenuated to ~80% of the crystal fold-level effect but decisive. The steering knob is **not a crystal
+**structure predictor** (AF2-multimer, n=93) confirms it (Phase 2: ipTM L−random +0.18 [+0.14,+0.22], composite
++0.68 [+0.55,+0.82], both CI>0, H1 PASS), attenuated to ~80% of the crystal fold-level effect but decisive. The steering knob is **not a crystal
 artifact**; it works where designers actually use it.
