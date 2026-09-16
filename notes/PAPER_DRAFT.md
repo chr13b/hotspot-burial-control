@@ -106,7 +106,7 @@ binding, and adds +0.018 beyond an all-atom rotamer-repacked occlusion baseline,
 scorer. → xmodel_confidence.csv, baseline_audit.csv, bindcraft_triage.csv, bennett_occlusion_allatom.csv, bennett_nonparent.csv.
 
 **(iii) The blindness generalises across function types.** On catalytic residues (M-CSA), structure-conditioned
-confidence is blind (within-amino-acid-type AUROC ≈ 0.44–0.50) while a sequence language model's conservation
+confidence is blind (within-amino-acid-type AUROC ≈ 0.43–0.52) while a sequence language model's conservation
 predicts them (0.77) — a dissociation surviving composition, burial, and chain-truncation controls.
 Inverse-folding confidence is blind to functional importance in general, not only binding. → catalytic_audit.csv.
 
@@ -607,7 +607,7 @@ specific to binding hotspots. (The premise that a *functional*-site signal can b
 biophysical stability model, not inverse folding; our distinct contribution is the
 inverse-folding-confidence-versus-PLM-conservation dissociation under a within-amino-acid-type control, and the
 finding that IF confidence is at chance.) On M-CSA catalytic residues, controlling for amino-acid composition by
-stratifying *within* amino-acid type, structure-conditioned confidence is blind (within-type AUROC 0.44–0.50 across strata, chance to weakly anti-predictive)
+stratifying *within* amino-acid type, structure-conditioned confidence is blind (within-type AUROC 0.43–0.52 across strata, chance to weakly anti-predictive)
 while a sequence language model's conservation predicts them (0.771 [0.723, 0.822]) — a dissociation
 of +0.288 [+0.237, +0.338] that survives on monomers alone (ruling out a partner-chain-truncation artifact:
 there MPNN is 0.516 [0.429, 0.604], chance) and under an additional within-amino-acid-type burial control (rSASA
@@ -886,7 +886,7 @@ The strongest form of this test uses ProBID-Net's own released voxel-CNN. Run on
 faithful (overall interface recovery 0.472, matching its reported non-hotspot number), and its published
 hotspot deficit *does* reproduce — but **only in comprehensively-scanned complexes**: pooled it is null
 (+0.014 [−0.052, +0.087]), and it appears at −0.113 [−0.208, −0.022] (p=0.007) only among the 18 complexes with
-≥5 measured hotspots (the intermediate scan-depth strata are non-monotone) —
+≥5 measured hotspots —
 the pattern expected if the deficit is real and sparsely-scanned complexes merely lack the power to show it,
 not a cherry-picked subset. But it attenuates under confound-matching: matching residue type
 turns it positive (+0.120), matching burial gives −0.038, matching
@@ -948,14 +948,14 @@ Two alternative explanations for a hotspot deficit, both plausible a priori, are
 refuted. The first is a *sample-budget* effect: at the low sampling temperatures used in design, the joint
 probability of recovering a specific multi-residue hotspot constellation is astronomically small (~10⁻¹⁰),
 so perhaps hotspots are simply lost to sampling. But that cost is statistically identical at burial-matched
-*control* constellations (median difference 0.000, p=0.90): it is a generic property of low-temperature
+*control* constellations (median difference 0.000, 95% CI [−1.67, +2.09] spanning zero): it is a generic property of low-temperature
 sampling of any buried residue set, not a hotspot-specific tax, and no amount of oversampling recovers it
 because the barrier is the temperature exponent itself. The second is a *commitment-ordering* effect: the
 autoregressive schedule might commit non-hotspot context first and paint hotspots into a corner. On
 ProteinMPNN, the oracle decoding order is inert (difference-in-differences −0.002, the decisive test); on
 MultiFlow, a coupled sequence-structure model, structure commits marginally before sequence and the
-unmasking-order knob has only a marginal effect (order-span 0.012, far below the seed-to-seed SD of 0.065 —
-the knob is inert relative to seed noise). The schedule mechanism is thus ruled
+unmasking-order knob has only a marginal effect (order-span 0.012, far below the sample SD of 0.065 across seeds
+and reference structures — the knob is inert relative to seed noise). The schedule mechanism is thus ruled
 out decisively on the autoregressive model and shown marginal on the coupled one. → FINDINGS_expB.md. Neither
 competitor accounts for the effect; what remains is the conditioning-set signal of §6.
 
@@ -1107,7 +1107,7 @@ backbones, where the effect is larger, fall in the *surviving* part of the dose 
 
 **Caveats specific to the decomposition.** (a) *Orthogonal is not independent*: confidence cannot *express*
 leverage, but the two are weakly-to-moderately correlated and the correlation is model-dependent
-(Spearman(confidence, |L|) = +0.075 for ProteinMPNN, +0.31 for ESM-IF1); we claim blindness by construction
+(Spearman(confidence, |L|) = +0.075 for ProteinMPNN, +0.30 for ESM-IF1); we claim blindness by construction
 (a flexible learner over the full bound distribution recovers only ~37% of the leverage — ~63% is irreducible
 from `P` in both families, → r2_leverage_from_P.csv), not statistical
 independence. (b) The leverage operator L *is* BA-Cycle (Jiao et al. 2024); we
@@ -1133,7 +1133,7 @@ memory — re-running ProteinMPNN on that same 337-subset leaves it unchanged, C
 geometry (position +0.0042, survives drop-3; mutation Spearman(L,ΔΔG) = −0.26, CPI +0.035 surviving
 geometry+substitution+confidence+scalar-KL, and +0.010 fully controlled), with somewhat smaller magnitudes than
 ProteinMPNN. So the feature-class law is a property of the inverse-folding class, not one model. →
-leverage_esmif.csv. (g) CPI is not formally commensurable across fixtures, so "natural ≫
+leverage_esmif.csv, leverage_dropcheck.csv (the 337-subset re-run). (g) CPI is not formally commensurable across fixtures, so "natural ≫
 de-novo" is a suggestive, not a formal, comparison. (h) *Effect sizes are modest in absolute terms* — the
 position-level CPI is +0.0048 — because the hotspot label is rare (base rate 2.4%, entropy 0.115 nats). We read
 them relatively rather than papering over them: leverage is 4.2% of the label's entropy (an order of magnitude
