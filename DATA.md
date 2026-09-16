@@ -46,6 +46,42 @@ not noise to be cleaned away.
 > at submission. Guardrail: watch the **1 GB free LFS storage** cap as C2 adds backbones — prune to the
 > scored tables (regenerable from backbones) or add a data pack if needed. The derived CSVs survive regardless.
 
+## Update 2026-09-16 — reproducibility state + Sherlock-loss hedge
+
+Scope has grown well past Exp C. Current state, and how we are hedged against losing the Sherlock allocation:
+
+**What reproduces the PAPER (numbers + figures) — GPU-free, LFS-free, Sherlock-free.** Every bolded number
+traces to a plain committed CSV in `results/` (verified by two independent audit passes); `src/fig_*.py` regenerate
+every figure from those CSVs. A reader who clones the repo can reproduce the paper's claims and figures with
+`numpy/scipy/pandas/matplotlib` alone. **This is the guarantee that matters most, and it does not depend on
+Sherlock or on LFS.**
+
+**What is in git-LFS (needed only to RE-RUN the pipeline, not to reproduce the numbers).** ~**856 MB** across 29
+objects — the big per-position scored tables (`exp{C,C2,D}_scored_positions.csv`, ~480 MB together), the predicted
+backbones (`exp{C,C2,D}_backbones.tar.gz`, ~99 MB), and the large positions/joined tables. **These are OFF Sherlock
+already (in LFS on origin), so a Sherlock purge does not lose them.** The real fragility is the **GitHub LFS
+free-tier cap (1 GB storage / 1 GB-month bandwidth)**: at 856 MB a public repo's clones start returning pointer
+files after ~1 pull/month. → **This is why Zenodo (below) is now the priority, not a submission-time nicety.**
+
+**What is ONLY on Sherlock `$SCRATCH` (lost if the allocation ends) — all re-derivable:** the FoldX 5.1 binary
+(license-gated, free re-download), the RepairPDB'd crystals (CPU-regenerable), and the gitignored per-position
+leverage caches (`leverage_pq_*`, `leverage_pq_predicted_*`, `atlas_pq_*` — GPU-regenerable via `leverage*.py
+--stage score`). Nothing here is a *result*; the results are the committed CSVs. Re-deriving needs weights + inputs
++ GPU, but no unique Sherlock state.
+
+**Hedge actions (prioritized, given the allocation is uncertain):**
+1. **Zenodo NOW** (was "at submission"): deposit the LFS big artifacts (backbones + scored tables) as a Zenodo
+   record → quota-free, durable, a DOI for the Data Availability statement, and it removes the LFS-cap clone
+   breakage. Files are pullable locally with `git lfs pull`; upload needs the operator's Zenodo account. Manifest
+   = `results/expC_interface_qc.csv` labels (interface-formed / dissolved / nan). Still comfortably before the
+   ~2026-10-09 SCRATCH-purge bound, but do it independent of that clock.
+2. **Copy the `$SCRATCH`-only derivable caches off Sherlock** before access ends (into LFS or the Zenodo bundle) so
+   a re-run needs no GPU-rescore — see `notes/SHERLOCK_ARCHIVE_HEDGE_PROMPT.md`.
+3. **`git lfs push --all origin`** confirmed complete (nothing pending) — the GitHub repo already holds every LFS
+   object; a fresh clone + `git lfs pull` is self-contained *until* the bandwidth cap bites (hence #1).
+4. At packaging, the de-identified public repo ships **load-bearing files only**, with the big artifacts referenced
+   by Zenodo DOI (not LFS) — so the public clone is small and never hits the cap.
+
 ## Do not redistribute
 
 - **RFdiffusion** (RosettaCommons) and its weights are third-party under their own license — not
