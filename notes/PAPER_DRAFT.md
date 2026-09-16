@@ -411,7 +411,7 @@ interface-size multiplier and is not evidence of reciprocity.) → leverage_reci
 **But this knowledge is fragile to backbone error — a dose law.** The mixed derivative is read off a backbone,
 and it does not survive a large perturbation of one. Jittering the crystal backbone to a target interface RMSD
 and re-scoring (the monomer inheriting the *same* jitter, so the partner ablation stays clean; σ=0 reproduces
-the crystal value exactly, a positive control), CPI(L | geometry) holds — +0.058 at 0.0 Å, +0.059 at 0.25 Å,
+the crystal value to within estimator noise, a positive control), CPI(L | geometry) holds — +0.058 at 0.0 Å, +0.059 at 0.25 Å,
 +0.047 at 0.5 Å, +0.032 at 0.75 Å — then collapses to +0.002 by 1.0 Å and −0.001 by 1.5 Å (all on the same
 2,949-mutation sample), and Spearman(L, ΔΔG) tracks it down (−0.30, −0.29, −0.29, −0.19, −0.08, −0.06). A
 re-drawn noise realization at 1 Å reproduces the collapse, so it is not a single-sample artifact. The
@@ -586,8 +586,8 @@ specific to binding hotspots. (The premise that a *functional*-site signal can b
 biophysical stability model, not inverse folding; our distinct contribution is the
 inverse-folding-confidence-versus-PLM-conservation dissociation under a within-amino-acid-type control, and the
 finding that IF confidence is at chance.) On M-CSA catalytic residues, controlling for amino-acid composition by
-stratifying *within* amino-acid type, structure-conditioned confidence is blind (within-type AUROC 0.44–0.50 across strata, chance to weakly anti-predictive,
-chance) while a sequence language model's conservation predicts them (0.771 [0.723, 0.822]) — a dissociation
+stratifying *within* amino-acid type, structure-conditioned confidence is blind (within-type AUROC 0.44–0.50 across strata, chance to weakly anti-predictive)
+while a sequence language model's conservation predicts them (0.771 [0.723, 0.822]) — a dissociation
 of +0.288 [+0.237, +0.338] that survives on monomers alone (ruling out a partner-chain-truncation artifact:
 there MPNN is 0.516 [0.429, 0.604], chance) and under an additional within-amino-acid-type burial control (rSASA
 and neighbour-count bins): +0.234 [+0.179, +0.290] on all enzymes, and +0.176 [+0.060, +0.293] with burial and
@@ -708,7 +708,7 @@ inverse-folding-*judge* level, where L beats the confidence tilt (ESM-IF1 **+0.1
 **+0.242 [+0.191, +0.292]**): a *substantial* separation between two tilts that are identical but for their
 direction, on top of a confidence baseline that is itself already strong. Binding-favorable residues are
 frequently *frustrated* (in the confidence tail), so a structure predictor under-credits them while a
-binding-sensitive judge does not. (Two honesties bound this. First, **a finding in its own right, and not a
+binding-sensitive judge does not. **Two honesties bound this.** First, **a finding in its own right, and not a
 contradiction of our thesis:** the confidence tilt is *far* from a null — ProteinMPNN confidence is substantially
 binding-correlated, carrying **~64–77% of L−random** at the judge level — a *surprisingly strong* but
 binding-**correlated**, not binding-**specific**, baseline, because a confidently-packed, foldable interface is a
@@ -725,7 +725,7 @@ both). This maps exactly onto the classifier-free-guidance structure that define
 tilts toward the model's own confidence — the *unguided/marginal* baseline — while `L` is the partner-conditioned
 minus partner-ablated *guidance* direction.** So "does `L` beat `naive`?" is precisely "does the CFG guidance term
 add over the unguided marginal?" — which is why `naive`, not `random`, is the control the CFG framing demands.
-And these judges are inverse-folding models — proxies for binding, not experimental ΔΔG (a gap the physics
+Second, these judges are inverse-folding models — proxies for binding, not experimental ΔΔG (a gap the physics
 ΔΔG readout below now closes). The standing **L − random** ipTM (+0.235)
 holds; what the naive control bounds is the *interpretation* of that fold gain, not the judge-level
 binding-specificity. → cfg_naive_summary.csv, iptm_summary_naive.csv, FINDINGS_naive.md.
@@ -958,10 +958,12 @@ their paper, which we verified), built on the conditional predictive impact (Wat
 conditional permutation test (Berrett et al. 2018), so the fact that L survives geometry (and that scalar
 summaries do not) is new; and **(iii)** the *feature-class law* — every scalar of the bound distribution sits at the CPI placebo floor
 while only the mixed derivative clears it. These add up to a **beyond-X ladder** — the mixed derivative carries
-binding signal that survives, in turn, **geometry** (burial/ΔSASA/contacts), **evolutionary conservation**, the
-**one-pass log-odds** (the full published feature set), and now a **fitted physics energy function** (FoldX;
-partial Spearman −0.17 [−0.23, −0.12], §4) — while *every scalar of `P`, at every rung, stays at the floor*: `L`
-clears every control anyone has proposed, and confidence clears none. (A single matched metric — partial
+binding signal that survives, in turn, **geometry** (burial/ΔSASA/contacts), **substitution similarity**
+(BLOSUM/Δvol/Δhydro), the **one-pass log-odds** (the full published feature set), and now a **fitted physics energy
+function** (FoldX; partial Spearman −0.17 [−0.23, −0.12], §4) — while *every scalar of `P`, at every rung, stays at
+the floor*: `L` clears every control anyone has proposed, and confidence clears none. (`L` also clears the
+*field-standard ESM-2 masked-marginal conservation* control — a real positional-conservation signal, distinct from
+the substitution-similarity rung here — measured separately in §4: CPI(L | geometry+conservation) +0.0059.) (A single matched metric — partial
 rank-correlation of `L` with experimental ΔΔG controlling for each class — makes the rungs directly comparable,
 Fig. L. → beyond_x_ladder.csv.) **The ladder and the fractal motif (§1) are two axes of one dissociation:** across
 *controls*, `L` clears every one while every scalar of `P` stays at the floor (this ladder); across *levels of the

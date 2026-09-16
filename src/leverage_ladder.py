@@ -14,8 +14,8 @@ from scipy.stats import rankdata, pearsonr
 
 SEED, NBOOT = 20260803, 5000
 RUNGS = [("geometry", ["drsasa", "rsasa_complex", "nbr", "burial"]),
-         ("conservation", ["blosum", "dvol", "dhydro"]),
-         ("one-pass log-odds", ["logP_mut", "r_mut", "conf"])]        # physics rung added below (needs FoldX merge)
+         ("substitution similarity", ["blosum", "dvol", "dhydro"]),   # BLOSUM + physicochem deltas — NOT positional
+         ("one-pass log-odds", ["logP_mut", "r_mut", "conf"])]        # (the field-standard ESM-2 conservation control is §4)
 
 
 def partial_rank(y, x, Z):

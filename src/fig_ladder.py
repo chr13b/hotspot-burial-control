@@ -20,13 +20,13 @@ S.apply()
 NDASH = "–"                                                    # ranges take an en dash, never the minus sign
 
 d = pd.read_csv("results/beyond_x_ladder.csv").set_index("rung")
-ORDER = ["geometry", "conservation", "one-pass log-odds", "fitted physics (FoldX)"]
-NAME = {"geometry": "geometry", "conservation": "conservation", "one-pass log-odds": "one-pass log-odds",
+ORDER = ["geometry", "substitution similarity", "one-pass log-odds", "fitted physics (FoldX)"]
+NAME = {"geometry": "geometry", "substitution similarity": "substitution", "one-pass log-odds": "one-pass log-odds",
         "fitted physics (FoldX)": "fitted physics"}
-SUB = {"geometry": "burial · ΔSASA · contacts", "conservation": "BLOSUM · Δvol · Δhydro",
+SUB = {"geometry": "burial · ΔSASA · contacts", "substitution similarity": "BLOSUM · Δvol · Δhydro",
        "one-pass log-odds": "full published feature set",
        "fitted physics (FoldX)": "FoldX ΔΔG$_{bind}$ — this work"}
-COL = {"geometry": S.GEOM, "conservation": S.CONS, "one-pass log-odds": S.SCALAR,
+COL = {"geometry": S.GEOM, "substitution similarity": S.CONS, "one-pass log-odds": S.SCALAR,
        "fitted physics (FoldX)": S.LEV}
 
 # ---- axis geometry, all derived from the committed numbers (nothing about the scale is hardcoded) ----
