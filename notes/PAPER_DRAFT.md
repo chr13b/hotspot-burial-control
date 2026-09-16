@@ -22,7 +22,8 @@ architectures; the published deficit is largely a burial confound. And the direc
 `+α·L` tilt on a *frozen* ProteinMPNN steers it toward higher binding-favorability — confirmed against a matched
 random control by independent sequence models, structure predictors, **and a physics energy function** (FoldX),
 the last also showing the tilt beats a same-magnitude *confidence* direction, isolating a binding-specific effect
-(four judges, two folders, both steering directions, 120 folded complexes). The leverage operator is BA-Cycle; ours is the decomposition, the
+(four judges, two folders, both steering directions, 120 folded complexes) — and it holds when the tilt is applied
+on *predicted*, not crystal, backbones, the staged-design regime itself. The leverage operator is BA-Cycle; ours is the decomposition, the
 identifiability no-go, the first beyond-geometry-and-conservation control on an inverse-folding binding signal,
 the feature-class law, and frozen-model steering. `L` is the model's **classifier-free-guidance direction**: to
 read an un-trained quantity off a conditional generative model, ablate the conditioner and take the mixed
