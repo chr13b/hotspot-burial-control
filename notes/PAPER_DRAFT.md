@@ -218,6 +218,18 @@ The results so far are corrective, and every quantity the field has read off the
 confidence, the complex-vs-monomer KL — is a *scalar summary* of the distribution. There is a specific reason
 they all fail at hotspots, and stating it turns the corrections into a theorem.
 
+**Roadmap for this section (it is long — here is the arc).** We first state the theorem — the Confidence–Leverage
+Decomposition and its no-go: confidence is the diagonal, leverage `L` is the mixed second derivative (the model's
+classifier-free-guidance direction), and confidence is blind to `L` by construction. We then trace one arc through
+the evidence: `L` adds binding information beyond every scalar of `P` and beyond cheap geometry (the *feature-class
+law*), and beyond substitution similarity, the one-pass log-odds, and a physics energy function; it is *fragile to
+backbone error* in a measured dose law but survives on the predicted backbones designers actually use; its
+*second-order couplings* track binding epistasis; it *corroborates on de-novo designs*; and it is **actionable** — a
+`+α·L` tilt steers a *frozen* model toward better binding, confirmed across four inverse-folding judges, two
+structure predictors, and a physics function, on crystal *and* predicted backbones. (§5's ProBID-Net, §8's
+BindCraft, and the KL detector are three scalars-of-`P` the field met separately — each blind for exactly this
+reason.)
+
 **The decomposition.** Write the model's per-position information as two orthogonal terms of the
 inverse-folding log-likelihood's interaction expansion in the partner. **Confidence** is the *diagonal* term —
 a scalar functional of the single bound-conditioned distribution `p(·|X_complex)` (log p(native), negentropy) —
@@ -291,12 +303,8 @@ to `L(→A)`) leaves **88% irreducible** for ProteinMPNN and **90%** for ESM-IF1
 experimental measurement noise enters, with substitution identity alone explaining ~1.5% of ΔΔG (both floors hold on a second model's distribution). → r2_ddg_from_P.csv, r2_ddg_from_P_esmif.csv. (iii) `X_monomer` is `X_complex` with the partner deleted, a deterministic map; `Q =
 model(X_monomer)` costs a second forward pass, which by (ii) no function of `P` reproduces. ∎
 
-The empirical sections instantiate the proposition — and they trace a single arc: `L` is the model's
-classifier-free-guidance direction (this section), it is among the best *training-free* readouts for locating
-interface hotspots (§8), and it is exactly the mixed derivative Proposition 1 proves confidence cannot see. The
-feature-class law below is (ii) measured on natural
-complexes; the no-go for scalar readouts is its immediate corollary; and §5 (ProBID-Net), §8 (BindCraft) and
-the KL detector are three scalars-of-`P` the field met separately, each blind for exactly this reason.
+The empirical sections instantiate the proposition (the arc is in the roadmap above). The feature-class law below
+is (ii) measured on natural complexes; the no-go for scalar readouts is its immediate corollary.
 
 **The feature-class law (on the main fixture, natural complexes).** On SKEMPI, the mixed derivative adds
 binding information beyond cheap geometry where every scalar summary does not. Per interface position
