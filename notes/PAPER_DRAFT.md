@@ -712,7 +712,9 @@ binding-sensitive judge does not. (Two honesties bound this. First, **a finding 
 contradiction of our thesis:** the confidence tilt is *far* from a null — ProteinMPNN confidence is substantially
 binding-correlated, carrying **~64–77% of L−random** at the judge level — a *surprisingly strong* but
 binding-**correlated**, not binding-**specific**, baseline, because a confidently-packed, foldable interface is a
-**prerequisite** for binding (foldability rides along with binding without being it). This does not soften "confidence
+**prerequisite** for binding. *Binding-correlated* means exactly this: the confidence direction points at *foldable*
+residues, which *tend* to bind, without pointing at the binding-favorable (often frustrated) ones per se — it rides
+along with binding rather than targeting it, which is why the binding-*specific* `L` still beats it. This does not soften "confidence
 is not competence": confidence as a **readout** is still at chance (§3, hotspot AUROC 0.51), and even confidence as
 a **direction** is beaten by the binding-specific `L` at the judge level *and* on physics — foldability gets you
 most of the way, but the binding-specific increment lives only in the mixed derivative. So
