@@ -814,10 +814,11 @@ read off the predicted structure* (pre-registered `PREREG_predicted_steer.md`; f
 `L − random` is **+0.70 to +0.76** across *both* predicted backbones × *both* anti-circular judges (ESM-IF1, MIF),
 every CI excluding zero, essentially equal to the matched-subset crystal control (+0.68 to +0.75; AF2 even edges
 it), `L − naive` stays positive (+0.17 to +0.22, specificity preserved on predicted backbones), and native recovery
-is preserved. An independent **structure predictor confirms it**: on AF2-multimer folds of the predicted-backbone
-steered sequences, interface ipTM `L − random` **+0.19 [+0.10, +0.28]** and the composite **+0.66 [+0.37, +0.96]**
-(both P(>0)=1.0, localized: |ΔpTM| 0.08 ≪ Δcomposite 0.66) — attenuated to ~80% of the crystal fold-level effect
-(ipTM +0.24), but decisive. This is **one dose law spanning both uses of the direction**: the predicted backbones
+is preserved. An independent **structure predictor confirms it** — on **93** complexes (AF2-multimer folds of the
+predicted-backbone steered sequences, 651 folds): interface ipTM `L − random` **+0.18 [+0.14, +0.22]** and the
+composite **+0.68 [+0.55, +0.81]** (both P(>0)=1.0, localized: |ΔpTM| 0.08 ≪ Δcomposite 0.68) — attenuated to ~80%
+of the crystal fold-level effect (ipTM +0.235), but decisive; extending the fold set from an initial 21 to 93 left
+the point estimates essentially unchanged and tightened the CIs ~2×, so the confirmation is not a small-n artifact. This is **one dose law spanning both uses of the direction**: the predicted backbones
 that fall on the *surviving* part of the dose law preserve the mixed derivative as a *readout* (§6, detection)
 **and** as an *intervention* (steering, here) — **the same design regime that preserves the readout preserves the
 knob**. → cfg_steer_predicted.csv, iptm_predicted.csv, FINDINGS_predicted_steer.md.
@@ -827,7 +828,8 @@ knob**. → cfg_steer_predicted.csv, iptm_predicted.csv, FINDINGS_predicted_stee
 | Judge leverage — OpenFold3 × {ESM-IF1, MIF} | **+0.73 / +0.70** | [+0.65,+0.83] / [+0.62,+0.79] |
 | Judge leverage — AF2-multimer × {ESM-IF1, MIF} | **+0.76 / +0.74** | [+0.68,+0.85] / [+0.66,+0.82] |
 | Judge leverage — crystal control (matched 106) | +0.75 / +0.68 | [+0.68,+0.82] / [+0.61,+0.74] |
-| Structure predictor — AF2-multimer interface ipTM (n=21) | **+0.19** | [+0.10, +0.28] |
+| Structure predictor — AF2-multimer interface ipTM (n=93) | **+0.18** | [+0.14, +0.22] |
+| Structure predictor — AF2-multimer composite (n=93) | **+0.68** | [+0.55, +0.81] |
 
 ## 5. On crystal backbones, the hotspot gap is a burial artifact
 

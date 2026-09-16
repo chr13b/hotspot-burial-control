@@ -16,7 +16,7 @@
 | **best-of-k design yield (+1.86)** + mean-over-k primary (+1.24) | §4, Fig. P | foldx_steer_robustness.csv |
 | AB-Bind 2nd fixture (trend, underpowered) | §4 | foldx_detection_abbind.csv |
 | L→kcal/mol calibration (0.42/unit, appendix-level) | §9(c) | laneA_calibration.csv |
-| **Predicted-backbone steering (judge +0.70–0.76, ipTM +0.19)** | §4 | cfg_steer_predicted.csv, iptm_predicted.csv |
+| **Predicted-backbone steering (judge +0.70–0.76 n=106; ipTM +0.18 [+0.14,+0.22] n=93)** | §4 | cfg_steer_predicted.csv, iptm_predicted.csv |
 | Judge matrix (4 architectures) + ipTM (AF2/Boltz-2) | §4 | cfg_judge_matrix{,_pifold}.csv, iptm_summary_*.csv |
 | Generalization triad (SKEMPI/AB-Bind/ATLAS + catalytic) | §9 | atlas_summary.csv, foldx_detection_abbind.csv |
 | Dose law (detection + intervention both survive predicted) | §4, §6 | rmsd_leverage_bridge.csv, cfg_steer_predicted.csv |
