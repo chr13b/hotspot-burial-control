@@ -80,10 +80,58 @@ landing if the main is rejected.
       sentence splits.
 - [ ] Zenodo archive before ~Oct 9 (data-archival memory deadline).
 
-## OpenReview recon — PLAN (deep pass queued)
-Goal: read the OpenReview threads of 4–6 closely-related recent papers (inverse folding / binding / protein design
-at ICLR/NeurIPS) and extract what reviewers rewarded and what they punished, then apply it. Candidates to pull:
-BA-Cycle, RedNet, StaB-ddG, ProteinMPNN-adjacent ICLR/NeurIPS papers, ProBID-Net, any ESM-IF binding papers.
-For each: the review scores, the top reviewer complaints (baselines? novelty vs prior? single-fixture? in-silico?),
-the rebuttal moves that worked, and any desk-reject/ethics/format issues. Record concrete "do/avoid" items here.
-*(To fill next turn.)*
+## OpenReview recon — FINDINGS (deep pass, 2026-09-17)
+**Provenance + caveat (citation discipline).** OpenReview's API + forum pages sat behind a live domain-wide
+bot-check on 2026-09-17 (confirmed via a positive control on the ViT/ICLR-2021 forum — identical block), so review
+TEXT below was recovered from third-party Hugging Face dataset mirrors that crawl OpenReview
+(`smallari/openreview-iclr-peer-reviews`, `insomnia7/iclr2026_stats`), each record cross-verified against the
+forum id (WebSearch) + exact title + reviewer-id format before trusting. Accept/venue for each paper was confirmed
+FIRST-PARTY via iclr.cc/icml.cc virtual pages. **Gap:** the rebuttal exchange (author responses, mid-review score
+changes) lives only on the blocked notes API — "which rebuttal moves moved scores" is unrecoverable this pass.
+Treat review quotes as mirror-sourced (not first-party-OpenReview) and NEVER quote them in the paper.
+
+**Threads extracted (ratings):**
+- **BA-Cycle** (Jiao et al.) — ICLR 2025 Accept/Poster (iclr.cc/virtual/2025/poster/28490); ratings [6,10,6,8].
+- **Complexa / Proteína-Complexa** (Didi et al., NVIDIA/Oxford) — ICLR 2026 **Oral + Poster**
+  (iclr.cc/virtual/2026/oral/10007212); ratings [10,8,4,6]. **Most relevant to us: in-silico-only, oracle-based.**
+- **PRISM** (retrieval-augmented IF) — ICLR 2026; ratings [6,4,8,6].
+- **MoMPNN** (multi-objective preference-aligned IF) — ICLR 2026; ratings [8,6,4].
+- **StaB-ddG** — ICML 2025 Poster (icml.cc/virtual/2025/poster/45926); review text NOT recovered (no mirror) — honest gap.
+- **ProBID-Net** — *Chemical Science* (RSC), closed review, no OpenReview forum (matches [[submission-hygiene]]).
+- **RedNet** (bioRxiv 2026-05-09) — no forum indexed yet (plausibly in an unopened ICLR-2027-style pipeline).
+
+**The load-bearing finding — Complexa.** An in-silico-only binder-design paper whose evaluation leans entirely on
+structure-predictor oracles got an **ORAL**, even though multiple reviewers named oracle-reliance / in-silico-only
+as weaknesses. The 10/10 review said the risk aloud ("massively overrelying on AlphaFold… biases… would not be
+picked up until wet-lab") and it did NOT cost the score. Reviewer-credited survival recipe: ≥2 independent oracles
+(AF2 **and** RF3), rich compute-normalized ablations, no easy-task/weak-baseline corner-cutting, code-release
+commitment, a plain up-front pipeline overview, limitations owned explicitly. → strong external evidence our
+in-silico-only design is venue-viable IF framed like Complexa; the "in-silico ⇒ auto-reject" fear is not borne out.
+
+**Recurring critiques to pre-empt (each independently raised by ≥2 reviewers where noted):**
+1. **"Incremental over the nearest prior method"** — the single most repeated complaint (PRISM vs AIDO.Protein-IF;
+   Complexa vs La-Proteína), 2 reviewers/paper. → OUR named #1 risk (vs BA-Cycle/RedNet). Answer at mechanism level
+   on p.1–2, not in rebuttal.
+2. **Single-fixture / limited-dataset** — named even in an 8/10 BA-Cycle review. → state the SKEMPI-only scope ourselves.
+3. **Theory without a paired empirical payoff** — PRISM's harshest reviewer called a derivation "trivial" once the
+   empirical link felt thin. → keep the no-go proposition welded to its measured non-vacuity (~63% irreducible).
+4. **Vague data-splitting / leakage** — 2 BA-Cycle reviewers independently pressed fold-splitting leakage. → state our
+   complex-level, burial-matched splitting plainly and early.
+5. **Unfair baseline settings** (mismatched temperature/sampling) — named in PRISM + MoMPNN. → confirm every comparator
+   (FoldX/geometry/substitution/log-odds) runs under identical conditions; foreground the decoding-order-averaging rule.
+6. **Undefended static calibration/threshold** — MoMPNN. → defend fixed α / post-hoc-affine L→kcal/mol as principled
+   zero-shot (already our "calibration is not fitting" + "don't tune L" stance).
+
+**Rewarded (emulate):** owning limitations (BA-Cycle 10/10, Complexa 10/10); dual-oracle anti-circular eval;
+front-loaded comprehensive + compute-normalized ablations; explicit code-release commitment; a one-paragraph
+plain-language pipeline overview for a multi-component method.
+
+**Apply-to-us checklist (✓ = already in draft; → = action, best done in the full LaTeX assembly):**
+- ✓ ≥2 independent anti-circular oracles (AF2/Boltz-2 ipTM + FoldX ΔΔG_bind) — → **foreground earlier**, not as an afterthought.
+- → **"Why not just BA-Cycle/RedNet," mechanism-level, in §1 and top of §8** (our #1 risk; make it unmissable).
+- ✓ single-fixture + in-silico-only owned in §9 — add the one-paragraph "why the interim signal is informative" justification.
+- ✓ leakage stance (complex-level, burial-matched) — → **state plainly and early**, not only in the appendix table.
+- → **methods line asserting identical baseline settings** (temperature/decoding-order/sampling) for every comparator.
+- ✓ code-release commitment — the prune guarantees the anon repo is genuinely complete at submission.
+- → **one-paragraph pipeline overview** up front (decomposition → no-go → beyond-X → CFG-steering → anti-circular eval).
+- ✓ LLM-usage disclosure + resolvable-DOI citation hygiene (run verify-references before submission; [[submission-hygiene]]).
