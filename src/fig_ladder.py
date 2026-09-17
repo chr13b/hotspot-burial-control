@@ -71,7 +71,7 @@ ax.tick_params(colors=S.RULE, labelcolor=S.INK, length=2.5, labelsize=6.0, pad=2
 ax.annotate("binding signal L retains beyond the control", xy=(XTOP / 2, 0), xycoords=("data", "axes fraction"),
             xytext=(0, -14.5), textcoords="offset points", fontsize=6.2, color=S.INK, ha="center", va="top")
 nb = int(d.nboot.max())
-ax.annotate(f"|partial rank-corr(L, ΔΔG | control)|   ·   95% CI, {nb:,} complex-clustered bootstrap replicates",
+ax.annotate(f"|partial rank-corr(L, ΔΔG | control)|   ·   95% CI, {nb:,} complex-clustered bootstraps",
             xy=(XTOP / 2, 0), xycoords=("data", "axes fraction"), xytext=(0, -22.5),
             textcoords="offset points", fontsize=5.4, color=S.MUTED, ha="center", va="top")
 
@@ -83,7 +83,6 @@ def rng(lo, hi, fmt="{:,}"):
 n = rng(int(d.n.min()), int(d.n.max()))
 nc = rng(int(d.n_complex.min()), int(d.n_complex.max()))
 S.header(ax, "L clears every control anyone has proposed",
-         note=f"one matched metric · SKEMPI interface mutants, n = {n} ({nc} complexes)"
-              f" · confidence stays at 0 at every rung", tsize=8.0)
+         note=f"one matched metric · SKEMPI interface mutants, n = {n} ({nc} complexes)", tsize=8.0)
 S.save(fig, "fig_ladder")
 print("rungs:", {k: round(val[k], 3) for k in ORDER})
