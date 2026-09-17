@@ -426,10 +426,9 @@ interface-size multiplier and is not evidence of reciprocity.) → leverage_reci
 **But this knowledge is fragile to backbone error — a dose law.** The mixed derivative is read off a backbone,
 and it does not survive a large perturbation of one. Jittering the crystal backbone to a target interface RMSD
 and re-scoring (the monomer inheriting the *same* jitter, so the partner ablation stays clean; σ=0 reproduces
-the crystal value to within estimator noise, a positive control), CPI(L | geometry) holds — +0.058 at 0.0 Å, +0.059 at 0.25 Å,
-+0.047 at 0.5 Å, +0.032 at 0.75 Å — then collapses to +0.002 by 1.0 Å and −0.001 by 1.5 Å (all on the same
-2,949-mutation sample), and Spearman(L, ΔΔG) tracks it down (−0.30, −0.29, −0.29, −0.19, −0.08, −0.06). A
-re-drawn noise realization at 1 Å reproduces the collapse, so it is not a single-sample artifact. The
+the crystal value to within estimator noise, a positive control), CPI(L | geometry) and Spearman(L, ΔΔG) hold through sub-Ångström error, then collapse
+past a model-dependent knee (the dose-law table). A re-drawn noise realization at 1 Å reproduces the
+collapse, so it is not a single-sample artifact. The
 binding signal is robust to *accurate* reconstruction and lost under an inaccurate one. **The decisive test is
 whether real predicted backbones fall on the surviving or the collapsed part of this curve, and they fall on
 the surviving part** (§6, measured directly): on OpenFold3 and AF2-multimer backbones for 140 shared complexes,
@@ -453,12 +452,9 @@ for any method reading this mixed derivative off a generated backbone (BA-Cycle,
 the sensitivity is a property of the *input backbone*, shared by any reader of the derivative. **That class
 prediction has now been run empirically under a second model family, and it half-holds — we state which half.**
 Repeating the identical ladder with ESM-IF1 (a 142M GVP-transformer with a native-teacher-forced conditional
-readout) over all 285 fixture complexes / 2,809 mutations, CPI(L | geometry) is **+0.0362 [+0.0273, +0.0452]**
-at 0.0 Å (CI excluding zero), **+0.0350** at 0.25 Å and **+0.0266 [+0.0178, +0.0353]** at 0.5 Å,
-so *the sub-Ångström survival replicates cleanly in a second architecture*. It then decays — +0.0115 at 0.75 Å,
-+0.0177 at 1.0 Å, +0.0020 [−0.0013, +0.0053] at 1.5 Å, +0.0011 at 2.0 Å — but **the collapse arrives later than
-ProteinMPNN's**: at 1.0 Å ProteinMPNN is already at the floor (+0.0024, CI touching zero) while ESM-IF1 decays
-more slowly, reaching the floor only by 1.5–2.0 Å (+0.0020 [−0.0013, +0.0053] at 1.5 Å). The 1.0 Å rung itself
+readout) over all 285 fixture complexes / 2,809 mutations, *the sub-Ångström survival replicates cleanly in a second architecture* (the dose-law table,
+ESM-IF1 columns; CI excluding zero through 0.5 Å) — but **the collapse arrives later than ProteinMPNN's**:
+ProteinMPNN is already at the floor by 1.0 Å while ESM-IF1, decaying more slowly, reaches it only by 1.5–2.0 Å. The 1.0 Å rung itself
 is unstable across noise realizations and should be read as *straddling* the floor, not as retained signal:
 three independent jitter draws on the 200-complex subsample (σ = 0.99/1.00/1.01, the seed being a function of σ)
 give +0.0019, +0.0114 and −0.0002 — a draw-to-draw spread (~0.012) the size of the estimates themselves, so the
@@ -469,6 +465,24 @@ shared; the *threshold* is model-dependent (≈1.0 Å for ProteinMPNN, ≈1.5 Å
 model, not as a universal ~1 Å cliff.** (ESM-IF1's raw Spearman(L, ΔΔG) is markedly more jitter-robust than its
 CPI — −0.252 → −0.169 at 1.0 Å versus ProteinMPNN's −0.301 → −0.077 — plausibly because its readout is
 teacher-forced on native sequence context that jitter leaves intact; we flag this as an untested hypothesis.)
+**Dose law — the mixed derivative vs backbone error (crystal-jitter ladder, both model families).**
+
+| Backbone jitter σ (Å) | ProteinMPNN: CPI beyond geom | ProteinMPNN: ρ(L,ΔΔG) | ESM-IF1: CPI beyond geom | ESM-IF1: ρ(L,ΔΔG) |
+|---|---|---|---|---|
+| 0.0 (crystal) | +0.058† | −0.30 | +0.036† | −0.25 |
+| 0.25 | +0.059† | −0.29 | +0.035† | −0.17 |
+| 0.50 | +0.047† | −0.29 | +0.027† | −0.17 |
+| 0.75 | +0.032† | −0.19 | +0.011† | −0.12 |
+| 1.0 | +0.002 | −0.08 | +0.018† | −0.17 |
+| 1.5 | −0.001 | −0.06 | +0.002 | −0.10 |
+| 2.0 | — | — | +0.001 | −0.10 |
+
+† 95% CI excludes zero (above the +0.0007 placebo floor). n = 2,949 mutations (ProteinMPNN, matched sample;
+0.75 Å rung from the full-sample re-run), 2,809 (ESM-IF1, all 285 complexes); seed 20260803. ProteinMPNN reaches
+the floor by ≈1.0 Å; ESM-IF1 (raw ρ markedly more jitter-robust) only by ≈1.5 Å — the threshold is
+model-dependent, not a universal cliff, and the ≈1.0 Å rung is realization-unstable (see text). Real predicted
+backbones fall on the surviving, sub-Ångström part (§4, §6).
+
 → leverage_noise_ladder.csv, leverage_noise_ladder_075full.csv, leverage_noise_ladder_esmif.csv,
 leverage_noise_ladder_esmif_{all285,redraw,tail}.csv, FINDINGS_esmif_dose_law.md.
 

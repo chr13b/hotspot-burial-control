@@ -29,7 +29,11 @@ Assemble one directory `$SCRATCH/ftax/zenodo_bundle/` containing:
 Do **not** include: the FoldX binary or rotabase (license), RFdiffusion weights (third-party), model weights
 (public downloads). Note their download URLs + pinned versions in `MANIFEST.md` instead.
 **Upload to Zenodo is the operator's step** (their account) — produce the bundle + MANIFEST + a printed `du -sh`
-and the file list so the operator can drag-drop or `zenodo` API upload. Report the total size.
+and the file list so the operator can drag-drop or `zenodo` API upload. Report the total size. (Operator note:
+deposit as a **Restricted-access** record with a **reserved DOI** — private now, no identity reveal for the
+double-blind submission; flip to public + named at camera-ready. The repo/Zenodo split is in
+`notes/LOAD_BEARING.md`: the anon repo ships load-bearing CSVs only, this bundle holds the big regenerable
+artifacts the repo excludes.)
 
 ## Step 3 — prove reproducibility-without-Sherlock
 - In a scratch dir, `git clone` origin fresh (no `git lfs pull`) and confirm `python3 src/fig_foldx.py`,

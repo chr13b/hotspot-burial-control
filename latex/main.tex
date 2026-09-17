@@ -27,63 +27,30 @@
 \maketitle
 
 \begin{abstract}
-Staged binder design---generate a backbone, then inverse-fold a sequence---is believed to stumble
-at protein--protein interface \emph{hotspots}, and a prominent report (ProBID-Net) quantifies this
-as inverse-folding recovery of 0.334 at hotspots versus 0.472 elsewhere, attributed to dynamics.
-The phenomenon is real but misread: the model's binding knowledge was being read from the wrong
-place. \textbf{Confidence and competence are two different derivatives of the same inverse-folding
-likelihood.} A residue's \emph{confidence} is the \emph{diagonal} term---a scalar summary of the
-bound-conditioned distribution---and measures fold-stability constraint; its binding
-\emph{leverage} is the \emph{mixed second derivative}, the response to ablating the binding
-partner, $[\log p(a \mid \text{complex}) - \log p(\text{wt} \mid \text{complex})] - [\log p(a \mid
-\text{monomer}) - \log p(\text{wt} \mid \text{monomer})]$, and measures the binding effect. Because
-the partner-ablated structure is \emph{determined} by the complex, leverage is computable from the
-structure but \textbf{not} from the bound distribution alone---so every scalar the field reads off
-the model (recovery, confidence, the complex-vs-monomer KL) is a lossy projection, blind to binding
-\textbf{by construction, not by failure}. This is no vacuous identity: holding the bound
-distribution fixed, much of the leverage spread survives---a flexible learner (the best of
-gradient boosting and random forests) trained on the \emph{entire} bound distribution recovers
-only $\sim$37\% of the leverage, so \textbf{$\sim$63\% is irreducible from the bound distribution}
-in both inverse-folding families ($\sim$62\% even when wt identity is added); the
-binding-specific component provably requires the partner-ablated second pass. And the consequence
-is measurable and large. On our main fixture (SKEMPI natural complexes) confidence ranks hotspots
-at or barely above chance across five architectures and adds nothing beyond geometry
-(position-level conditional predictive impact 0.000), while the mixed derivative adds binding
-information \textbf{beyond geometry, beyond the standard one-pass log-odds readout, and beyond
-evolutionary conservation}---the full feature set of published hotspot predictors (mutation-level
-CPI $+0.059$; Spearman with experimental $\Delta\Delta G$ $-0.30$; per-position $\sim 5\times$ the
-best scalar, where confidence is conditionally independent)---and the whole result replicates in
-three further inverse-folding families (ESM-IF1: CPI $+0.035$, Spearman $-0.26$; PiFold: $+0.050$,
-$-0.33$; MIF: $+0.058$, $-0.27$). Three consequences follow. It is \textbf{actionable}: the mixed
-derivative is among the strongest single features for ranking interface hotspots (AUROC 0.69, on
-par with the learned KL detector at 0.68 and above geometry's 0.66 and confidence's 0.51), and adds
-\textbf{+0.016 AUROC [+0.004, +0.029]} on top of the full feature set published predictors already
-use---geometry \emph{and} conservation. It is a \textbf{dose law} of backbone accuracy---the signal
-survives $\le 0.5$~\AA{} of error and then collapses, at $\sim$1~\AA{} for ProteinMPNN and
-$\sim$1.5~\AA{} for ESM-IF1---and because the sensitivity is to the \emph{backbone the derivative
-is read from}, not to the network, the fragility (though not its exact threshold, which we measure
-to be model-dependent) is a prediction every method built on the same mixed derivative (BA-Cycle,
-RedNet, StaB-ddG) inherits on predicted backbones. And it reaches the \textbf{second} mixed
-derivative: the model's partner-ablated pairwise couplings predict experimental binding
-\emph{epistasis}. The published deficit is then largely a corollary---mostly a burial confound
-that attenuates sharply under matching, across five architectures plus ProBID-Net's own released
-model---and the blindness generalizes from binding to \emph{catalytic} residues (confidence blind,
-sequence conservation predicts). The leverage operator is BA-Cycle (Jiao et al. 2024); our
-contribution is the decomposition, the identifiability result and its \emph{measured} non-vacuity,
-the first beyond-geometry (and beyond-conservation) control on any inverse-folding binding signal,
-the feature-class law, and---on the intervention side---frozen-model steering by this direction,
-validated anti-circularly by a second sequence model, an independent structure predictor, and a
-physics energy function. The
-recipe is general and already familiar: the mixed derivative is the model's
-\textbf{classifier-free-guidance direction} (the binding partner as conditioner), and to read an
-un-trained quantity off a conditional generative model one ablates the conditioner and reads that
-direction---not the conditional marginal the field has been mistaking for competence. And the
-direction is \emph{actionable}: biasing a frozen off-the-shelf ProteinMPNN's interface logits by
-$+\alpha \cdot L$ raises the binding-leverage an independent model (ESM-IF1) assigns the sampled
-residues---monotonically, while a matched-magnitude random direction \emph{lowers} it---with
-native recovery preserved, and both an independent \emph{structure} predictor (AF2-multimer interface
-ipTM) and an independent \emph{physics} energy function (FoldX; Guerois et al.\ 2002; Schymkowitz et al.\ 2005;
-Delgado et al.\ 2019) concur that the steered interfaces bind better.
+Staged binder design---generate a backbone, then inverse-fold a sequence---is thought to stumble at
+interface \emph{hotspots}; a prominent report (ProBID-Net) quantifies this as inverse-folding recovery of
+0.334 at hotspots versus 0.472 elsewhere. The phenomenon is real but misread. \textbf{Confidence and
+competence are two different derivatives of the same inverse-folding likelihood.} A residue's
+\emph{confidence} is the \emph{diagonal}---any scalar of the bound-conditioned distribution $P$---and
+measures fold-stability constraint; its binding \emph{leverage} is the \emph{mixed second derivative}, the
+response to ablating the partner. We prove $L$ is not a function of $P$, so every scalar the field reads off
+these models is blind to binding \textbf{by construction}; empirically a flexible learner over the entire
+bound distribution recovers only $\sim$37\% of $L$. The consequence is large and controlled: on natural
+complexes (SKEMPI) confidence sits at chance and adds nothing beyond geometry, while the mixed
+derivative---a \textbf{zero-shot} readout using no binding labels---adds binding information \textbf{beyond
+geometry, conservation, and the one-pass log-odds} (the full published feature set, beating a
+\emph{supervised} baseline), across four inverse-folding architectures; the published deficit is largely a
+burial confound. And the direction is \textbf{actionable}: an $+\alpha \cdot L$ tilt on a \emph{frozen}
+ProteinMPNN steers it toward higher binding-favorability---confirmed against a matched random control by
+independent sequence models, structure predictors, \textbf{and a physics energy function} (FoldX), the last
+also showing the tilt beats a same-magnitude \emph{confidence} direction, isolating a binding-specific
+effect (four judges, two folders, both steering directions, 120 folded complexes)---and it holds when the
+tilt is applied on \emph{predicted}, not crystal, backbones, the staged-design regime itself. The leverage
+operator is BA-Cycle; ours is the decomposition, the identifiability no-go, the first
+beyond-geometry-and-conservation control on an inverse-folding binding signal, the feature-class law, and
+frozen-model steering. $L$ is the model's \textbf{classifier-free-guidance direction}: to read an un-trained
+quantity off a conditional generative model, ablate the conditioner and take the mixed derivative---not the
+marginal mistaken for competence.
 \end{abstract}
 
 \section{Introduction}
