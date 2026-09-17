@@ -31,6 +31,14 @@ ship_csv=$(printf '%s\n%s\n' "$cited" "$fig" | sort -u)   # ~78 files
   `iptm_steer.csv`, `iptm_steer_120.csv`, `matched_recovery.csv`, `p0_dssp_summary.csv`,
   `expD_af2_of3_corr.csv`, `expD_af2_of3_corr_percomplex.csv`, `leverage_skempi_positions.csv`.
 
+## FIGURE-REGEN CAVEAT (found by the Fable figure pass, 2026-09-17)
+`src/fig1_decomposition.py` reads the gitignored 11 MB P/Q cache `results/leverage_pq_skempi.csv`, so a
+fresh-clone `python3 src/fig1_decomposition.py` FAILS (FileNotFoundError) until that cache is regenerated
+(`leverage_decomposition.py --stage score`) or pulled from the Zenodo bundle. The committed `fig1_decomposition.pdf`
+ships, so a reviewer SEES the figure; only regenerating it needs the cache. Anon-repo options: (a) ship the built
+`fig1_decomposition.pdf` + the one-line regen recipe in `reproduce.sh`, or (b) include `leverage_pq_skempi.csv`.
+Every other `fig*.py` regenerates from committed CSVs alone.
+
 ## EXCLUDE — big regenerable intermediates (→ Zenodo, NOT the repo)
 All `results/*.csv > 2 MB` **except `leverage_skempi_positions.csv`** (3.2 MB, a figure input → ships).
 The 23 to relocate (regenerable from committed inputs + `src/`, and archived in the Zenodo bundle):
