@@ -8,7 +8,9 @@ two things we do with it, and the three independent modalities that confirm it.
   (3) Three independent readouts agree anti-circularly: inverse-folding judges, structure predictors, physics —
       vs random (null) and naive (folds, doesn't bind) controls, on crystal AND predicted backbones.
 
-Schematic only — asserts no data values (those are Figs. 1–P/L and the tables); it carries the logic, no numbers.
+Schematic only — it carries the logic, not the effect sizes (those are Figs. 1–P/L and the tables). The ONE
+count it names, the SKEMPI detection fixture, is read from results/leverage_decomposition.csv rather than typed,
+so it can never drift from Fig. 1's n.
 
 Layout: a three-column grid with constant gutters. Every box is SIZED FROM ITS OWN TEXT (see `_h`), so a box can
 never be too small for what it holds, and each column is justified to a common floor — the arrows and the thesis
@@ -17,10 +19,16 @@ path, SCALAR-grey = the blind scalar-of-P class, ESMIF/GEOM/CONS = the three ind
 
   python3 src/fig_overview.py  ->  results/figures/fig_overview.{pdf,png}
 """
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Ellipse
 import figstyle as S
 S.apply()
+
+# the only number on this schematic: the SKEMPI detection fixture, read from the same committed row
+# Fig. 1 quotes (spearman_L_vs_ddG), never typed — 2,949, not the 2,948-mutant FoldX lane.
+_dl = pd.read_csv("results/leverage_decomposition.csv", low_memory=False)
+N_SKEMPI = int(_dl[_dl.test.astype(str).str.strip() == "spearman_L_vs_ddG"].iloc[0].n)
 
 H = 3.02                                                  # width is fixed at S.FIG_W; height is ours to choose
 RECT = [0.012, 0.010, 0.976, 0.980]
@@ -124,7 +132,7 @@ LEVG = dict(title="Leverage  L", tcol=S.LEV, fc=S.rgba(S.LEV, 0.09), ec=S.LEV, l
 
 # ---------------- stage 2 — two uses ----------------
 DET = dict(title="Detect", fc=S.TINT, ec=S.FLOOR_EDGE, lw=1.0,     # structural grey: SCALAR-grey is reserved
-           body="rank experimental ΔΔG\n(SKEMPI n=2,948; AB-Bind);\nzero-shot, competitive with\n"
+           body=f"rank experimental ΔΔG\n(SKEMPI n={N_SKEMPI:,}; AB-Bind);\nzero-shot, competitive with\n"
                 "and beyond FoldX physics")                        # for the blind scalar-of-P class alone
 STEER = dict(title="Steer", fc=S.TINT, ec=S.FLOOR_EDGE, lw=1.0,
              body="$+\\,α\\,L$ on a frozen,\noff-the-shelf ProteinMPNN\n→ new interface sequences",
@@ -159,3 +167,5 @@ ax.text(0.5, STRIP_TOP - (6.0 + 7.3 + 5.0) * PY,
         fontsize=5.5, color=S.INK, ha="center", va="top", linespacing=1.38, zorder=5)
 
 S.save(fig, "fig_overview")
+print(f"  SKEMPI detection n = {N_SKEMPI:,} (results/leverage_decomposition.csv, spearman_L_vs_ddG) "
+      f"— the same n Fig. 1a prints")

@@ -110,7 +110,9 @@ gB = fig.add_gridspec(1, 1, left=0.700, right=0.985, top=0.845, bottom=0.170)
 # ================================================================== (a) forest
 # three columns: metric name (left of zero) · whisker (right of zero) · value.
 axa = fig.add_subplot(gA[0])
-XL, XV = -0.70, 1.46                                              # label gutter / axes right edge
+XL, XV = -0.82, 1.46                                              # label gutter / axes right edge
+#      the gutter is sized for the WIDEST fallback font (DejaVu Sans on a machine with no Helvetica
+#      or Nimbus), so "composite (z-mean)" cannot push the tight bbox past the 5.5in text width
 VX = max(X(m, "hi") for m, *_ in FOREST) + 0.06                   # value column starts clear of the caps
 YS = {"composite": 0.00, "iptm": 1.05, "interface_pae": 2.10, "interface_plddt": 2.80, "ptm": 3.70}
 SEPY, SUB = 3.26, 0.34                                            # separator; sub-note offset

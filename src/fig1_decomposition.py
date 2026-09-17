@@ -57,10 +57,21 @@ CFG_A = list(CL.alpha)
 # ------------------------------------------------------------------ canvas (3 rows: a / b,c / d,e)
 fig = plt.figure(figsize=(5.5, 7.05))
 gA = fig.add_gridspec(1, 1, left=0.048, right=0.992, top=0.966, bottom=0.672)
-gB = fig.add_gridspec(1, 2, left=0.092, right=0.985, top=0.612, bottom=0.432,
+GL, GR = 0.118, 0.985             # b/d share one left edge; wide enough for d's signed tick labels
+gB = fig.add_gridspec(1, 2, left=GL, right=GR, top=0.612, bottom=0.432,
                       width_ratios=[1.16, 1.0], wspace=0.40)
-gD = fig.add_gridspec(1, 2, left=0.092, right=0.985, top=0.300, bottom=0.076,
+gD = fig.add_gridspec(1, 2, left=GL, right=GR, top=0.300, bottom=0.076,
                       width_ratios=[1.0, 1.0], wspace=0.38)
+
+
+def right_left(wr, ws):
+    """Figure-fraction left edge of the SECOND column of a two-column gridspec — derived, so a panel
+    letter can never drift off the panel it names when a width ratio changes."""
+    u = (GR - GL) / (sum(wr) + ws * np.mean(wr))
+    return GL + u * (wr[0] + ws * np.mean(wr))
+
+
+XC, XE = right_left([1.16, 1.0], 0.40), right_left([1.0, 1.0], 0.38)
 
 # ================================================================== 1a — the operator
 axa = fig.add_subplot(gA[0]); axa.set_axis_off()
@@ -181,10 +192,13 @@ for e in (EH, EC):
     axb.plot(e.conf, e.L_rms, "o", ms=4.8, mfc="none", mec=S.INK, mew=1.0, zorder=6)
 axb.annotate("", xy=(EH.conf, EH.L_rms - 0.32), xytext=(EC.conf, EC.L_rms + 0.32),
              arrowprops=dict(arrowstyle="<->", color=S.INK, lw=0.8, shrinkA=0, shrinkB=0), zorder=6)
-axb.annotate("same confidence,\n100× the leverage", xy=(EH.conf - 0.10, 3.1), xytext=(-5.90, 6.75),
-             fontsize=6.3, color=S.INK, ha="left", va="top", linespacing=1.35,
-             arrowprops=dict(arrowstyle="-", color=S.RULE, lw=0.7, shrinkA=3, shrinkB=3))
-axb.text(-5.90, 8.75, f"blue bars: 5–95th pct of |L| per decile\n"
+# the exemplar callout moves to the free upper-right quadrant, clear of the stats block on the left
+EX_MULT = int(round(float(EH.L_rms) / float(EC.L_rms), -1))        # the multiple is read, not typed
+axb.annotate(f"same confidence,\n{EX_MULT}× the leverage", xy=(EH.conf + 0.09, 3.9),
+             xytext=(0.32, 7.70), fontsize=6.3, color=S.INK, ha="right", va="top",
+             linespacing=1.35, zorder=7,
+             arrowprops=dict(arrowstyle="-", color=S.RULE, lw=0.7, shrinkA=4, shrinkB=3))
+axb.text(-5.90, 8.55, f"blue bars: 5–95th pct of |L| per decile\n"
                       f"within-decile IQR = {IQR_RATIO:.2f}× overall\n"
                       f"ρ(confidence, |L|) = {RHO_CL:+.3f}",
          fontsize=6.3, color=S.MUTED, ha="left", va="top", linespacing=1.45)
@@ -210,7 +224,7 @@ for yy, nm in [(1.0, "ProteinMPNN"), (0.0, "ESM-IF1")]:
     axc.text(-0.02, yy + 0.235, nm, fontsize=6.9, color=S.INK, ha="left", va="bottom")
     axc.text(0.99, yy + 0.235, f"{float(f.irreducible_frac)*100:.0f}% irreducible",
              fontsize=6.6, color=S.INK, ha="right", va="bottom")
-    axc.text(1.0, yy - 0.245, f"n = {int(f.n):,}", fontsize=6.0, color=S.MUTED, ha="right", va="top")
+    axc.text(0.982, yy - 0.245, f"n = {int(f.n):,}", fontsize=6.0, color=S.MUTED, ha="right", va="top")
 axc.text(float(LIN["ProteinMPNN"].r2) + 0.025, 1.0 - 0.245,
          f"linear read of P: {float(LIN['ProteinMPNN'].r2):.2f}", fontsize=6.0, color=S.MUTED,
          ha="left", va="top")
@@ -219,7 +233,7 @@ axc.text(0.985, -0.60, "P would determine L", fontsize=6.2, color=S.MUTED, ha="r
 axc.text(0.015, -0.60, "L unrelated to P", fontsize=6.2, color=S.MUTED, ha="left", va="top")
 axc.set_xlim(-0.03, 1.06); axc.set_ylim(-1.00, 1.58); axc.set_yticks([])
 axc.set_xticks([0, 0.5, 1.0]); axc.tick_params(labelsize=7.2)
-axc.set_xlabel("$R^{2}$ of $|L|_{\\mathrm{rms}}$ from all 20 coordinates of $P$", fontsize=8)
+axc.set_xlabel("$R^{2}$ of $|L|_{\\mathrm{rms}}$ from all 20 coords. of $P$", fontsize=8)
 axc.xaxis.set_label_coords(0.5, -0.145)
 S.strip(axc, left=False)
 S.assert_in_view(axc, [float(FLEX["ProteinMPNN"].hi), float(FLEX["ESM-IF1"].hi)])
@@ -268,7 +282,8 @@ axe.text(xp[2], float(CL.int_recovery.iloc[2]) + 0.004, "steer by $L$", color=S.
          fontsize=6.5, fontweight="bold", ha="center", va="bottom")
 axe.text(xp[-1], float(CR.int_recovery.iloc[-1]) - 0.004, "random dir.", color=S.MUTED,
          fontsize=6.5, ha="right", va="top")
-axe.text(0.02, base + 0.0015, "α=0 baseline", fontsize=5.8, color=S.MUTED, va="bottom", ha="left")
+axe.text(len(CFG_A) - 0.45, base + 0.0012, "α = 0 baseline", fontsize=5.8, color=S.MUTED,
+         va="bottom", ha="right")            # at the far end, between the two arms — never on a marker
 axe.set_xticks(xp); axe.set_xticklabels([f"{a:g}" for a in CFG_A], fontsize=7.0)
 axe.set_ylim(0.205, 0.315); axe.set_yticks([0.22, 0.26, 0.30]); axe.tick_params(labelsize=7.0)
 axe.set_xlim(-0.3, len(CFG_A) - 0.4)
@@ -277,10 +292,10 @@ axe.set_ylabel("native recovery", fontsize=7.7)
 S.strip(axe); S.header(axe, "at no cost to native recovery", "the L direction is native-consistent too")
 
 S.flabel(fig, 0.048, 0.992, "a")
-S.flabel(fig, 0.092, 0.642, "b")
-S.flabel(fig, 0.590, 0.642, "c")
-S.flabel(fig, 0.092, 0.330, "d")
-S.flabel(fig, 0.545, 0.330, "e")
+S.flabel(fig, GL, 0.642, "b")
+S.flabel(fig, XC, 0.642, "c")
+S.flabel(fig, GL, 0.330, "d")
+S.flabel(fig, XE, 0.330, "e")
 S.save(fig, "fig1_decomposition")
 print(f"  1a P({WT})={P[IWT]:.3f} Q({WT})={Q[IWT]:.3f}  Spearman(L,ddG)={SP_LDDG:+.3f} n={SP_N}")
 print(f"  1b IQR ratio {IQR_RATIO:.3f}  rho(conf,|L|)={RHO_CL:+.4f}  exemplars |L| {EH.L_rms:.2f} vs {EC.L_rms:.3f}")
