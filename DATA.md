@@ -105,3 +105,33 @@ summary CSV (`cfg_steer_summary.csv`), so "every number → committed CSV" holds
 - Location: `~/ftax/data/m-csa/` (curated_data.csv, pdbs/*.pdb). NOT committed (third-party).
 - Labels built by `src/mcsa_build_labels.py` → mcsa_labels.csv (130 enzymes, catalytic = role type "reactant").
 - Used by: catalytic_dissociation.py, catalytic_audit.py.
+
+## Reproducibility verification (fresh-clone test, 2026-09-17)
+A **fresh pointer-only clone** of origin (`GIT_LFS_SKIP_SMUDGE=1 git clone …`, so all git-LFS files are pointers,
+no `$SCRATCH`) reproduces the headline numbers from the committed plain CSVs alone (SEED=20260803):
+- `foldx_laneA_deepen.py` → **byte-identical** to the committed CSV; `leverage_ladder.py`, `analyse_predicted_steer.py`,
+  `fig_foldx.py` → run clean off committed CSVs; `foldx_analyse.py` → reproduces `foldx_detection.csv` **and**
+  `foldx_steer.csv` **byte-identical**.
+- **Fixed one reproducibility defect:** `src/foldx_analyse.py` defaulted to on-disk-only shards
+  (`results/_foldx_{A,B}_s*.csv`); repointed its `--a-glob/--b-glob` defaults to the committed aggregates
+  (`results/foldx_ddg_lane{A,B}.csv`, byte-schema-identical) so a fresh clone reproduces (pass the shard globs
+  explicitly to re-aggregate during a live run).
+- `fig_ladder.py` reads its committed data fine but trips a cosmetic `figstyle` width assertion (+0.2 in,
+  font-metric dependent) — a figure-layout QC, **not** an LFS/`$SCRATCH` dependency; the ladder numbers reproduce.
+- **No audited script secretly needs an LFS or `$SCRATCH` file.** Every gitignored `leverage_pq_*` / `atlas_pq_*`
+  cache is CPU-regenerable via a committed `--stage score` script (see the regeneration table in
+  `results/zenodo_manifest.md` / the audit); only the of3/af2 predicted-leverage arms need the GPU-made backbones.
+
+## git-LFS + Zenodo durability
+- `git lfs push --all origin` → **all 29 LFS objects (~1 GB history) on origin, nothing pending.** LFS is the
+  interim home; the free-tier bandwidth cap makes **Zenodo the durable home** for public clones.
+- **Zenodo bundle** assembled at `$SCRATCH/ftax/zenodo_bundle/` — **779 MB, 12 files** + `MANIFEST.md` +
+  `SHA256SUMS.txt` (copy of the manifest at `results/zenodo_manifest.md`): the big LFS artifacts
+  (exp{C,C2,D}_backbones/scored_positions, p0_positions) + the GPU-made / license-gated `$SCRATCH` inputs
+  (of3/af2 predicted PDBs, OF3 geom, FoldX-repaired crystals). Excludes weights/binaries (URLs + pinned versions in
+  the MANIFEST / `environment/README.md`). **Operator step:** deposit as Restricted-access + reserved DOI (flip
+  public at camera-ready).
+- **Frozen env specs added** for the previously-unpinned legs: `environment/{esmif,mif,of3,stab}.env.txt`
+  (pip freeze + PYTHONPATH-layered side packages). SE3nv/RFdiffusion was already pinned
+  (`environment/se3nv.{explicit,pip-freeze}.txt`). ColabFold = the pinned Apptainer image tag and PiFold =
+  unavailable (no weights) are documented in `environment/README.md` / the MANIFEST.

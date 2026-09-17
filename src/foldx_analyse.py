@@ -95,8 +95,12 @@ def lane_b(b_glob, b_out):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--a-glob", default="results/_foldx_A_s*.csv")
-    ap.add_argument("--b-glob", default="results/_foldx_B_s*.csv")
+    # default to the COMMITTED aggregates so a fresh clone reproduces GPU/LFS/Sherlock-free; the raw per-shard
+    # globs (used during the live FoldX campaign) are byte-schema-identical — pass them explicitly to re-aggregate.
+    ap.add_argument("--a-glob", default="results/foldx_ddg_laneA.csv",
+                    help="Lane-A ddG_bind source (committed aggregate; live re-run: 'results/_foldx_A_s*.csv')")
+    ap.add_argument("--b-glob", default="results/foldx_ddg_laneB.csv",
+                    help="Lane-B ddG_bind source (committed aggregate; live re-run: 'results/_foldx_B_s*.csv')")
     ap.add_argument("--a-out", default="results/foldx_detection.csv")
     ap.add_argument("--b-out", default="results/foldx_steer.csv")
     a = ap.parse_args()
