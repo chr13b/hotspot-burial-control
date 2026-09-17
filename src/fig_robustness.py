@@ -229,9 +229,9 @@ axa.text(XL, YEND + 1.05, sgn(
     + " of the random → wild-type distance — the comparison the raw Δ cannot make"),
     fontsize=5.5, color=S.MUTED, ha="left", va="center", zorder=6)
 S.header(axa, "a second folder, a second steered model, the same direction",
-         sgn(f"paired Δ (L {MINUS} random) per complex, mean over k = 3 folds  ·  "
+         sgn(f"paired Δ (L {MINUS} random) per complex, mean over k = 3  ·  "
              f"complex-clustered 95% CI  ·  P(>0) = "
-             f"{min(min(i['iptm']['p'], i['comp']['p']) for i in INSTR):.2f} on every row"))
+             f"{min(min(i['iptm']['p'], i['comp']['p']) for i in INSTR):.2f}, every row"))
 
 # ================================================================== (b) the judge matrix
 axb = fig.add_subplot(gB[0])
@@ -283,28 +283,28 @@ for t in TICKS:
 axb.text(xj(TICKS[-1]) + 0.07, RULY + 0.05, "leverage (nats)", fontsize=5.5, color=S.MUTED,
          ha="left", va="center", zorder=6)
 axb.text(XL, RULY + 1.10, sgn(
-    f"every non-self cell: L > random in ≥ {WORST_WIN * 100:.0f}% of complexes — four architectures, "
-    f"both steering directions, none of them the steered model"),
+    f"every non-self cell: L > random in ≥ {WORST_WIN * 100:.0f}% of complexes — four "
+    f"architectures, both directions, never the steered model"),
     fontsize=6.0, color=S.INK, ha="left", va="center", zorder=6)
 axb.text(XL, RULY + 1.66, "all six share ONE leverage scale — unlike a, these cells are one "
-                          "instrument family, so their lengths do compare",
+                          "instrument family, so lengths do compare",
          fontsize=5.5, color=S.MUTED, ha="left", va="center", zorder=6)
 S.header(axb, "and under four judge architectures — never the one that was steered",
-         sgn(f"paired Δ judge-leverage (L {MINUS} random), α = {ALPHA:g}  ·  the self-judged diagonal "
-             f"is excluded as circular  ·  P(>0) = {min(c['p'] for c in NONSELF):.2f} on all six"))
+         sgn(f"paired Δ judge-leverage (L {MINUS} random), α = {ALPHA:g}  ·  self-judged diagonal "
+             f"excluded  ·  P(>0) = {min(c['p'] for c in NONSELF):.2f} on all six"))
 
 # ================================================================== footnote
 SEEDS = sorted({i["iptm"]["seed"] for i in INSTR} | {c["seed"] for c in NONSELF})
 NOTE = [
     f"a, paired Δ per complex, mean over k = 3 folds; complex-clustered bootstrap, {NBOOT:,} "
-    f"replicates, seed {SEEDS[0]}. Composite = z-mean of",
-    f"(ipTM, {MINUS}interface pAE, interface pLDDT) z-scored WITHIN each run (n = "
-    + " / ".join(str(i["comp"]["n"]) for i in INSTR) + f"). The {BZ['ncx']} Boltz-2 and the "
-    f"{EF['ncx']} reverse-direction complexes",
-    f"are the SAME set, nested in the {A120['ncx']}; on those {BZ['ncx']}, AF2 / steer-ProteinMPNN "
-    f"gives {num(D_AF2_ON60, 3)} ({F_AF2_ON60 * 100:.0f}% of its span), so the AF2 / Boltz-2 difference is",
-    f"not a complex-set effect.   b, judge-leverage = the per-complex mean L over the sampled "
-    f"interface residues; method {METHOD}, same bootstrap.",
+    f"replicates, seed {SEEDS[0]}. Composite =",
+    f"z-mean of (ipTM, {MINUS}interface pAE, interface pLDDT), z-scored WITHIN each run (n = "
+    + " / ".join(str(i["comp"]["n"]) for i in INSTR) + f"). The {BZ['ncx']} Boltz-2 and",
+    f"the {EF['ncx']} reverse-direction complexes are the SAME set, nested in the {A120['ncx']}; on "
+    f"those {BZ['ncx']}, AF2 / steer-ProteinMPNN gives",
+    f"{num(D_AF2_ON60, 3)} ({F_AF2_ON60 * 100:.0f}% of its span), so the AF2 / Boltz-2 difference is "
+    f"not a complex-set effect.   b, judge-leverage = the",
+    f"per-complex mean L over the sampled interface residues; method {METHOD}, same bootstrap.",
 ]
 fig.text(0.043, 0.118, sgn("\n".join(NOTE)), fontsize=5.35, color=S.MUTED, ha="left", va="top",
          linespacing=1.55)

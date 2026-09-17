@@ -67,7 +67,7 @@ for xx, (nm, v, lo, hi) in zip(XSLOT, PRED):
     axa.plot(xx, v, "D", ms=4.2, color=S.INK, mfc="white" if open_ else S.INK,
              mec=S.INK, mew=1.0, zorder=5)
 axa.plot(XSLOT, [p[1] for p in PRED], "-", color=S.INK, lw=0.7, zorder=3)
-axa.annotate("real predicted\nbackbones, 140 cx\ncrystal → OF3 → AF2",
+axa.annotate(f"real predicted\nbackbones, {ncx_pred} cx\ncrystal → OF3 → AF2",
              xy=(XSLOT[0] - 0.04, PRED[0][1] + 0.004), xytext=(1.28, 0.0755), fontsize=6.2,
              color=S.INK, va="top", ha="left", linespacing=1.35,
              arrowprops=dict(arrowstyle="-", color=S.RULE, lw=0.7, shrinkA=2, shrinkB=4,
@@ -130,5 +130,6 @@ for x, ch in zip(lefts, "abc"):
     S.flabel(fig, x, 0.955, ch)
 S.save(fig, "fig3_doselaw")
 print(f"  3a MPNN {np.round(cm,4).tolist()} | ESM {np.round(ce,4).tolist()}")
-print(f"  3a slot {[(k, round(v,5)) for k, v, _, _ in PRED]}")
+print(f"  3a slot {[(k, round(v,5)) for k, v, _, _ in PRED]}  (n={n_pred:,} mut / {ncx_pred} cx, "
+      f"leverage_predicted.csv)")
 print(f"  3c draws {np.round(rz.cpi_L_geom.values,5).tolist()}")

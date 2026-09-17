@@ -187,7 +187,9 @@ axb = fig.add_subplot(gB[0])
 # three columns that no mark may enter: label gutter | whisker region (|x| <= 1) | value column.
 # The whisker region is normalised per block, so the SHARED zero line is the only thing the two
 # blocks have in common — which is exactly the comparison being made.
-XL, LX, VX, XV = -2.20, -1.06, 1.10, 2.90
+# XV is sized so the value column still clears the panel edge under the WIDEST fallback font
+# (DejaVu Sans, on a machine with no Helvetica / Nimbus) — the 5.5in guard must hold there too.
+XL, LX, VX, XV = -2.20, -1.06, 1.10, 3.10
 YB, y = {}, 0.0
 for tag, *_ in BLOCKS:
     for k, _ in BACKBONE:
@@ -205,8 +207,10 @@ axb.text(0.0, -1.02, "no effect", fontsize=5.6, color=S.MUTED, ha="center", va="
 axb.plot([XL, XV], [SEPY, SEPY], "-", color=S.GHOST, lw=0.6, zorder=1)
 
 for tag, htitle, src, col, dp in BLOCKS:
+    # the block title spans the zero rule, so it knocks a clean hole in it rather than sitting on it
     axb.text(XL, YB[(tag, "crystal")] - 0.66, htitle, fontsize=6.2, color=S.INK,
-             ha="left", va="center", zorder=6)
+             ha="left", va="center", zorder=6,
+             path_effects=[pe.withStroke(linewidth=5.2, foreground="white")])
     axb.plot([src[k]["v"] / SCALE[tag] for k, _ in BACKBONE],                # crystal -> predicted
              [YB[(tag, k)] for k, _ in BACKBONE], "-", color=S.GHOST, lw=0.7, zorder=3)
     for k, klab in BACKBONE:

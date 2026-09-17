@@ -52,9 +52,11 @@ axa = fig.add_axes([gsL, 0.20, 0.40, 0.60])       # (a) steering forest
 axb = fig.add_axes([gsR, 0.20, 0.345, 0.60])      # (b) detection bars
 
 # ============================ (a) steering specificity ============================
+# grey is the NON-identity here: both vs-random contrasts are the same kind of thing, so they take the
+# one house grey (SCALAR) and are told apart by their labels, not by two shades of the same non-hue.
 ROWS = [("L-naive", "L − naive   (decisive)", S.LEV, True),
         ("naive-random", "naive − random", S.SCALAR, False),
-        ("L-random", "L − random", S.MUTED, False)]
+        ("L-random", "L − random", S.SCALAR, False)]
 ys = [2.3, 1.15, 0.0]                              # decisive on top, extra gap below it
 axa.axvline(0, ls=(0, (3, 3)), color=S.RULE, lw=0.8, zorder=2)
 for (key, lab, col, decisive), y in zip(ROWS, ys):
@@ -87,25 +89,28 @@ axa.set_xticks([0, 3, 6, 9])
 axa.tick_params(colors=S.RULE, labelcolor=S.INK, length=2.5, labelsize=6.0)
 axa.set_xlabel("Δ favorability  (= −ΔΔG$_{bind}$, kcal/mol)  —  >0 favours the first arm",
                fontsize=5.9, color=S.MUTED)
+NS = sorted({int(st.loc[k].n) for k, *_ in ROWS}, reverse=True)      # read, never typed
 S.header(axa, "L > naive > random on physics ΔΔG$_{bind}$",
-         note="best-of-k (design yield); paired 95% CI  ·  n = 59 / 57 complexes", tsize=7.6)
+         note="best-of-k (design yield); paired 95% CI  ·  n = "
+              + " / ".join(str(n) for n in NS) + " complexes", tsize=7.6)
 
 # ============================ (b) detection ============================
 bars = [("FoldX ΔΔG$_{bind}$", abs(rho_fx), S.SCALAR, "fit to ΔΔG"),
         ("L  (leverage)", abs(rho_l), S.LEV, "zero-shot, no binding term")]
 by = [1.0, 0.0]
 for (lab, val, col, sub), y in zip(bars, by):
-    axb.barh(y, val, height=0.52, color=col, zorder=3)
-    axb.text(val + 0.012, y + 0.11, f"{val:.3f}".replace("-", MINUS), fontsize=6.6,
+    axb.barh(y, val, height=0.44, color=col, zorder=3)
+    axb.text(val + 0.012, y, f"{val:.3f}".replace("-", MINUS), fontsize=6.8,
              color=S.INK, ha="left", va="center", fontweight="bold", zorder=6)
-    axb.text(0.006, y + 0.11, lab, fontsize=6.4, color="white", ha="left", va="center",
+    axb.text(0.008, y, lab, fontsize=6.4, color="white", ha="left", va="center",
              fontweight="bold", zorder=6)
-    axb.text(0.006, y - 0.22, sub, fontsize=5.4, color=S.MUTED, ha="left", va="center", zorder=6)
-axb.annotate(f"L recovers {recov*100:.0f}% of the\nphysics tool's rank accuracy",
-             xy=(abs(rho_l), 0.0), xytext=(abs(rho_fx) - 0.02, 0.52),
-             fontsize=5.5, color=S.LEV, ha="right", va="center", linespacing=1.35, zorder=6)
+    # the qualifier goes BELOW the bar, on the white surface — grey-on-fill was barely readable
+    axb.text(0.0, y - 0.35, sub, fontsize=5.4, color=S.MUTED, ha="left", va="center", zorder=6)
+# the callout sits in the free band BETWEEN the two bars, right-aligned under the FoldX value
+axb.text(abs(rho_fx) + 0.082, 0.42, f"L recovers {recov*100:.0f}% of the\nphysics tool's rank accuracy",
+         fontsize=5.5, color=S.LEV, ha="right", va="center", linespacing=1.35, zorder=6)
 axb.set_xlim(0, 0.52)
-axb.set_ylim(-0.62, 1.62)
+axb.set_ylim(-0.72, 1.52)
 axb.set_yticks([])
 axb.spines["left"].set_visible(False)
 axb.spines["top"].set_visible(False)

@@ -47,10 +47,11 @@ for xi, lo, hi in zip(x[:3], lev_lo, lev_hi):
     ax.plot([xi, xi], [lo, hi], color=S.LEV, lw=0.9, zorder=3)
 ax.plot(x[:3], lev, "s", color=S.LEV, ms=5.5, zorder=6)
 
-# direct labels (no boxed legend)
-ax.text(1.55, 0.585, "leverage", color=S.LEV, fontsize=7, fontweight="bold", ha="center")
-ax.text(4.0, 0.648, "confidence", color=S.MUTED, fontsize=7, ha="center")
-ax.text(2.0, 0.785, "burial", color=S.GEOM, fontsize=6.5, ha="center")
+# direct labels (no boxed legend). Each sits beside its OWN series in free space — in particular the
+# leverage label hangs off the Pr/PI square rather than crossing the burial line between x = 1 and 2.
+ax.text(3.16, 0.705, "leverage", color=S.LEV, fontsize=7, fontweight="bold", ha="left", va="center")
+ax.text(4.0, 0.655, "confidence", color=S.MUTED, fontsize=7, ha="center")
+ax.text(2.0, 0.788, "burial", color=S.GEOM, fontsize=6.5, ha="center")
 
 ax.set_xticks(x); ax.set_xticklabels(labels, fontsize=6.4)
 ax.set_ylim(0.34, 0.84); ax.set_xlim(0.55, 4.55)

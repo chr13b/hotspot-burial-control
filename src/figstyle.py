@@ -69,27 +69,61 @@ def assert_in_view(ax, xs, axis="x"):
 
 
 PAD = 0.02
+FALLBACK = "DejaVu Sans"      # what a machine with no Helvetica / Arial / Nimbus Sans falls back to
+
+
+def _tight_w(fig):
+    fig.canvas.draw()
+    return fig.get_tightbbox(fig.canvas.get_renderer()).width + 2 * PAD
+
+
+def _fallback_w(fig):
+    """The tight width this same figure would have under the metric-WIDEST fallback font.
+
+    matplotlib resolves a Text's family when the Text is built, so flipping rcParams here would be
+    silently ignored; each Text is therefore re-familied in place and put back afterwards. The file
+    that gets written is unaffected — this is a measurement, not a restyle."""
+    import matplotlib.text as mtext
+    texts = list(fig.findobj(mtext.Text))
+    old = [t.get_fontfamily() for t in texts]
+    try:
+        for t in texts:
+            t.set_fontfamily([FALLBACK])
+        return _tight_w(fig)
+    finally:
+        for t, o in zip(texts, old):
+            t.set_fontfamily(o)
+        fig.canvas.draw()
 
 
 def save(fig, stem):
     """Write PDF + PNG at true final width. bbox_inches='tight' silently GROWS the saved file when
     a title/note overhangs the axes, which is how a '5.5in' figure ships at 6.25in and gets scaled
     down by \\includegraphics — the exact failure this house style exists to prevent. So measure the
-    tight bbox and refuse to write when it overflows: shorten the overhanging text instead."""
+    tight bbox and refuse to write when it overflows: shorten the overhanging text instead.
+
+    The same measurement is repeated under the FALLBACK font, because the width guard is only worth
+    anything on the machine that renders the camera-ready: a figure that fits in Nimbus Sans here can
+    overflow in DejaVu Sans there, and that overflow is invisible until the page is typeset."""
     import os
     w = fig.get_size_inches()[0]
     assert w <= FIG_W + 0.02, f"[figstyle] figure width {w:.2f}in exceeds {FIG_W}in"
-    fig.canvas.draw()
-    saved = fig.get_tightbbox(fig.canvas.get_renderer()).width + 2 * PAD
+    saved = _tight_w(fig)
     assert saved <= FIG_W + 0.01, (
         f"[figstyle] saved width {saved:.3f}in overflows {FIG_W}in by {saved - FIG_W:+.3f}in — "
         f"an in-plot title/note/label overhangs the figure. Shorten it or widen its panel; "
         f"never render wide and scale down.")
+    fb = _fallback_w(fig)
+    assert fb <= FIG_W + 0.01, (
+        f"[figstyle] under the {FALLBACK} fallback the saved width is {fb:.3f}in, {fb - FIG_W:+.3f}in "
+        f"over {FIG_W}in (it fits at {saved:.3f}in in the font installed here). Shorten the longest "
+        f"note/label or widen its gutter — the camera-ready machine may have no Helvetica or Nimbus.")
     os.makedirs("results/figures", exist_ok=True)
     fig.savefig(f"results/figures/{stem}.pdf", bbox_inches="tight", pad_inches=PAD)
     fig.savefig(f"results/figures/{stem}.png", bbox_inches="tight", pad_inches=PAD, dpi=200)
     print(f"wrote results/figures/{stem}.{{pdf,png}}  ({saved:.2f} × "
-          f"{fig.get_tightbbox(fig.canvas.get_renderer()).height + 2 * PAD:.2f} in)")
+          f"{fig.get_tightbbox(fig.canvas.get_renderer()).height + 2 * PAD:.2f} in"
+          f"; {FALLBACK} fallback {fb:.2f} in)")
 
 
 rgba = to_rgba

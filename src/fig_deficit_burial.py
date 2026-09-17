@@ -65,10 +65,12 @@ U_MEA = dss.loc["UNCONTROLLED_strict_vs_measured_nonhot_iface"]
 U_LOO = dss.loc["UNCONTROLLED_loose_vs_null_iface"]
 
 # five pools: the hotspot pool(s) and the three candidate control pools, each read from the CSV
+# every label is ONE line, so with its count appended each gutter entry is exactly two lines — three
+# would be taller than the row pitch and adjacent pools would overlap
 POOLS = [
     ("nulls",              f"nulls |{DDG}|<0.25",  U_LOO.rsasa_null, U_LOO.recovery_null, U_LOO.n_nonhot, 0),
-    ("measured_non",       "measured\nnon-hotspots",   U_MEA.rsasa_null, U_MEA.recovery_null, U_MEA.n_nonhot, 0),
-    ("all_other",          "all other\ninterface",     U_ALL.rsasa_null, U_ALL.recovery_null, U_ALL.n_nonhot, 0),
+    ("measured_non",       "measured non-hotspots", U_MEA.rsasa_null, U_MEA.recovery_null, U_MEA.n_nonhot, 0),
+    ("all_other",          "all other interface",   U_ALL.rsasa_null, U_ALL.recovery_null, U_ALL.n_nonhot, 0),
     ("hot_loose",          f"hotspots {DDG}>1",    U_LOO.rsasa_hot,  U_LOO.recovery_hot,  U_LOO.n_hot,    1),
     ("hot_strict",         f"hotspots {DDG}>2",    U_ALL.rsasa_hot,  U_ALL.recovery_hot,  U_ALL.n_hot,    1),
 ]
@@ -159,8 +161,8 @@ assert SEED == int(pg.loc["uncontrolled_strat_nhot_ge5"].seed), "panels disagree
 
 # ================================================================== canvas
 fig = plt.figure(figsize=(5.5, 5.45))
-gA = fig.add_gridspec(1, 1, left=0.142, right=0.372, top=0.910, bottom=0.680)
-gB = fig.add_gridspec(1, 1, left=0.600, right=0.985, top=0.910, bottom=0.676)
+gA = fig.add_gridspec(1, 1, left=0.184, right=0.398, top=0.910, bottom=0.680)
+gB = fig.add_gridspec(1, 1, left=0.626, right=0.985, top=0.910, bottom=0.676)
 gC = fig.add_gridspec(1, 1, left=0.205, right=0.985, top=0.505, bottom=0.255)
 
 RAMP = S.RAMP_MPNN
@@ -248,9 +250,10 @@ axb.text(XB[0] + 0.008, YB[PROBID[4]["key"]] - 0.60, "confound-matched, same fix
          fontsize=5.8, color=S.MUTED, ha="left", va="center", zorder=6)
 axb.plot(list(XB), [BSEP, BSEP], "-", color=S.GHOST, lw=0.6, zorder=1)
 
-axb.text(XB[0] + 0.008, YB[DEEP["key"]] + 0.58,
-         sgn(f"{num(DEEP['v'])} — the published deficit, reproduced"),
-         fontsize=5.7, color=S.INK, ha="left", va="center", zorder=7)
+# the deep-scan number labels its OWN row, in the free space right of zero — a line slung underneath
+# it sat on that row's whisker caps
+axb.text(0.022, YB[DEEP["key"]], sgn(f"{num(DEEP['v'])} — the published\ndeficit, reproduced"),
+         fontsize=5.7, color=S.INK, ha="left", va="center", linespacing=1.35, zorder=7)
 axb.text(XB[1], YB[PROBID[4]["key"]] - 0.60, f"all {N_MAT_SPAN0} span zero", fontsize=5.8,
          color=S.LEV, ha="right", va="center", fontweight="bold", zorder=7)
 
@@ -348,9 +351,9 @@ fig.text(0.028, 0.145,
              f"{num(DS.dsasa_adjusted_deficit)} nats."),
          fontsize=5.6, color=S.MUTED, ha="left", va="top", linespacing=1.5)
 
-S.flabel(fig, 0.142, 0.986, "a")
-S.flabel(fig, 0.600, 0.986, "b")
-S.flabel(fig, 0.142, 0.598, "c")
+S.flabel(fig, 0.184, 0.986, "a")
+S.flabel(fig, 0.626, 0.986, "b")
+S.flabel(fig, 0.205, 0.598, "c")
 S.save(fig, "fig_deficit_burial")
 
 # ------------------------------------------------------------------ provenance
