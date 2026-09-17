@@ -10,6 +10,9 @@
 
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\graphicspath{{../results/figures/}}
 
 \title{Confidence is not competence: inverse-folding models know binding in the mixed derivative}
 
@@ -132,45 +135,472 @@ rather than inventing one. Controlling burial is not a detail. It is the experim
 \end{itemize}
 
 \section{Setup and pre-registration}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md \S2, house-styled.
-% Fold: state complex-level, burial-matched leakage control plainly here (recon action).
-% Keep the four evaluation questions (Q1-Q4) stated up front (recon: eval questions early).
+
+\paragraph{Fixtures.} Our primary fixture is SKEMPI 2.0, from which we take single-mutation binding data and define
+a hotspot as an alanine-scan $\Delta\Delta G_{\text{bind}} > 1$ kcal/mol (strict variant $> 2$, ProBID-Net's
+threshold), with a null set of $|\Delta\Delta G| < 0.25$. Hotspots are rare, 2.4\% of interface positions
+(327/13{,}401, label entropy 0.115 nats), which sets the scale for the effect sizes below. Because SKEMPI
+complexes are crystal structures of \emph{natural} complexes, we add two fixtures of different character.
+Bennett-2023 de-novo designed binders carry site-saturation binding measurements over four targets, a true
+design-regime test. AB-Bind gives antibody-antigen $\Delta\Delta G$ over 27 analysed complexes, a second
+SKEMPI-class fixture with distinct biophysics.
+
+\paragraph{The matched-pair protocol, and leakage.} The burial analysis rests on a within-complex optimal 1:1
+matching of hotspots to null residues on relative complex SASA ($\pm 0.05$), secondary-structure class, and
+neighbour count ($\pm 1$). All matching and all cross-validation are \emph{complex-level}: a complex is never
+split across train and test, so a leak through near-identical interface structures cannot inflate a result.
+Effects are aggregated by complex-clustered bootstrap, every seed is fixed (20260803) and reported with its
+replicate count.
+
+\paragraph{Statistical stance.} Headline claims are pre-registered, so their tests are confirmatory rather than
+selected after seeing the data. The placebo floor calibrates the conditional-predictive-impact (CPI) estimator's
+false-positive rate directly: a feature must clear the floor, not merely exceed zero. Every interval is a
+complex-clustered bootstrap. The secondary and cross-architecture analyses are reported without a global
+family-wise correction and are treated as descriptive support, not independent confirmatory tests.
+
+\paragraph{Models.} Five inverse-folding architectures span the design space: ProteinMPNN (vanilla and soluble),
+ESM-IF1 (a 142M-parameter GVP-transformer), PiFold (a one-shot GNN), MIF (masked inverse folding), and
+ProBID-Net (a voxel CNN). A positive control gates every scoring path. These are inverse-folding \emph{sequence}
+models, the stage our critique targets. Backbone generators such as RFdiffusion are the upstream stage and are
+not steerable by $+\alpha \cdot L$ nor usable as a leverage judge, so they enter only through the
+generated-backbone regime we test directly in Section 6.
+
+\paragraph{What the evaluation answers.} Four questions organise the empirical sections. \textbf{(Q1)} Can any
+scalar a designer reads off an inverse-folding model (recovery, confidence, entropy, a complex-vs-monomer KL)
+locate binding hotspots beyond cheap geometry (Section 3)? \textbf{(Q2)} If not, where does the model's binding
+knowledge live, and is it real beyond geometry, beyond conservation, and beyond the one-pass log-odds, on the
+natural complexes the field benchmarks on (Section 4)? \textbf{(Q3)} Is that knowledge actionable, can it steer a
+frozen model, and do independent models agree the result binds better (Section 4)? \textbf{(Q4)} Does it survive
+the predicted backbones designers condition on, and is the published recovery deficit a real binding effect or a
+burial confound (Sections 5 and 6)?
 
 \section{Confidence is not competence}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md \S3, house-styled.
+
+The quantity a practitioner is most tempted to trust, the model's own confidence that the native residue belongs
+at a position, is useless for locating hotspots. On SKEMPI interface positions, ProteinMPNN's per-residue
+confidence attains an AUROC of 0.538 for hotspots, barely above chance, and for a fixed-budget triage (the top-3
+interface positions per complex) it captures fewer hotspots than random selection (0.064 vs 0.084, overlapping
+intervals, so a trend rather than a significant deficit). The point is that confidence buys nothing over random.
+
+One might object that any single scalar can be rescued by combining it with structure. It cannot. We apply a CPI
+test: cross-fit a model of hotspot-ness on cheap geometry (burial, neighbour count, $\Delta$SASA), then measure
+how much predictive information confidence adds once its geometry-conditional information is destroyed by
+permutation within geometry strata. The estimate is $0.000$ $[-0.0003, +0.0003]$: confidence is conditionally
+independent of hotspot-ness given structure. By the same test, $\Delta$SASA adds real information ($+0.013$) and
+the KL detector adds a token amount ($+0.002$).
+
+This is not a quirk of one network. Across all five architectures, interface-hotspot confidence-AUROC lies in
+$0.50$ to $0.54$ (ProteinMPNN 0.538, ESM-IF1 0.517, PiFold 0.499, MIF 0.509, ProBID-Net 0.536), each 0.15 to 0.19
+below what trivial burial alone achieves. What predicts hotspots is free geometry: burial reaches 0.689,
+$\Delta$SASA (the partner-contact area, computable without any network) 0.673, and a cheap-geometry combination
+0.734. The learned alternative, a sequence-free KL detector between the complex- and monomer-conditioned
+distributions, captures only a small signal (CPI $+0.002$, within-stratum AUROC 0.60, about six times smaller than
+$\Delta$SASA). None of this is specific to SKEMPI: on AB-Bind the identical pattern holds (confidence-AUROC 0.560
+at chance, adding $+0.008$ over full geometry).
 
 \section{The Confidence--Leverage Decomposition: the model knows binding in the mixed derivative}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md \S4, house-styled.
-% Fold: foreground the multi-oracle anti-circular evaluation (AF2/Boltz-2 ipTM + FoldX) earlier;
-% add a methods line asserting identical baseline settings (temperature/decoding-order/sampling)
-% for every comparator (recon actions).
+
+The results so far are corrective, and every quantity the field reads off these models (recovery, confidence, the
+KL) is a scalar summary of the distribution. There is a specific reason they all fail at hotspots, and stating it
+turns the corrections into a theorem.
+
+\subsection{The decomposition and the no-go}
+
+Write the model's per-position information as two terms of the inverse-folding log-likelihood. \textbf{Confidence}
+is the \emph{diagonal}, a scalar functional of the single bound-conditioned distribution $p(\cdot \mid
+X_{\text{complex}})$ (log $p(\text{native})$, negentropy), and estimates fold-stability constraint.
+\textbf{Leverage} is the \emph{mixed second difference}, the per-substitution response to ablating the partner:
+\[
+L_i(a) = [\log p(a \mid X_{\text{complex}}) - \log p(\text{wt} \mid X_{\text{complex}})]
+       - [\log p(a \mid X_{\text{monomer}}) - \log p(\text{wt} \mid X_{\text{monomer}})],
+\]
+which by the standard binding thermodynamic cycle estimates $-\Delta\Delta G_{\text{bind}}$ up to a single unknown
+positive scale. This is exactly the classifier-free-guidance direction: a guided logit
+$\text{logit}(\cdot \mid X_{\text{complex}}) + \alpha \cdot [\text{logit}(\cdot \mid X_{\text{complex}}) -
+\text{logit}(\cdot \mid X_{\text{monomer}})]$ has bracket equal to $L$ up to a reference shift the softmax absorbs.
+The binding partner is the conditioner and confidence is the conditional marginal, so the recipe for reading an
+un-trained quantity off a conditional generative model is to ablate the conditioner and take this mixed
+derivative, not the marginal.
+
+\begin{quote}
+\textbf{Proposition 1 (Confidence is blind to leverage).} Fix a model and an interface position $i$, with
+$P_i = p(\cdot \mid X_{\text{complex}})$ and $Q_i = p(\cdot \mid X_{\text{monomer}})$. \textbf{(i, cycle)}
+$L_i(a)$ estimates $-\Delta\Delta G_{\text{bind}}(i, \text{wt} \to a)$ up to one positive scale.
+\textbf{(ii, non-identifiability)} $L$ is not a function of $P$: two positions with $P_i = P_j$ have identical
+confidence $\varphi(P_i) = \varphi(P_j)$ for every functional $\varphi$, yet can differ in leverage, so any
+$P$-only estimator carries an error floor $\inf_\varphi \mathbb{E}[(\Delta\Delta G_{\text{bind}} - \varphi(P))^2]
+\ge \mathbb{E}[\text{Var}(\Delta\Delta G_{\text{bind}} \mid P)] > 0$. \textbf{(iii, readout, not model)}
+$X_{\text{monomer}}$ is $X_{\text{complex}}$ with the partner deleted, a deterministic map, so $L$ is computable by
+a second forward pass yet by (ii) is not a function of $P$. The binding term is in the weights, reachable only by
+re-querying on $X_{\text{monomer}}$.
+\end{quote}
+
+The no-go is not vacuous, and we measure it. A flexible learner (the better of gradient boosting and random
+forests, out-of-sample under complex-clustered cross-validation) trained on the full 20-vector $P$ recovers only
+$R^2(L \mid P) = 0.37$ $[0.34, 0.40]$ for ProteinMPNN and $0.36$ $[0.34, 0.39]$ for ESM-IF1, so about 63\% of the
+mixed derivative is irreducible from $P$ in both families (about 62\% even when wild-type identity is added). A
+linear readout recovers less than half of that. Against ground truth the floor is starker: regressing experimental
+$\Delta\Delta G_{\text{bind}}$ directly on $P$ leaves 88\% irreducible for ProteinMPNN and 90\% for ESM-IF1.
+
+\subsection{The feature-class law on natural complexes}
+
+On SKEMPI, the mixed derivative adds binding information beyond cheap geometry where every scalar summary does
+not (Table~\ref{tab:featureclass}, per interface position, CPI over burial, neighbours, and $\Delta$SASA). At the
+mutation level the effect is large: Spearman$(L, \Delta\Delta G) = -0.30$ and CPI$(L \mid \text{geometry}) = +0.059$
+$[+0.046, +0.073]$. The second pass earns its keep against the standard one-pass complex log-odds: controlling for
+it and geometry, leverage still tracks $\Delta\Delta G$ (partial Spearman $-0.147$ $[-0.190, -0.108]$), and the
+one-pass readout retains signal after controlling for leverage ($-0.094$), so neither pass subsumes the other.
+The increment is not conservation in disguise: scoring each position with the field-standard ESM-2 masked-marginal
+estimator (itself the stronger baseline, adding $+0.0064$ beyond geometry), leverage's contribution is
+undiminished, CPI$(L \mid \text{geometry} + \text{conservation}) = +0.0059$ $[+0.0031, +0.0097]$. As a zero-shot
+readout of a model never trained on binding, $L$ adds $+0.030$ interface AUROC on top of a \emph{supervised}
+geometry-plus-substitution baseline fit on the labels, which the ground-truth floor predicts: with 88\% of
+experimental $\Delta\Delta G$ irreducible from $P$, there is little for a supervised model to fit.
+
+All comparators run under identical settings (temperature, decoding-order averaging, and sampling depth held
+fixed), so the contrasts isolate the feature, not the protocol. The law replicates across four inverse-folding
+architectures: ESM-IF1 (Spearman $-0.26$, CPI $+0.035$), PiFold ($-0.33$, $+0.050$), and MIF ($-0.27$, $+0.058$),
+each surviving substitution, confidence, and scalar-KL controls, with confidence position-blind throughout. The
+law is about a feature class, not a regime: on natural complexes scalar summaries reduce to geometry (confidence
+exactly, KL nearly), while the mixed derivative does not.
+
+\begin{table}[t]
+\centering
+\caption{The feature-class law on SKEMPI (per interface position, CPI beyond burial, neighbours, and
+$\Delta$SASA, 13{,}401 positions). Every scalar of the bound distribution sits at or below the calibrated placebo
+floor. Only the two-pass mixed derivative clears it.}
+\label{tab:featureclass}
+\small
+\begin{tabular}{lc}
+\hline
+Feature (all functionals of the same distribution) & CPI beyond geometry \\
+\hline
+Placebo floor (a deterministic function of geometry) & $+0.0007$ (false-positive floor) \\
+\textbf{Confidence} (the diagonal) & $+0.0002$ $[-0.0002, +0.0006]$ (below floor) \\
+Negentropy (one-pass) & $+0.0009$ $[+0.0003, +0.0015]$ (at floor) \\
+Scalar KL (a contraction of $L$) & $+0.0010$ $[+0.0003, +0.0017]$ (at floor) \\
+\textbf{Leverage $L$} (the mixed derivative) & $\mathbf{+0.0048}$ $[+0.0034, +0.0065]$ (about $7\times$ floor) \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{A dose law: fragility to backbone error}
+
+The mixed derivative is read off a backbone, and it does not survive a large perturbation of one. Jittering the
+crystal backbone to a target interface RMSD and re-scoring (the monomer inheriting the same jitter, so the
+partner ablation stays clean), CPI$(L \mid \text{geometry})$ and Spearman$(L, \Delta\Delta G)$ hold through
+sub-\AA{}ngstr\"om error, then collapse past a model-dependent knee (Table~\ref{tab:doselaw}). The decisive test is
+whether real predicted backbones fall on the surviving or the collapsed part, and they fall on the surviving
+part (Section 6): on OpenFold3 and AF2-multimer backbones for 140 shared complexes, CPI$(L \mid \text{geometry})$
+is $+0.039$ $[+0.026, +0.050]$ and $+0.032$ $[+0.023, +0.041]$, 69 to 84\% of the matched crystal value. Because
+the collapse is driven by the backbone the derivative is read from, the same fragility is a prediction every
+method built on this mixed derivative inherits on predicted backbones, and the threshold is model-dependent
+(about 1.0~\AA{} for ProteinMPNN, about 1.5~\AA{} for ESM-IF1), not a universal cliff.
+
+\begin{table}[t]
+\centering
+\caption{Backbone-error dose law (crystal-jitter ladder). $\dagger$ marks a 95\% CI excluding zero (above the
+$+0.0007$ placebo floor). $n = 2{,}949$ mutations (ProteinMPNN, matched sample), $2{,}809$ (ESM-IF1, all 285
+complexes), seed 20260803.}
+\label{tab:doselaw}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccc}
+\hline
+Jitter $\sigma$ (\AA) & MPNN: CPI beyond geom & MPNN: $\rho(L,\Delta\Delta G)$ & ESM-IF1: CPI beyond geom & ESM-IF1: $\rho(L,\Delta\Delta G)$ \\
+\hline
+0.0 (crystal) & $+0.058^{\dagger}$ & $-0.30$ & $+0.036^{\dagger}$ & $-0.25$ \\
+0.25 & $+0.059^{\dagger}$ & $-0.29$ & $+0.035^{\dagger}$ & $-0.17$ \\
+0.50 & $+0.047^{\dagger}$ & $-0.29$ & $+0.027^{\dagger}$ & $-0.17$ \\
+0.75 & $+0.032^{\dagger}$ & $-0.19$ & $+0.011^{\dagger}$ & $-0.12$ \\
+1.0 & $+0.002$ & $-0.08$ & $+0.018^{\dagger}$ & $-0.17$ \\
+1.5 & $-0.001$ & $-0.06$ & $+0.002$ & $-0.10$ \\
+2.0 & n/a & n/a & $+0.001$ & $-0.10$ \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+The knowledge also reaches the second mixed derivative. The partner-ablated pairwise coupling tracks measured
+binding epistasis with the cycle-predicted sign, Spearman$(C, g) = -0.14$ $[-0.23, -0.07]$, surviving control for
+inter-residue distance (partial $-0.12$). The effect is modest and is a signal about coupling magnitude more than
+sign, and partner ablation is what surfaces it: the un-ablated coupling is null. On de-novo designs (Bennett-2023,
+site-saturation labels) even the scalar complex-conditioned distribution ranks substitutions by binding (interface
+AUROC 0.615, above every substitution baseline), answers the stability question better than the binding question
+(0.721 vs 0.615, the control a fold-trained model should pass), and adds $+0.018$ beyond an all-atom
+rotamer-repacked occlusion baseline, reproduced by a non-parent scorer.
+
+\subsection{Steering a frozen model}
+
+If $L$ is the guidance direction, the direct test is to guide with it. Biasing a frozen, off-the-shelf
+ProteinMPNN's interface logits by $+\alpha \cdot L$ and sampling (K=64, 271 complexes, pre-registered grid) raises
+the mean binding-leverage a \emph{different} model (ESM-IF1) assigns the sampled residues, monotonically, from
+$-0.20$ at $\alpha=0$ to $+0.27$ at $\alpha=2$. A matched-magnitude random direction does the opposite, so the
+paired $L - \text{random}$ gap reaches $+0.77$ ($P(>0)=1.0$ at every $\alpha>0$): it is the direction, not the
+perturbation. Native interface recovery does not fall but slightly rises (0.276 to 0.297). Scoring with a
+different model is what makes this non-trivial, and the steered sequences transfer to an independent structure
+predictor: folded with AF2-multimer (120 complexes), the $L$-steered interfaces beat the random control on ipTM by
+$+0.235$ $[+0.199, +0.272]$, interface-localized (global pTM rises about $2.9\times$ less). The effect is robust
+across a matrix of independent readouts (Table~\ref{tab:steer}): a second structure predictor (Boltz-2), a second
+steered model (ESM-IF1, judged by a third), and four anti-circular judges, with the trivially-circular self-judged
+cells excluded.
+
+A specificity control bounds the interpretation. A \emph{naive} tilt, the model's own log-odds direction rescaled
+to $L$'s magnitude (be more confident, not bind better), recovers most of the ipTM gain and slightly exceeds $L$
+there, because ipTM is itself a structure-level confidence and rewards a foldable, confident interface. This is
+the same confidence-is-not-competence split one level up. The binding-specific increment survives where the
+mechanism predicts, at the inverse-folding-judge level, where $L$ beats the confidence tilt (ESM-IF1 $+0.159$
+$[+0.110, +0.207]$, MIF $+0.242$ $[+0.191, +0.292]$). The confidence tilt is a strong but binding-\emph{correlated}
+baseline (it carries 64 to 77\% of $L - \text{random}$ at the judge level), not binding-\emph{specific}: a
+confidently-packed interface is a prerequisite for binding, so the confidence direction rides along with binding
+without targeting it. In the classifier-free-guidance framing, naive is the unguided marginal and $L$ is the
+guidance term, so ``does $L$ beat naive'' is exactly ``does the guidance add over the marginal,'' which is why
+naive, not random, is the control the framing demands.
+
+\begin{table}[t]
+\centering
+\caption{Steering benefit across independent readouts (paired $L - \text{random}$, complex-clustered 95\% CI). ipTM
+rows are within-folder paired effects (AF2 and Boltz-2 are differently calibrated, each read in its own scale).
+Judge rows are on the leverage scale. Self-judged cells (steer-X, judge-X) are excluded as trivially circular.}
+\label{tab:steer}
+\begin{tabular}{llc}
+\hline
+Steered model & Independent readout & Paired $L - \text{random}$ \\
+\hline
+ProteinMPNN & AF2-multimer ipTM ($n=120$) & $+0.235$ $[+0.199, +0.272]$ \\
+ProteinMPNN & Boltz-2 ipTM ($n=60$) & $+0.139$ $[+0.101, +0.177]$ \\
+ProteinMPNN & ESM-IF1 leverage (judge) & $+0.77$ $[+0.72, +0.82]$ \\
+ProteinMPNN & MIF leverage (judge) & $+0.71$ $[+0.66, +0.76]$ \\
+ProteinMPNN & PiFold leverage (judge) & $+0.89$ $[+0.84, +0.95]$ \\
+ESM-IF1 (reverse) & AF2-multimer ipTM ($n=60$) & $+0.158$ $[+0.102, +0.215]$ \\
+ESM-IF1 (reverse) & ProteinMPNN leverage (judge) & $+0.43$ $[+0.37, +0.49]$ \\
+ESM-IF1 (reverse) & MIF leverage (judge) & $+0.57$ $[+0.48, +0.66]$ \\
+ESM-IF1 (reverse) & PiFold leverage (judge) & $+0.73$ $[+0.62, +0.84]$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Physics adjudication (FoldX)}
+
+To close the gap between inverse-folding judges and a real binding term, we ran FoldX (Guerois et al.\ 2002,
+Schymkowitz et al.\ 2005, Delgado et al.\ 2019), a hand-fit physics energy function with an explicit binding term,
+from a modality outside inverse folding (pre-registered, falsifier: $L - \text{naive}$ favorability $\le 0$). On
+the 60-complex steering set, $L$ beats the confidence tilt on physics: a designer keeping the best of a few
+samples gets $L - \text{naive} = +1.86$ kcal/mol $[+0.72, +3.02]$ (best-of-k, the design-relevant yield), and the
+pre-registered mean-over-k primary is $+1.24$ $[+0.14, +2.33]$, both clearing zero (Table~\ref{tab:foldx}).
+Because FoldX is physics, not an inverse-folding proxy, it sides with the judges ($L > \text{naive}$) against ipTM
+(naive $\gtrsim L$), so the binding-specific advantage of $L$ is real, and the ipTM disagreement was the
+foldability effect the frustration thesis predicts. As a detector, FoldX (fit to $\Delta\Delta G$) ranks better
+than the zero-shot $L$ ($|0.43|$ vs $|0.30|$), and we do not claim otherwise. The narrower and more surprising
+claim is that $L$ carries binding rank-signal beyond the fitted energy function: partial Spearman$(L, \Delta\Delta G
+\mid \text{FoldX}) = -0.17$ $[-0.23, -0.12]$. The direction replicates on a second fixture (AB-Bind), same-signed
+but underpowered at 22 crystal complexes.
+
+\begin{table}[t]
+\centering
+\caption{FoldX adjudication. Left: detection ($n=2{,}948$ mutants, 284 complexes), Spearman vs experimental
+$\Delta\Delta G$. The two opposite signs both mean ``ranks binding correctly'': experimental $\Delta\Delta G$ and
+FoldX score cost, $L$ scores favorability. Right: steering specificity (best-of-k, paired 95\% CI).}
+\label{tab:foldx}
+\small
+\begin{tabular}{lc}
+\hline
+Detection & Spearman vs exp $\Delta\Delta G$ \\
+\hline
+FoldX $\Delta\Delta G_{\text{bind}}$ (physics, fit) & $+0.434$ $[+0.38, +0.49]$ \\
+$L$ (zero-shot inverse-folding) & $-0.301$ $[-0.35, -0.24]$ \\
+$L \mid$ FoldX (partial, beyond physics) & $-0.17$ $[-0.23, -0.12]$ \\
+\hline
+Steering specificity (kcal/mol) & $\Delta$, 95\% CI, $P(>0)$ \\
+\hline
+$\mathbf{L - \text{naive}}$ (decisive) & $+1.86$ $[+0.72, +3.02]$, 0.999 \\
+$L - \text{random}$ & $+6.27$ $[+5.03, +7.49]$, 1.000 \\
+naive $-$ random & $+4.79$ $[+3.46, +6.11]$, 1.000 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Predicted-backbone steering (the design regime)}
+
+Every steering result so far tilts the model on a crystal backbone, but the staged-design regime has only a
+predicted one. So we recomputed the leverage and applied the tilt on the predicted backbone (OpenFold3 and
+AF2-multimer, 106 complexes), judging anti-circularly by an independent model's leverage also read off the
+predicted structure (pre-registered, falsifier: judge-level $L - \text{random} \le 0$). The falsifier does not
+fire and the effect is barely attenuated: judge-level $L - \text{random}$ is $+0.70$ to $+0.76$ across both
+predicted backbones and both judges, essentially equal to the matched crystal control, and $L - \text{naive}$
+stays positive ($+0.17$ to $+0.22$), so specificity is preserved. An independent structure predictor confirms it:
+on 93 complexes, interface ipTM $L - \text{random}$ is $+0.18$ $[+0.14, +0.22]$. This is one dose law spanning both
+uses of the direction: the design regime that preserves the readout preserves the knob.
 
 \section{On crystal backbones, the hotspot gap is a burial artifact}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md \S5, house-styled.
+
+We now return to the published deficit and show, on crystal backbones, that it is a burial confound. The confound
+is visible directly: as hotspot strength rises, both recovery and burial rise in lockstep (recovery 0.347 to
+0.529, relative SASA 0.218 to 0.080). Under the matched-pair design the deficit attenuates to statistical
+indistinguishability: the matched estimate is $-0.042$ $[-0.222, +0.129]$ and a higher-powered regression
+estimator is $+0.059$ $[-0.051, +0.167]$. The matching does not control partner-contact area, so we check the
+residual directly: adjusting for the $\Delta$SASA imbalance moves the deficit essentially nowhere ($-0.042$ to
+$-0.028$). No architecture retains a hotspot deficit under matching. Most attenuate to zero, and two (MIF, PiFold)
+flip to a hotspot advantage on the underpowered strict tier. The strongest form of the test uses ProBID-Net's own
+released voxel-CNN: its port is faithful (interface recovery 0.472), its published deficit reproduces only in
+comprehensively-scanned complexes, and it dissolves under confound-matching (matching residue type turns it
+positive, burial gives $-0.038$, hydrophobicity $-0.051$, every interval spanning zero). ProBID-Net's deficit is a
+residue-composition and burial confound, and we offer the matched-pair design as a reusable diagnostic protocol.
 
 \section{The tax lives in the conditioning set}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md \S6, house-styled.
+
+If the deficit were a benchmark artifact it would vanish once burial is controlled. It does not. It reappears on
+the predicted backbones designers condition on. On backbones from two architecturally-independent predictors
+(OpenFold3 and AF2-multimer) a burial-matched deficit is present ($-0.191$ and $-0.233$, the crystal deficit is
+about zero). The claim rests not on either marginal number but on their agreement: the two predictors' per-complex
+deficits correlate at $\rho = 0.565$ $[0.40, 0.71]$, the same three complexes carry the effect under both, and the
+agreement survives residualising on interface burial (partial $+0.529$). The effect tracks how a backbone is
+non-native, not how far: on noised crystals at matched RMSD the deficit is absent, so it is a property of
+independent reconstruction. And the binding signal a designer would read off these backbones survives them:
+recomputed on the predicted structures, CPI$(L \mid \text{geometry})$ is $+0.039$ and $+0.032$ (pooled $+0.036$,
+$P(>0)=1.0$), a 69 to 84\% retention of the crystal value, with the positive control reproducing the committed
+leverage to $10^{-5}$. The confidence readout degrades into the deficit while the mixed derivative survives,
+exactly where the decomposition says they must diverge.
 
 \section{Ruling out competing mechanisms}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md \S7, house-styled.
+
+Two alternative explanations are separately measured and refuted. A \emph{sample-budget} effect (at low sampling
+temperature a multi-residue hotspot constellation has astronomically small joint probability) is identical at
+burial-matched control constellations (median difference 0.000, 95\% CI $[-1.67, +2.09]$ spanning zero): it is a
+generic property of low-temperature sampling, not a hotspot tax, and no oversampling recovers it. A
+\emph{commitment-ordering} effect (the autoregressive schedule paints hotspots into a corner) is inert on
+ProteinMPNN (oracle-order difference-in-differences $-0.002$), and on MultiFlow the unmasking-order knob has only a
+marginal effect (order-span 0.012, far below the 0.065 sample SD across seeds and reference structures). What
+remains is the conditioning-set signal of Section 6.
 
 \section{Related work and positioning}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md \S8, house-styled.
-% Fold: put the mechanism-level "why not just BA-Cycle/RedNet" differentiation at the top (recon action).
+
+The nearest prior methods use this operator, so we are exact about the boundary. The leverage operator $L$ is
+BA-Cycle (Jiao et al., 2024), whose bound-versus-unbound double-difference rearranges to our mixed second
+difference, and we credit it for the score. RedNet independently operationalises the same contrast as a
+design-time decoder, verified in its released code, and we credit it too. What is not theirs and is ours is a
+different object. \textbf{(i)} The decomposition identifies their score as the mixed derivative and confidence as
+the diagonal, with the constructive proof that confidence, and every scalar of $P$, is blind to it, a question
+neither poses. \textbf{(ii)} We give the first beyond-geometry and beyond-conservation control for an
+inverse-folding binding signal, built on CPI (Watson \& Wright, 2021) with a conditional permutation test (Berrett
+et al., 2018), which BA-Cycle and RedNet run in no form. \textbf{(iii)} We state the feature-class law.
+\textbf{(iv)} We show frozen-model steering, where RedNet retrains a decoder and the direction is already a drop-in
+tilt on a frozen model with native recovery preserved. \textbf{(v)} We validate anti-circularly across four judges,
+two structure predictors, and a physics energy function, with a confidence-tilt specificity control no design
+method has run. A frozen-vs-retrained head-to-head is not runnable (RedNet needs non-public packages and
+access-restricted weights) and would be muddy, since the direction is shared, so the sharp comparisons are the ones
+we report: $L$ vs random and $L$ vs the confidence tilt.
+
+These add up to a beyond-X ladder (Figure~\ref{fig:ladder}): the mixed derivative carries binding signal that
+survives, in turn, geometry, substitution similarity, the one-pass log-odds, and a fitted physics energy function,
+while every scalar of $P$ stays at the placebo floor at every rung. Read with the fractal motif of Section 1,
+these are two axes of one dissociation: a scalar of anything is blind to binding-specificity, across controls and
+across levels of the modeling stack, and the mixed derivative carries it. The sequence-free KL detector is a
+learned frustratometer, a concept we credit to the classical frustration literature (Ferreiro et al.\ 2007,
+Freiberger et al.\ 2019, Parra et al.), and our narrow point is only that this one scalar equals $\Delta$SASA,
+which is why it does not beat physics, whereas the mixed derivative does. ProBID-Net reports the phenomenon as a
+recovery deficit, and we correct the attribution: it is neither dynamics nor decoding but conditioning, and a
+burial confound on the crystal benchmark. The most telling piece of practice is BindCraft, whose one-shot pipeline
+hard-codes an interface freeze that forbids inverse folding at the interface, the field's implicit admission of our
+thesis. Ranking by confidence is at chance there (which justifies the freeze), but adding the mixed derivative to
+the standard geometric feature set lifts hotspot AUROC from 0.704 to 0.717 (paired $+0.0125$ $[+0.0007, +0.0246]$),
+so the corrected rule is to rank by geometry plus the mixed derivative, not by confidence. Independent corroboration
+comes from Janusz et al. (2026), who report ``a very weak effect of antigen on the predictions'' in antigen-aware
+antibody inverse folding, the same partner-insensitivity we quantify.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_ladder}
+\caption{The beyond-X ladder in one matched metric (partial rank-correlation of $L$ with experimental
+$\Delta\Delta G$, controlling for each competing feature class). $L$ clears geometry, substitution similarity, the
+one-pass log-odds, and a fitted physics energy function. Every scalar of $P$ stays at the floor.}
+\label{fig:ladder}
+\end{figure}
 
 \section{Limitations}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md \S9, house-styled.
-% Fold: add a one-paragraph "why the interim in-silico signal is informative" justification (recon action).
+
+We evaluate on three fixtures (SKEMPI, Bennett de-novo, AB-Bind), none a full generate-design-wet-lab loop, and we
+are explicit about which half rests on what. The \emph{detection} claim is experiment-anchored: $L$ correlates
+with experimental $\Delta\Delta G$ (Spearman $-0.30$) and adds beyond a fitted physics function (partial $-0.17$),
+both against real measurements. The \emph{steering} claim's binding-specificity is anchored, out-of-family, by one
+approximate-physics readout (FoldX, mean-over-k $L - \text{naive}$ $+1.24$, lower CI $+0.14$), so we scope it as
+physics-supported pending a wet-lab test rather than experimentally proven, and do not overclaim it.
+
+The primary claims rest on one natural fixture. This is structural to the field's data, not a gap in our search:
+SKEMPI 2.0's curators already absorbed the non-redundant content of the other curated affinity databases, and the
+subsequent resources are aggregators built around it. We mitigate with two further fixtures, four architectures, a
+catalytic-site replication, and the cleanest non-overlapping alternative, ATLAS (TCR-pMHC), where the direction
+replicates (Spearman$(L, \Delta\Delta G) = -0.22 / -0.32$ across the two models, bracketing SKEMPI's $-0.30$). The
+direction thus generalizes across three interface classes (protein-protein $-0.30$, antibody-antigen $-0.18$,
+TCR-pMHC $-0.22 / -0.32$), though only SKEMPI is powered for the geometry-controlled add-on. Tellingly, ATLAS is
+the lowest-confidence interface class, so it tests the mixed derivative exactly where the scalar readout is
+blindest, and the direction still points the right way. The blindness itself extends beyond binding, to catalytic
+residues (M-CSA): inverse-folding confidence is blind (within-amino-acid-type AUROC 0.43 to 0.52) while a
+sequence language model's conservation predicts them (0.77), a dissociation of $+0.288$ that survives composition,
+burial, and chain-truncation controls.
+
+Why an in-silico result is informative now. The detection half is validated against real $\Delta\Delta G$
+measurements on three fixtures, so it is not in-silico in the sense that matters. The steering half is validated by
+three instruments that do not share a failure mode (a second sequence model, two structure predictors, and a
+physics energy function with an explicit binding term), which is the standard by which comparable design methods
+are currently judged. A wet-lab loop is the right next step and is the one claim we scope as pending, not the
+foundation the paper stands on.
+
+Caveats specific to the decomposition. Orthogonal is not independent: confidence cannot express leverage, but the
+two are weakly-to-moderately correlated and the correlation is model-dependent (Spearman(confidence, $|L|$) $=
++0.075$ for ProteinMPNN, $+0.30$ for ESM-IF1), so we claim blindness by construction, not statistical
+independence. $L$ estimates $-\Delta\Delta G_{\text{bind}}$ only up to a temperature, and all headline readouts are
+rank-based, but a single 2-parameter out-of-fold affine reads one unit of $L$ as about 0.42 kcal/mol (OOF RMSE
+1.82, next to fitted FoldX's 1.79), a good ranker and a rough absolute predictor, kept out of every headline. The
+decomposition replicates under a second architecture (ESM-IF1) on the 337 complexes both models cover.
 
 \section*{Reproducibility statement}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md "Reproducibility and LLM-usage disclosure".
+
+Every numerical result traces to a committed script and CSV, each carrying its exact command and a fixed seed
+(20260803). A fresh pointer-only clone reproduces every headline number and figure from the committed CSVs alone,
+with no GPU, no Git-LFS pull, and no cluster access, which we verified directly. The central result (the
+Confidence-Leverage Decomposition) was additionally subjected to an independent adversarial audit of its
+statistical machinery: the conditional-independence test was verified not to leak, with pure-noise features giving
+CPI about zero, a null floor about 16 times below the reported effect.
 
 \section*{LLM usage disclosure}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md "Reproducibility and LLM-usage disclosure".
+
+Per the ICLR LLM-usage policy, we disclose that large language models were used as an assistant for code
+generation, data analysis, prose drafting and editing, and research ideation. All experiments, numerical results,
+and citations were verified and validated by the authors, who are solely responsible for the contents of this
+submission. No result or citation is included that does not resolve to committed code and data or to a source we
+fetched and checked.
 
 \appendix
 
 \section{Pre-registered false-positive modes and their controls}
-% TODO (next assembly pass): migrate from PAPER_DRAFT.md "Appendix A".
+
+Six ways to get a false positive were named in the pre-registration before any number was computed
+(Table~\ref{tab:falsepos}). One (assay heterogeneity) is controlled only in part, and we say so. The pattern worth
+noting is that the two largest confounds, burial and training leakage, both run against the hypothesis, so the
+burden is to show the effect despite them, which is why the matched-pair design, not the raw deficit, is the
+experiment.
+
+\begin{table}[t]
+\centering
+\caption{Pre-registered false-positive modes and their controls.}
+\label{tab:falsepos}
+\begin{tabular}{p{2.4cm}p{4.5cm}p{5.0cm}}
+\hline
+Mode & Control & Result \\
+\hline
+Burial (buried positions are where inverse folding is most confident, so it hides the effect) & within-complex
+matched pairs (rSASA, secondary structure, neighbour count) plus CPI over geometry at every step & deficit
+attenuates across 5 architectures plus ProBID-Net, and leverage CPI $+0.0048$ survives full geometry \\
+Native amino-acid identity & per-type breakdown, alanine-only subset, substitution-similarity partialled out &
+Spearman negative in 18/19 wt-types and $-0.25$ on Ala-only \\
+PDB training leakage & none needed: leakage makes a positive conservative & every positive is a lower bound \\
+Assay heterogeneity & strict ($>2$) and loose ($>1$) hotspot thresholds, both reported & conclusions hold under
+both (partial: no temperature/pH stratification, disclosed) \\
+Positional independence & measure the second mixed derivative directly & couplings track epistasis, Spearman $-0.14$ \\
+Decoding-order variance & sequence-free marginals, else symmetrise over $\ge 8$ orders & disjoint-order subsets
+agree $+0.61$, oracle order inert ($-0.002$) \\
+\hline
+\end{tabular}
+\end{table}
 
 \end{document}
