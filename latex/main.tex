@@ -13,6 +13,9 @@
 \usepackage{graphicx}
 \usepackage{amssymb}
 \graphicspath{{../results/figures/}}
+\setlength{\abovecaptionskip}{10pt}
+\setlength{\belowcaptionskip}{8pt}
+\renewcommand{\arraystretch}{1.2}
 
 \title{Confidence is not competence: inverse-folding models know binding in the mixed derivative}
 
@@ -134,6 +137,16 @@ rather than inventing one. Controlling burial is not a detail. It is the experim
   classifier-free-guidance direction for any conditional generative model.
 \end{itemize}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_overview}
+\caption{Confidence and competence are two derivatives of one inverse-folding likelihood. Confidence is the
+diagonal, a scalar of the bound distribution, and it measures fold-stability constraint. Leverage is the mixed
+second derivative, the response to ablating the partner, and it measures binding. The field has read the diagonal,
+where binding does not live.}
+\label{fig:overview}
+\end{figure}
+
 \section{Setup and pre-registration}
 
 \paragraph{Fixtures.} Our primary fixture is SKEMPI 2.0, from which we take single-mutation binding data and define
@@ -242,6 +255,15 @@ mixed derivative is irreducible from $P$ in both families (about 62\% even when 
 linear readout recovers less than half of that. Against ground truth the floor is starker: regressing experimental
 $\Delta\Delta G_{\text{bind}}$ directly on $P$ leaves 88\% irreducible for ProteinMPNN and 90\% for ESM-IF1.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig1_decomposition}
+\caption{The Confidence-Leverage Decomposition. A flexible learner over the entire bound distribution recovers
+only about 37 percent of the leverage, so most of the mixed derivative is irreducible from the bound distribution,
+in both inverse-folding families.}
+\label{fig:decomposition}
+\end{figure}
+
 \subsection{The feature-class law on natural complexes}
 
 On SKEMPI, the mixed derivative adds binding information beyond cheap geometry where every scalar summary does
@@ -283,6 +305,14 @@ Scalar KL (a contraction of $L$) & $+0.0010$ $[+0.0003, +0.0017]$ (at floor) \\
 \hline
 \end{tabular}
 \end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig2_featureclass}
+\caption{The feature-class law. Every scalar of the bound distribution (confidence, negentropy, the scalar KL)
+sits at or below the calibrated placebo floor. Only the two-pass mixed derivative clears it.}
+\label{fig:featureclass}
+\end{figure}
 
 \subsection{A dose law: fragility to backbone error}
 
@@ -328,6 +358,22 @@ site-saturation labels) even the scalar complex-conditioned distribution ranks s
 AUROC 0.615, above every substitution baseline), answers the stability question better than the binding question
 (0.721 vs 0.615, the control a fold-trained model should pass), and adds $+0.018$ beyond an all-atom
 rotamer-repacked occlusion baseline, reproduced by a non-parent scorer.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig3_doselaw}
+\caption{The backbone-error dose law. The mixed derivative survives sub-\AA{}ngstr\"om reconstruction error and
+collapses past a model-dependent knee. Real predicted backbones fall on the surviving part.}
+\label{fig:doselaw}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig4_coupling}
+\caption{The second mixed derivative. The partner-ablated pairwise coupling tracks measured binding epistasis with
+the cycle-predicted sign, surviving control for inter-residue distance.}
+\label{fig:coupling}
+\end{figure}
 
 \subsection{Steering a frozen model}
 
@@ -379,6 +425,14 @@ ESM-IF1 (reverse) & PiFold leverage (judge) & $+0.73$ $[+0.62, +0.84]$ \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_iptm_steer}
+\caption{Steering a frozen ProteinMPNN by the mixed derivative raises AF2-multimer interface ipTM against a
+matched-magnitude random control, and the gain is interface-localized (global pTM rises far less).}
+\label{fig:iptmsteer}
+\end{figure}
+
 \subsection{Physics adjudication (FoldX)}
 
 To close the gap between inverse-folding judges and a real binding term, we ran FoldX (Guerois et al.\ 2002,
@@ -419,6 +473,15 @@ naive $-$ random & $+4.79$ $[+3.46, +6.11]$, 1.000 \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_foldx}
+\caption{FoldX adjudication. As a detector the fitted physics ranks better than the zero-shot leverage, yet the
+leverage carries binding rank-signal beyond it (partial correlation). As a steering readout the mixed derivative
+beats the confidence tilt, so the advantage is binding-specific, not foldability.}
+\label{fig:foldx}
+\end{figure}
+
 \subsection{Predicted-backbone steering (the design regime)}
 
 Every steering result so far tilts the model on a crystal backbone, but the staged-design regime has only a
@@ -430,6 +493,15 @@ predicted backbones and both judges, essentially equal to the matched crystal co
 stays positive ($+0.17$ to $+0.22$), so specificity is preserved. An independent structure predictor confirms it:
 on 93 complexes, interface ipTM $L - \text{random}$ is $+0.18$ $[+0.14, +0.22]$. This is one dose law spanning both
 uses of the direction: the design regime that preserves the readout preserves the knob.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig5_gradient}
+\caption{Confidence-AUROC climbs a fold-coupling gradient across interface classes and only clears chance on
+de-novo binders, while the mixed derivative clears chance in every class. The scalar is regime-dependent and the
+derivative is not.}
+\label{fig:gradient}
+\end{figure}
 
 \section{On crystal backbones, the hotspot gap is a burial artifact}
 
@@ -446,6 +518,14 @@ comprehensively-scanned complexes, and it dissolves under confound-matching (mat
 positive, burial gives $-0.038$, hydrophobicity $-0.051$, every interval spanning zero). ProBID-Net's deficit is a
 residue-composition and burial confound, and we offer the matched-pair design as a reusable diagnostic protocol.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_deficit_burial}
+\caption{On crystal backbones the hotspot recovery deficit tracks burial. Under the pre-registered matched-pair
+design it attenuates to statistical indistinguishability, so the published deficit is largely a burial confound.}
+\label{fig:deficitburial}
+\end{figure}
+
 \section{The tax lives in the conditioning set}
 
 If the deficit were a benchmark artifact it would vanish once burial is controlled. It does not. It reappears on
@@ -460,6 +540,14 @@ recomputed on the predicted structures, CPI$(L \mid \text{geometry})$ is $+0.039
 $P(>0)=1.0$), a 69 to 84\% retention of the crystal value, with the positive control reproducing the committed
 leverage to $10^{-5}$. The confidence readout degrades into the deficit while the mixed derivative survives,
 exactly where the decomposition says they must diverge.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_conditioning_tax}
+\caption{On predicted backbones a burial-matched deficit reappears, and the two architecturally-independent
+predictors agree per complex, so the residual tax lives in the conditioning set, not in the benchmark.}
+\label{fig:conditioningtax}
+\end{figure}
 
 \section{Ruling out competing mechanisms}
 
