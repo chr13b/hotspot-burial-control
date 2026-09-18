@@ -491,8 +491,20 @@ predicted structure (pre-registered, falsifier: judge-level $L - \text{random} \
 fire and the effect is barely attenuated: judge-level $L - \text{random}$ is $+0.70$ to $+0.76$ across both
 predicted backbones and both judges, essentially equal to the matched crystal control, and $L - \text{naive}$
 stays positive ($+0.17$ to $+0.22$), so specificity is preserved. An independent structure predictor confirms it:
-on 93 complexes, interface ipTM $L - \text{random}$ is $+0.18$ $[+0.14, +0.22]$. This is one dose law spanning both
-uses of the direction: the design regime that preserves the readout preserves the knob.
+on 93 complexes, interface ipTM $L - \text{random}$ is $+0.18$ $[+0.14, +0.22]$ (Figure~\ref{fig:predsteer}). This
+is one dose law spanning both uses of the direction: the design regime that preserves the readout preserves the
+knob.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_predicted_steer}
+\caption{Steering survives the swap to a predicted backbone. \textbf{a}, judge-level paired $L - \text{random}$ and
+$L - \text{naive}$ on OpenFold3 and AF2-multimer backbones under two anti-circular judges; the grey band is the
+matched crystal control's 95\% CI on the same 106 complexes, and all eight predicted estimates fall inside it.
+\textbf{b}, an instrument outside the inverse-folding family agrees, with global pTM as the localization control.
+\textbf{c}, the same ipTM effect per complex.}
+\label{fig:predsteer}
+\end{figure}
 
 \begin{figure}[t]
 \centering
