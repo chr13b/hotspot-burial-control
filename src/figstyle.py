@@ -3,22 +3,43 @@
 A HUE MEANS EXACTLY ONE THING ACROSS THE WHOLE PAPER. Two disjoint groups, never crossed:
   MODEL identities  LEV (ProteinMPNN / the construct L) · ESMIF · PIFOLD · MIF
   CONCEPT hues      GEOM (geometry: burial / ΔSASA / contacts) · CONS (conservation / substitution similarity)
+                    PHYS (a fitted physics energy function: the FoldX ΔΔG_bind rung)
 PIFOLD and MIF exist because GEOM and CONS used to double as the PiFold and MIF judge identities, which made
-teal mean "geometry" in one figure and "PiFold" in another. Anything that is neither a model nor one of those
-two concepts takes a grey: SCALAR for the scalar-of-P class, FLOOR_*/GHOST/TINT for structure.
+teal mean "geometry" in one figure and "PiFold" in another. PHYS exists for the same reason one level down:
+fig_ladder's "fitted physics (FoldX)" rung used to wear LEV, so the blue that means ProteinMPNN everywhere else
+meant "FoldX" there. Anything that is neither a model nor one of those concepts takes a grey: SCALAR for the
+scalar-of-P class, FLOOR_*/GHOST/TINT for structure.
 
 Palette validation (dataviz scripts/validate_palette.js, Machado-Oliveira-Fernandes 2009 at severity 1.0):
   the four MODEL hues, ALL-PAIRS (any two models can sit side by side in a judge list) --
     node validate_palette.js "#0B6FA4,#C0561F,#CA007F,#996BFE" --pairs all --mode light  -> 5/5 PASS
     node validate_palette.js "#0B6FA4,#C0561F,#CA007F,#996BFE" --pairs all --mode dark   -> 5/5 PASS
       worst CVD ΔE 10.0 (#CA007F↔#0B6FA4, protan) · worst normal ΔE 18.3 (#CA007F↔#C0561F)
-  the documented 6-slot order, ADJACENT --
-    node validate_palette.js "#0B6FA4,#C0561F,#CA007F,#996BFE,#1B9E77,#6D4E9C" --mode light -> 5/5 PASS
-    node validate_palette.js "#0B6FA4,#C0561F,#CA007F,#996BFE,#1B9E77,#6D4E9C" --mode dark  -> PASS,
-      with one pre-existing WARN (CONS 2.67:1 on the dark surface) that predates these two hues and is
-      relieved the way the house style already requires: every plotted value is direct-labelled.
-  CONCEPT hues are additionally >= 15 normal-vision ΔE from both new MODEL hues, so nothing reads as
-  "the teal one" across figures even though they never share a chart.
+  the documented 7-slot order, ADJACENT --
+    node validate_palette.js "#0B6FA4,#C0561F,#CA007F,#996BFE,#1B9E77,#6D4E9C,#6A6E00" --mode light -> 5/5 PASS
+    node validate_palette.js "#0B6FA4,#C0561F,#CA007F,#996BFE,#1B9E77,#6D4E9C,#6A6E00" --mode dark  -> PASS,
+      worst adjacent CVD ΔE 12.9 and normal ΔE 18.3 (both PIFOLD↔ESMIF) in either mode, with one
+      pre-existing WARN (CONS 2.67:1 on the dark surface) that predates PHYS and is relieved the way the
+      house style already requires: every plotted value is direct-labelled. PHYS itself clears contrast in
+      both modes (5.32:1 light, 3.19:1 dark) and adds no new WARN.
+  fig_ladder's own chromatic rungs, ALL-PAIRS (they are four bars in one chart, so any two are neighbours) --
+    node validate_palette.js "#1B9E77,#6D4E9C,#6A6E00" --pairs all --mode light -> 5/5 PASS
+    node validate_palette.js "#1B9E77,#6D4E9C,#6A6E00" --pairs all --mode dark  -> PASS (same CONS WARN)
+      worst CVD ΔE 13.0 · worst normal ΔE 15.2 (both PHYS↔GEOM). PHYS↔SCALAR, the fourth rung: 17.6 / 18.6.
+  CONCEPT hues are additionally >= 15 normal-vision ΔE from every MODEL hue, so nothing reads as "the teal
+  one" across figures even though they never share a chart. PHYS vs each shipped hue (CVD / normal):
+    LEV 19.9/20.8 · PIFOLD 12.0/30.4 · MIF 31.1/34.9 · GEOM 13.0/15.2 · CONS 21.0/23.9 · SCALAR 17.6/18.6
+    ESMIF 1.1/16.4 -- the one soft spot, and it is cross-figure only: a deuteranope sees dark ochre and
+      burnt orange converge, but PHYS appears ONLY in fig_ladder and ESMIF ONLY in fig_predicted_steer and
+      fig_robustness, so no chart ever asks a reader to tell them apart; every rung is direct-labelled.
+  Why PHYS is an ochre and not something livelier: with six hues already placed, an exhaustive step-1 sweep
+  of all 16.7M sRGB colors finds ZERO that clear CVD ΔE >= 8 AND normal ΔE >= 15 against all six while
+  staying inside both lightness bands, over the chroma floor and over 3:1 on both surfaces (best is
+  normal 14.7). Seven hues is past the all-pairs series cap the dataviz skill documents, which is also why
+  the shipped set has always validated all-pairs over the four MODEL hues only -- LEV↔CONS (CVD 2.2,
+  normal 12.2), PIFOLD↔GEOM (6.9) and PIFOLD↔CONS (5.0) never co-occur and never have. Under the operative
+  pairlist the only unclaimed families were ochre, a second blue (reads as LEV) and a pink (reads as
+  PIFOLD); ochre is the one that collides with no other hue at normal vision.
 
 Verified house format (ICLR 2026 sty: \textwidth 5.5 true in; NeurIPS demands embedded fonts -> fonttype 42).
 """
@@ -30,7 +51,8 @@ INK, RULE, MUTED, SOFT = "#1A1A1A", "#4D4D4D", "#6B7379", "#333333"
 SCALAR = "#8A9299"                                     # ONE grey for the scalar-of-P class (they are one class)
 LEV, ESMIF, PIFOLD, MIF = "#0B6FA4", "#C0561F", "#CA007F", "#996BFE"   # MODEL identities, in palette order
 GEOM, CONS = "#1B9E77", "#6D4E9C"                      # CONCEPT hues — geometry, conservation. NEVER a model.
-PALETTE = [LEV, ESMIF, PIFOLD, MIF, GEOM, CONS]        # the documented slot order the validation above uses
+PHYS = "#6A6E00"                                       # CONCEPT hue — a fitted physics energy (FoldX). NEVER a model.
+PALETTE = [LEV, ESMIF, PIFOLD, MIF, GEOM, CONS, PHYS]  # the documented slot order the validation above uses
 MODEL_HUES = {"ProteinMPNN": LEV, "ESM-IF1": ESMIF, "PiFold": PIFOLD, "MIF": MIF}
 FLOOR_FILL, FLOOR_EDGE, GHOST, TINT = "#E4E7E9", "#B4BBC0", "#C8CDD1", "#F4F6F7"
 RAMP_MPNN = ["#D6E7F0", "#A9CBDF", "#7BAECC", "#4B90B9", "#0B6FA4", "#08526F"]   # ordinal ramp (never categorical)
