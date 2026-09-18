@@ -207,7 +207,7 @@ $0.50$ to $0.54$ (ProteinMPNN 0.538, ESM-IF1 0.517, PiFold 0.499, MIF 0.509, Pro
 below what trivial burial alone achieves. What predicts hotspots is free geometry: burial reaches 0.689,
 $\Delta$SASA (the partner-contact area, computable without any network) 0.673, and a cheap-geometry combination
 0.734. The learned alternative, a sequence-free KL detector between the complex- and monomer-conditioned
-distributions, captures only a small signal (CPI $+0.002$, within-stratum AUROC 0.60, about six times smaller than
+distributions, captures only a small signal (CPI $+0.002$, within-stratum AUROC 0.58, about six times smaller than
 $\Delta$SASA). None of this is specific to SKEMPI: on AB-Bind the identical pattern holds (confidence-AUROC 0.560
 at chance, adding $+0.008$ over full geometry).
 
@@ -301,7 +301,7 @@ Placebo floor (a deterministic function of geometry) & $+0.0007$ (false-positive
 \textbf{Confidence} (the diagonal) & $+0.0002$ $[-0.0002, +0.0006]$ (below floor) \\
 Negentropy (one-pass) & $+0.0009$ $[+0.0003, +0.0015]$ (at floor) \\
 Scalar KL (a contraction of $L$) & $+0.0010$ $[+0.0003, +0.0017]$ (at floor) \\
-\textbf{Leverage $L$} (the mixed derivative) & $\mathbf{+0.0048}$ $[+0.0034, +0.0065]$ (about $7\times$ floor) \\
+\textbf{Leverage $L$} (the mixed derivative) & $\mathbf{+0.0049}$ $[+0.0034, +0.0065]$ (about $7\times$ floor) \\
 \hline
 \end{tabular}
 \end{table}
@@ -678,7 +678,7 @@ Mode & Control & Result \\
 \hline
 Burial (buried positions are where inverse folding is most confident, so it hides the effect) & within-complex
 matched pairs (rSASA, secondary structure, neighbour count) plus CPI over geometry at every step & deficit
-attenuates across 5 architectures plus ProBID-Net, and leverage CPI $+0.0048$ survives full geometry \\
+attenuates across 5 architectures plus ProBID-Net, and leverage CPI $+0.0049$ survives full geometry \\
 Native amino-acid identity & per-type breakdown, alanine-only subset, substitution-similarity partialled out &
 Spearman negative in 18/19 wt-types and $-0.25$ on Ala-only \\
 PDB training leakage & none needed: leakage makes a positive conservative & every positive is a lower bound \\

@@ -89,7 +89,7 @@ yields a **feature-class law**: on natural complexes a scalar read off the bound
 little beyond cheap geometry — confidence, negentropy, and the scalar KL all sit **at or below the CPI
 estimator's calibrated false-positive floor** (+0.0007, the score of a placebo feature that is a deterministic
 function of geometry) — whereas the *two-pass* mixed derivative does not reduce: per interface position it adds
-+0.0048, ~7× the floor (CI disjoint from every scalar's, robust to a nonlinear geometry control), and on SKEMPI at the mutation level CPI +0.059
++0.0049, ~7× the floor (CI disjoint from every scalar's, robust to a nonlinear geometry control), and on SKEMPI at the mutation level CPI +0.059
 with Spearman −0.30 against experimental ΔΔG, robustly (a *dissociation between feature classes*, not a claim
 that `L` is a large-magnitude predictor). The model knows binding on natural complexes; the knowledge
 was invisible to every scalar readout the field has used. → leverage_decomposition.csv, nugget_cpi.csv.
@@ -197,7 +197,7 @@ computable without any neural network — reaches 0.673; and a cheap-geometry co
 obvious learned alternative is the sequence-free divergence between the model's complex- and
 monomer-conditioned distributions (a KL detector), which one might hope captures partner-induced frustration
 beyond geometry. It captures a *small* one: under a combiner-free conditional test, KL adds CPI = +0.002
-[+0.0006, +0.0034], P=0.998 beyond full geometry, and its within-geometry-stratum AUROC is 0.60 (vs 0.50
+[+0.0006, +0.0034], P=0.998 beyond full geometry, and its within-geometry-stratum AUROC is 0.58 (vs 0.50
 leakage) — a small, near-floor learned-frustratometer signal (§4 reads the same scalar *at* the floor on the full
 sample), ~6× smaller than ΔSASA's contribution and not worth the network as a standalone ranker. It is the same signal §4 reads *at the placebo floor*: the scalar KL is a
 contraction of the leverage vector (`E_P[L]` up to a constant) — the single best scalar summary of the two-pass
@@ -322,7 +322,7 @@ same diagonal §3 finds conditionally independent):
 | **confidence** — the diagonal | **+0.0002 [−0.0002, +0.0006]** — below the floor; conditionally independent |
 | negentropy — one-pass | +0.0009 [+0.0003, +0.0015] — at the floor |
 | scalar KL — a contraction of L | +0.0010 [+0.0003, +0.0017] — at the floor |
-| **leverage L** — the mixed derivative | **+0.0048 [+0.0034, +0.0065]** — ~7× the floor; CI disjoint from every scalar; robust to a nonlinear geometry control (+0.0047); survives dropping the 3 most influential complexes |
+| **leverage L** — the mixed derivative | **+0.0049 [+0.0034, +0.0065]** — ~7× the floor; CI disjoint from every scalar; robust to a nonlinear geometry control (+0.0047); survives dropping the 3 most influential complexes |
 
 → w_placebo_ladder.csv.
 
@@ -332,7 +332,7 @@ spans 0). → leverage_nugget_match.csv. For an interpretable scale: on that sam
 derivative contributes **~71%** of what the partner-contact area (ΔSASA) — an explicit geometric measurement of
 the interface — contributes beyond burial and neighbour count (ΔSASA +0.0129; → nugget_cpi.csv). And because
 the hotspot label is rare (base rate 2.4%, entropy 0.115 nats), these CPIs are small in absolute terms but not
-in relative: leverage's +0.0048 is **4.2%** of the label's entropy — against 0.2% for confidence, 0.8% for the
+in relative: leverage's +0.0049 is **4.2%** of the label's entropy — against 0.2% for confidence, 0.8% for the
 scalar KL — an order of magnitude more than either scalar of the bound distribution (the comparison to ΔSASA,
 ~71%, is given above on its own sample). → effect_size_normalized.csv. At the mutation level the effect is large: Spearman(L, experimental ΔΔG_bind) = **−0.30**, and CPI(L | geometry)
 = **+0.059 [+0.046, +0.073]**, surviving controls from substitution similarity (BLOSUM, volume, hydropathy) and
@@ -358,7 +358,7 @@ is not a side-chain-volume or truncation proxy. → w2_onepass_control.csv. And 
 conservation in disguise — the one control every *published* hotspot predictor uses. We score each interface
 position's sequence conservation with the **field-standard masked-marginal** ESM-2 estimator (mask the
 position, read the model's distribution) — itself the *stronger* baseline, adding **+0.0064 [+0.0028, +0.0113]**
-beyond geometry — and leverage's contribution is *undiminished*: CPI(L | geometry) +0.0048 → CPI(L | geometry +
+beyond geometry — and leverage's contribution is *undiminished*: CPI(L | geometry) +0.0049 → CPI(L | geometry +
 conservation) **+0.0059 [+0.0031, +0.0097]** (surviving the drop of its 3 most influential complexes at +0.0040 [+0.0027, +0.0054],
 those three contributing 33% of the estimate). The simpler unmasked estimator agrees
 (+0.0051; the two conservation estimators correlate at +0.71), and conservation adds beyond leverage in turn
@@ -402,7 +402,7 @@ information beyond them, still scores **+0.0007** (a duplicate of ΔSASA; pure n
 w_placebo_ladder.csv. Against that floor the scalars of the bound distribution are indistinguishable from
 noise-beyond-geometry: confidence **+0.0002** (CI spans zero), one-pass negentropy **+0.0009**, and even
 leverage's own P-weighted contraction — the KL detector, algebraically `E_P[L] + const` — **+0.0010**, all at or
-below the floor. Only the *two-pass* mixed derivative L(→Ala) clears it decisively: **+0.0048**, ~7× the floor,
+below the floor. Only the *two-pass* mixed derivative L(→Ala) clears it decisively: **+0.0049**, ~7× the floor,
 CI disjoint from every scalar's, robust to a *nonlinear* (quadratic or cubic) geometry control (+0.0047 quadratic, +0.0046 cubic), and
 surviving the drop of its 3 most influential complexes. So collapsing the leverage vector to any scalar of the
 bound distribution discards **essentially all** of its conditional signal. (That confidence and sequence recovery track
@@ -1149,7 +1149,7 @@ geometry+substitution+confidence+scalar-KL, and +0.010 fully controlled), with s
 ProteinMPNN. So the feature-class law is a property of the inverse-folding class, not one model. →
 leverage_esmif.csv, leverage_dropcheck.csv (the 337-subset re-run). (g) CPI is not formally commensurable across fixtures, so "natural ≫
 de-novo" is a suggestive, not a formal, comparison. (h) *Effect sizes are modest in absolute terms* — the
-position-level CPI is +0.0048 — because the hotspot label is rare (base rate 2.4%, entropy 0.115 nats). We read
+position-level CPI is +0.0049 — because the hotspot label is rare (base rate 2.4%, entropy 0.115 nats). We read
 them relatively rather than papering over them: leverage is 4.2% of the label's entropy (an order of magnitude
 above any scalar of `P`), ~71% of what the explicit geometric ΔSASA contributes, and, most concretely, it
 reaches a standalone training-free hotspot-ranking AUROC of 0.694 (§8). The result is a *dissociation between
@@ -1178,7 +1178,7 @@ controlled only in part; we say so rather than overstate it.
 
 | # | Pre-registered false-positive mode | How it would fake — or hide — the effect | Control | Result / where |
 |---|---|---|---|---|
-| 1 | **Burial** | Buried positions are where inverse folding is *most* confident, so an uncontrolled hotspot-vs-rest comparison **hides** the effect (the confound cuts against us, not for us) | within-complex matched pairs (rSASA ±0.05, secondary-structure class, neighbour count ±1); and CPI over burial + neighbours + ΔSASA at *every* downstream step | deficit largely attenuates unmatched→matched across 5 architectures + ProBID-Net (residual for 2/5 on the strict tier; §5); leverage CPI **+0.0048** survives full geometry (§4) |
+| 1 | **Burial** | Buried positions are where inverse folding is *most* confident, so an uncontrolled hotspot-vs-rest comparison **hides** the effect (the confound cuts against us, not for us) | within-complex matched pairs (rSASA ±0.05, secondary-structure class, neighbour count ±1); and CPI over burial + neighbours + ΔSASA at *every* downstream step | deficit largely attenuates unmatched→matched across 5 architectures + ProBID-Net (residual for 2/5 on the strict tier; §5); leverage CPI **+0.0049** survives full geometry (§4) |
 | 2 | **Native amino-acid identity** (Trp/Arg/Tyr are hotspot-enriched with distinctive priors) | the model's per-type prior, not binding, drives the score | per-wt-type breakdown; alanine-only subset; substitution-similarity (BLOSUM, side-chain volume, hydropathy) partialled out | Spearman(L, ΔΔG) negative in **18/19** wt-types and **−0.25 on Ala-only** (n=2,327); survives similarity controls (§4) |
 | 3 | **PDB training leakage** | the model has seen these complexes | *none needed* — leakage makes a positive **conservative** (the model is scored on structures it memorised, which can only *help* recovery/confidence, i.e. work against our deficit) | stated as such; every positive here is a lower bound (§1, §9) |
 | 4 | **Assay heterogeneity** (SKEMPI pools ITC, SPR, fluorescence) | a hotspot threshold or condition artifact masquerades as signal | strict (>2 kcal/mol, ProBID-Net's threshold) **and** loose (>1) hotspot definitions, both reported | conclusions hold under both thresholds (§2). **Partial:** we do *not* stratify by temperature/pH for the headline — disclosed as a limitation, not claimed as a control (§9) |
