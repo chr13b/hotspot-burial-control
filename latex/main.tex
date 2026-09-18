@@ -51,7 +51,7 @@ independent sequence models, structure predictors, \textbf{and a physics energy 
 function also shows the tilt beats a same-magnitude \emph{confidence} direction, isolating a binding-specific
 effect (four judges, two folders, both steering directions, 120 folded complexes). The effect holds when the tilt
 is applied on \emph{predicted}, not crystal, backbones, the staged-design regime itself. The leverage operator is
-BA-Cycle (Jiao et al., 2024). Our contribution is the decomposition, the identifiability no-go, the first
+BA-Cycle (Jiao et al., 2025). Our contribution is the decomposition, the identifiability no-go, the first
 beyond-geometry-and-conservation control on an inverse-folding binding signal, the feature-class law, and
 frozen-model steering. $L$ is the model's \textbf{classifier-free-guidance direction}: to read an un-trained
 quantity off a conditional generative model, ablate the conditioner and take the mixed derivative, not the
@@ -93,7 +93,7 @@ not the marginal) applies to any conditional generative model, which is what pla
 representation-learning venue rather than a purely methodological one.
 
 We are precise about what is new, because the nearest prior methods already use this operator. The leverage
-operator itself, a partner-ablated second forward pass, is the BA-Cycle operator of Jiao et al. (2024), and
+operator itself, a partner-ablated second forward pass, is the BA-Cycle operator of Jiao et al. (2025), and
 decoders such as RedNet already tilt along this direction. Our contribution is not the operator but what it means
 and what it buys. We give a decomposition that separates confidence from leverage at the mechanism level, a proof
 that no scalar of the bound distribution can recover leverage, the first control showing the signal survives
@@ -563,7 +563,7 @@ remains is the conditioning-set signal of Section 6.
 \section{Related work and positioning}
 
 The nearest prior methods use this operator, so we are exact about the boundary. The leverage operator $L$ is
-BA-Cycle (Jiao et al., 2024), whose bound-versus-unbound double-difference rearranges to our mixed second
+BA-Cycle (Jiao et al., 2025), whose bound-versus-unbound double-difference rearranges to our mixed second
 difference, and we credit it for the score. RedNet independently operationalises the same contrast as a
 design-time decoder, verified in its released code, and we credit it too. What is not theirs and is ours is a
 different object. \textbf{(i)} The decomposition identifies their score as the mixed derivative and confidence as

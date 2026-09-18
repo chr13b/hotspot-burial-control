@@ -38,7 +38,7 @@ _dl = pd.read_csv(f"{R}/leverage_decomposition.csv", low_memory=False)
 _sp = _dl[_dl.test.astype(str).str.strip() == "spearman_L_vs_ddG"].iloc[0]
 SP_LDDG, SP_N = float(_sp.stat), int(_sp.n)
 
-pq = pd.read_csv(f"{R}/leverage_pq_skempi.csv")
+pq = pd.read_csv(f"{R}/fig1_example_pq.csv")   # one committed example row (3SZK_AB_C/C/44); avoids the 11MB P/Q cache
 _e = pq[(pq.complex_id == EX_HOT[0]) & (pq.chain == EX_HOT[1]) & (pq.resnum == EX_HOT[2])].iloc[0]
 P = np.exp(np.array([_e[f"lP_{a}"] for a in AA])); P /= P.sum()
 Q = np.exp(np.array([_e[f"lQ_{a}"] for a in AA])); Q /= Q.sum()
