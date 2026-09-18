@@ -84,6 +84,12 @@ predictor, and a physics energy function. The recipe is not protein-specific: th
 \textbf{classifier-free-guidance direction}, so the same move applies to any conditional generative model, which
 places the result at a representation-learning venue rather than a purely methodological one.
 
+There is a confound that no prior analysis controls, and it runs opposite to intuition. Hotspots are, on average,
+\emph{more deeply buried} than other interface residues, and burial is precisely where inverse folding is
+\emph{most} confident and accurate. An uncontrolled hotspot-vs-rest comparison therefore mixes a putative binding
+effect with a large burial effect of the opposite sign, so the naive comparison \textbf{hides} any real deficit
+rather than inventing one. Controlling burial is not a detail. It is the experiment.
+
 We are precise about what is new, because the nearest prior methods already use this operator. The leverage
 operator, a partner-ablated second forward pass, is the BA-Cycle operator of \citet{jiao2024bacycle}, and decoders
 such as RedNet \citep{rednet2026} already tilt along this direction. Our contribution is not the operator but what
@@ -97,12 +103,6 @@ every level. An inverse-folding model's confidence is blind to binding by constr
 structure predictor's interface ipTM is blind to binding-\emph{specificity}, rewarding a confidently-packed
 interface that a foldability tilt achieves (Section 4). The competence always lives in the response to ablating the
 partner, never in the bound-state confidence, whichever model does the reading.
-
-There is a confound that no prior analysis controls, and it runs opposite to intuition. Hotspots are, on average,
-\emph{more deeply buried} than other interface residues, and burial is precisely where inverse folding is
-\emph{most} confident and accurate. An uncontrolled hotspot-vs-rest comparison therefore mixes a putative binding
-effect with a large burial effect of the opposite sign, so the naive comparison \textbf{hides} any real deficit
-rather than inventing one. Controlling burial is not a detail. It is the experiment.
 
 \paragraph{Contributions.}
 \begin{itemize}
@@ -202,7 +202,9 @@ full geometry).
 
 The results so far are corrective, and every quantity the field reads off these models (recovery, confidence, the
 KL) is a scalar summary of the distribution. There is a specific reason they all fail at hotspots, and stating it
-turns the corrections into a theorem.
+turns the corrections into a theorem. The section builds one arc: the decomposition and its no-go, the
+feature-class law that only the mixed derivative clears, the readout's fragility and reach, steering a frozen model
+with it, and a physics and predicted-backbone adjudication.
 
 \subsection{The decomposition and the no-go}
 
@@ -290,7 +292,7 @@ Scalar KL (a contraction of $L$) & $+0.0010$ $[+0.0003, +0.0017]$ (at floor) \\
 
 % [fig:featureclass relocated to Appendix A: Extended figures and tables]
 
-\subsection{A dose law: fragility to backbone error}
+\subsection{A backbone-error dose law, and two further readouts}
 
 The mixed derivative is read off a backbone and does not survive a large perturbation of one. Jittering the
 crystal backbone to a target interface RMSD and re-scoring (the monomer inheriting the same jitter, so the partner
@@ -498,13 +500,28 @@ additionally subjected to an independent adversarial audit of its statistical ma
 conditional-independence test was verified not to leak, with pure-noise features giving CPI about zero, a null floor
 about 16 times below the reported effect.
 
+\section*{Ethics statement}
+
+This work studies and steers existing, publicly released inverse-folding and structure-prediction models on public
+benchmark data (SKEMPI, AB-Bind, ATLAS, M-CSA, and released de-novo design measurements), and introduces no new
+experiments involving humans or animals. Its dual-use profile is that of the open models and public data it
+analyzes: the paper contributes a diagnostic and a training-free readout, not a new generative capability or
+dataset that lowers the barrier to designing harmful binders. All data are used under their original licenses, and
+the analysis-ready data and code are released to support scrutiny and reproduction.
+
 \section*{LLM usage disclosure}
 
-Per the ICLR LLM-usage policy, we disclose that large language models were used as an assistant for code
-generation, data analysis, prose drafting and editing, and research ideation. All experiments, numerical results,
-and citations were verified and validated by the authors, who are solely responsible for the contents of this
-submission. No result or citation is included that does not resolve to committed code and data or to a source we
-fetched and checked.
+Per the ICLR policy on LLM use, we disclose the following. Among tasks that require disclosure, we used generative
+AI tools to formulate and check mathematical claims and to help write the proof of Proposition 1, to help develop
+the conceptual framing of the Confidence-Leverage Decomposition, to design and give feedback on the experimental
+methodology, to implement analysis code, to clean and reformat datasets, and to interpret results. We did not use
+generative AI to generate synthetic data, as every fixture is a real, public benchmark. Among tasks with
+recommended disclosure, we used these tools to edit the manuscript for readability, to search and summarize related
+literature, to check and format references, to brainstorm, and to suggest the paper's structure. We have reviewed
+all AI-assisted work: all code was verified and tested, every number traces to a committed script and CSV, every
+mathematical claim was independently checked (including an adversarial machine check of Proposition 1), and every
+citation was verified against a fetched source. The authors take full responsibility for the final content of this
+work, including all text, claims, and artifacts produced with the aid of generative AI.
 
 \bibliographystyle{iclr2027_conference}
 \bibliography{references}
