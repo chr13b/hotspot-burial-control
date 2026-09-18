@@ -1,5 +1,25 @@
 """Shared figure design system for the ICLR figure set. One place so all figures stay one coherent system.
-Palette validated: node validate_palette.js "#0B6FA4,#C0561F,#1B9E77,#6D4E9C" --mode light -> all 6 checks PASS.
+
+A HUE MEANS EXACTLY ONE THING ACROSS THE WHOLE PAPER. Two disjoint groups, never crossed:
+  MODEL identities  LEV (ProteinMPNN / the construct L) · ESMIF · PIFOLD · MIF
+  CONCEPT hues      GEOM (geometry: burial / ΔSASA / contacts) · CONS (conservation / substitution similarity)
+PIFOLD and MIF exist because GEOM and CONS used to double as the PiFold and MIF judge identities, which made
+teal mean "geometry" in one figure and "PiFold" in another. Anything that is neither a model nor one of those
+two concepts takes a grey: SCALAR for the scalar-of-P class, FLOOR_*/GHOST/TINT for structure.
+
+Palette validation (dataviz scripts/validate_palette.js, Machado-Oliveira-Fernandes 2009 at severity 1.0):
+  the four MODEL hues, ALL-PAIRS (any two models can sit side by side in a judge list) --
+    node validate_palette.js "#0B6FA4,#C0561F,#CA007F,#996BFE" --pairs all --mode light  -> 5/5 PASS
+    node validate_palette.js "#0B6FA4,#C0561F,#CA007F,#996BFE" --pairs all --mode dark   -> 5/5 PASS
+      worst CVD ΔE 10.0 (#CA007F↔#0B6FA4, protan) · worst normal ΔE 18.3 (#CA007F↔#C0561F)
+  the documented 6-slot order, ADJACENT --
+    node validate_palette.js "#0B6FA4,#C0561F,#CA007F,#996BFE,#1B9E77,#6D4E9C" --mode light -> 5/5 PASS
+    node validate_palette.js "#0B6FA4,#C0561F,#CA007F,#996BFE,#1B9E77,#6D4E9C" --mode dark  -> PASS,
+      with one pre-existing WARN (CONS 2.67:1 on the dark surface) that predates these two hues and is
+      relieved the way the house style already requires: every plotted value is direct-labelled.
+  CONCEPT hues are additionally >= 15 normal-vision ΔE from both new MODEL hues, so nothing reads as
+  "the teal one" across figures even though they never share a chart.
+
 Verified house format (ICLR 2026 sty: \textwidth 5.5 true in; NeurIPS demands embedded fonts -> fonttype 42).
 """
 import matplotlib as mpl
@@ -8,7 +28,10 @@ from matplotlib.colors import to_rgba
 
 INK, RULE, MUTED, SOFT = "#1A1A1A", "#4D4D4D", "#6B7379", "#333333"
 SCALAR = "#8A9299"                                     # ONE grey for the scalar-of-P class (they are one class)
-LEV, ESMIF, GEOM, CONS = "#0B6FA4", "#C0561F", "#1B9E77", "#6D4E9C"   # a hue is a MODEL identity or nothing
+LEV, ESMIF, PIFOLD, MIF = "#0B6FA4", "#C0561F", "#CA007F", "#996BFE"   # MODEL identities, in palette order
+GEOM, CONS = "#1B9E77", "#6D4E9C"                      # CONCEPT hues — geometry, conservation. NEVER a model.
+PALETTE = [LEV, ESMIF, PIFOLD, MIF, GEOM, CONS]        # the documented slot order the validation above uses
+MODEL_HUES = {"ProteinMPNN": LEV, "ESM-IF1": ESMIF, "PiFold": PIFOLD, "MIF": MIF}
 FLOOR_FILL, FLOOR_EDGE, GHOST, TINT = "#E4E7E9", "#B4BBC0", "#C8CDD1", "#F4F6F7"
 RAMP_MPNN = ["#D6E7F0", "#A9CBDF", "#7BAECC", "#4B90B9", "#0B6FA4", "#08526F"]   # ordinal ramp (never categorical)
 FIG_W = 5.5                                            # ICLR single-column text width (exact)
