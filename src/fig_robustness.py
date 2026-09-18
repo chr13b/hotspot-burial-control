@@ -124,7 +124,8 @@ assert all(i["iptm"]["lo"] > 0 and i["comp"]["lo"] > 0 for i in INSTR), \
     "a panel-(a) interval touches zero — the figure's claim would be wrong"
 
 # ================================================================== (b) data — the judge matrix
-JCOL = {"ProteinMPNN": S.LEV, "ESM-IF1": S.ESMIF, "PiFold": S.GEOM, "MIF": S.CONS}
+JCOL = dict(S.MODEL_HUES)          # PiFold and MIF have their OWN hues; GEOM/CONS mean geometry and
+assert set(JCOL) >= {"ProteinMPNN", "ESM-IF1", "PiFold", "MIF"}   # conservation, never a model identity
 JUDGES = ["ProteinMPNN", "ESM-IF1", "PiFold", "MIF"]                 # fixed order -> the two blocks
 JKEY = {"ProteinMPNN": "mpnn", "ESM-IF1": "esmif", "PiFold": "pifold", "MIF": "mif"}   # align as a matrix
 JM = pd.concat([pd.read_csv(f"{R}/cfg_judge_matrix.csv"),

@@ -14,8 +14,10 @@ so it can never drift from Fig. 1's n.
 
 Layout: a three-column grid with constant gutters. Every box is SIZED FROM ITS OWN TEXT (see `_h`), so a box can
 never be too small for what it holds, and each column is justified to a common floor — the arrows and the thesis
-strip then hang off that same grid. Hue is model/role identity, never decoration: LEV = the construct L and its
-path, SCALAR-grey = the blind scalar-of-P class, ESMIF/GEOM/CONS = the three independent readout families.
+strip then hang off that same grid. Hue is MODEL identity, never decoration: LEV = the construct L and its path,
+SCALAR-grey = the blind scalar-of-P class. The three readout families are families, not models, so they take the
+structural grey of the Detect/Steer boxes rather than borrowing GEOM and CONS, which mean geometry and
+conservation in Figs. ladder / gradient and nothing else.
 
   python3 src/fig_overview.py  ->  results/figures/fig_overview.{pdf,png}
 """
@@ -113,10 +115,12 @@ for (x, w), n, s in zip(COL, "123", ["The construct", "Two uses of  L", "Three r
     ax.plot([x, x + w], [RULE_Y, RULE_Y], "-", color=S.RULE, lw=0.9, zorder=3, solid_capstyle="butt")
 
 # ---------------- stage 1 — the construct ----------------
-ax.add_patch(Ellipse((0.039, 0.876), 0.078, 0.072, fc=S.rgba(S.LEV, 0.15), ec=S.LEV, lw=1.1, zorder=3))
-ax.add_patch(Ellipse((0.097, 0.891), 0.060, 0.056, fc=S.rgba(S.ESMIF, 0.17), ec=S.ESMIF, lw=1.1, zorder=4))
-ax.text(0.037, 0.871, "receptor", fontsize=5.0, color=S.LEV, ha="center", va="center", zorder=5)
-ax.text(0.099, 0.891, "binder", fontsize=5.0, color=S.ESMIF, ha="center", va="center", zorder=5)
+# the two chains are a cartoon, not a series: structural grey, because LEV and ESMIF are the ProteinMPNN
+# and ESM-IF1 identities and must not also mean "receptor" and "binder"
+ax.add_patch(Ellipse((0.039, 0.876), 0.078, 0.072, fc=S.rgba(S.RULE, 0.10), ec=S.RULE, lw=1.0, zorder=3))
+ax.add_patch(Ellipse((0.097, 0.891), 0.060, 0.056, fc=S.rgba(S.RULE, 0.24), ec=S.RULE, lw=1.0, zorder=4))
+ax.text(0.037, 0.871, "receptor", fontsize=5.0, color=S.SOFT, ha="center", va="center", zorder=5)
+ax.text(0.099, 0.891, "binder", fontsize=5.0, color=S.SOFT, ha="center", va="center", zorder=5)
 ax.text(0.150, 0.899, "one likelihood", fontsize=6.0, color=S.INK, ha="left", va="center",
         fontweight="bold", zorder=5)
 ax.text(0.150, 0.867, "$P(\\mathrm{seq}\\,|\\,\\mathrm{structure})$", fontsize=6.0, color=S.INK,
@@ -139,12 +143,17 @@ STEER = dict(title="Steer", fc=S.TINT, ec=S.FLOOR_EDGE, lw=1.0,
              tail="controls:  random · naive", tailsize=5.4)
 
 # ---------------- stage 3 — readouts ----------------
-RD = [(S.ESMIF, "Inverse-folding judges", "ESM-IF1 · MIF · PiFold — leverage ↑"),
-      (S.GEOM, "Structure predictors", "AF2-multimer · Boltz-2 — ipTM ↑"),
-      (S.CONS, "Physics energy function", "FoldX ΔΔG$_{bind}$ — more favorable ↑")]
-READ = [dict(title=t, tcol=c, tsize=6.5, bsize=5.6, body=b, fc=S.rgba(c, 0.09), ec=c, lw=1.15, pad=5.0)
-        for c, t, b in RD]
-AGREE = dict(fc=S.FLOOR_FILL, ec=S.FLOOR_EDGE, lw=1.0, bsize=5.4, pad=5.0,
+# A readout FAMILY is a set of models, not a model identity, so under the house rule ("a hue is a MODEL
+# identity or nothing") these three boxes wear the same structural grey as Detect/Steer and their bold
+# titles carry the identity. They used to wear GEOM and CONS, which made teal mean "structure predictors"
+# here and "geometry" in Figs. ladder / gradient — one hue, two meanings.
+RD = [("Inverse-folding judges", "ESM-IF1 · MIF · PiFold — leverage ↑"),
+      ("Structure predictors", "AF2-multimer · Boltz-2 — ipTM ↑"),
+      ("Physics energy function", "FoldX ΔΔG$_{bind}$ — more favorable ↑")]
+READ = [dict(title=t, tsize=6.5, bsize=5.6, body=b, fc=S.TINT, ec=S.FLOOR_EDGE, lw=1.0, pad=5.0)
+        for t, b in RD]
+# the one box in stage 3 that states a claim about L itself keeps L's hue
+AGREE = dict(fc=S.rgba(S.LEV, 0.07), ec=S.LEV, lw=1.0, bsize=5.4, pad=5.0,
              body="steered L beats  random  and  naive\n(folds but does not bind) on all three")
 
 c1 = stack([CONF, LEVG], COL[0], BAND_TOP, FLOOR)
