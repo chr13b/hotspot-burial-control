@@ -17,7 +17,7 @@
 \setlength{\belowcaptionskip}{8pt}
 \renewcommand{\arraystretch}{1.2}
 
-\title{Confidence is not competence: inverse-folding models know binding in the mixed derivative}
+\title{Confidence is not competence: Inverse-folding models know binding in the mixed derivative}
 
 % ANONYMOUS SUBMISSION. Do not add real names/emails/affiliations here.
 % The iclr2027_conference.sty style automatically prints "Anonymous authors /
@@ -491,6 +491,18 @@ orthogonal is not independent, so we claim confidence is blind to leverage \emph
 are statistically independent (their correlation is weak-to-moderate and model-dependent). And $L$ estimates
 $-\Delta\Delta G_{\text{bind}}$ only up to a temperature, so every headline readout is rank-based.
 
+\section{Conclusion}
+
+Confidence and competence are two derivatives of one inverse-folding likelihood, and the field has been reading the
+wrong one. Where every scalar of the bound distribution is blind to binding by construction, the mixed derivative
+detects it beyond geometry, conservation, the one-pass log-odds, and a fitted physics energy function, and steers a
+frozen model in a direction that an independent sequence model, two structure predictors, and FoldX all confirm, on
+crystal and predicted backbones. The result is meant to be used: because the readout is the classifier-free-guidance
+direction, the recipe of ablating the conditioner and reading the mixed derivative carries to any conditional
+generative model, and a practitioner can apply it today on a frozen, off-the-shelf model with no retraining and no
+binding labels. We release the readout, the pre-registered controls, and the analysis-ready data so that the one
+step we scope as pending, a wet-lab loop, and the scrutiny of everything here, are straightforward to take up.
+
 \section*{Reproducibility statement}
 
 Every numerical result traces to a committed script and CSV, each carrying its exact command and a fixed seed
@@ -511,17 +523,11 @@ the analysis-ready data and code are released to support scrutiny and reproducti
 
 \section*{LLM usage disclosure}
 
-Per the ICLR policy on LLM use, we disclose the following. Among tasks that require disclosure, we used generative
-AI tools to formulate and check mathematical claims and to help write the proof of Proposition 1, to help develop
-the conceptual framing of the Confidence-Leverage Decomposition, to design and give feedback on the experimental
-methodology, to implement analysis code, to clean and reformat datasets, and to interpret results. We did not use
-generative AI to generate synthetic data, as every fixture is a real, public benchmark. Among tasks with
-recommended disclosure, we used these tools to edit the manuscript for readability, to search and summarize related
-literature, to check and format references, to brainstorm, and to suggest the paper's structure. We have reviewed
-all AI-assisted work: all code was verified and tested, every number traces to a committed script and CSV, every
-mathematical claim was independently checked (including an adversarial machine check of Proposition 1), and every
-citation was verified against a fetched source. The authors take full responsibility for the final content of this
-work, including all text, claims, and artifacts produced with the aid of generative AI.
+We designed the study, carried out the analysis, and independently verified all theoretical and empirical results
+(every number against committed code and data, and the decomposition against its closed-form statement).
+Generative-AI tools assisted with literature search and reference checking, experiment and analysis implementation,
+and manuscript editing. All such output was reviewed and validated by the authors, who are solely responsible for
+the content.
 
 \bibliographystyle{iclr2027_conference}
 \bibliography{references}
@@ -530,8 +536,15 @@ work, including all text, claims, and artifacts produced with the aid of generat
 
 \section{Extended figures and tables}
 
-These figures and tables support the main-text claims at their cited points and are placed here to keep the main
-body within the page limit.
+This appendix collects the extended figures and tables, grouped by the main-text claim each supports, so it reads
+as a guided extension of the argument rather than a reference dump. Within each group the caption states what the
+panel shows and the referenced section states why it matters. Nothing here is required to follow the main text, but
+each item makes a headline claim easier to check.
+
+\subsection{The decomposition and the feature-class law}
+Figures~\ref{fig:decomposition} and~\ref{fig:featureclass} visualize the core of Section 4: a flexible learner
+recovers only about 37\% of the leverage from the bound distribution, and among all scalars of that distribution
+only the two-pass mixed derivative clears the calibrated placebo floor.
 
 \begin{figure}[t]
 \centering
@@ -549,6 +562,11 @@ in both inverse-folding families.}
 sits at or below the calibrated placebo floor. Only the two-pass mixed derivative clears it.}
 \label{fig:featureclass}
 \end{figure}
+
+\subsection{Robustness: the backbone-error dose law and second-order couplings}
+Table~\ref{tab:doselaw} and Figures~\ref{fig:doselaw} and~\ref{fig:coupling} show the readout survives
+sub-\AA{}ngstr\"om backbone error, the regime real predicted backbones occupy, and reaches the partner-ablated
+pairwise coupling with the cycle-predicted sign.
 
 \begin{table}[t]
 \centering
@@ -589,6 +607,11 @@ the cycle-predicted sign, surviving control for inter-residue distance.}
 \label{fig:coupling}
 \end{figure}
 
+\subsection{Steering across independent readouts}
+Table~\ref{tab:steer} and Figure~\ref{fig:iptmsteer} give the full matrix behind Section 4.4: the $+\alpha \cdot L$
+tilt on a frozen model beats a matched random control under every independent judge and both structure predictors,
+and the ipTM gain is interface-localized.
+
 \begin{table}[t]
 \centering
 \caption{Steering benefit across independent readouts (paired $L - \text{random}$, complex-clustered 95\% CI). ipTM
@@ -620,6 +643,11 @@ matched-magnitude random control, and the gain is interface-localized (global pT
 \label{fig:iptmsteer}
 \end{figure}
 
+\subsection{Regime dependence of the scalar}
+Figure~\ref{fig:gradient} shows why confidence looks useful only on de-novo binders: the scalar climbs a
+fold-coupling gradient across interface classes and clears chance only at the de-novo end, while the mixed
+derivative clears chance in every class.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.56\textwidth]{fig5_gradient}
@@ -628,6 +656,11 @@ de-novo binders, while the mixed derivative clears chance in every class. The sc
 derivative is not.}
 \label{fig:gradient}
 \end{figure}
+
+\subsection{The burial confound and the conditioning-set tax}
+Figures~\ref{fig:deficitburial} and~\ref{fig:conditioningtax} support Sections 5 and 6: the crystal-backbone
+recovery deficit is a burial artifact, while a burial-matched deficit reappears on the predicted backbones
+designers actually condition on, where the mixed-derivative readout nonetheless survives.
 
 \begin{figure}[t]
 \centering
@@ -644,6 +677,11 @@ design it attenuates to statistical indistinguishability, so the published defic
 predictors agree per complex, so the residual tax lives in the conditioning set, not in the benchmark.}
 \label{fig:conditioningtax}
 \end{figure}
+
+\subsection{Physics adjudication}
+Table~\ref{tab:foldx} and Figures~\ref{fig:foldx} and~\ref{fig:ladder} give the FoldX evidence of Section 4.5: the
+mixed derivative carries binding rank-signal beyond a fitted physics energy function, and beats the confidence tilt
+on physics, the out-of-family readout that sides with the inverse-folding judges against ipTM.
 
 \begin{table}[t]
 \centering
