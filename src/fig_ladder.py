@@ -27,7 +27,7 @@ SUB = {"geometry": "burial · ΔSASA · contacts", "substitution similarity": "B
        "one-pass log-odds": "full published feature set",
        "fitted physics (FoldX)": "FoldX ΔΔG$_{bind}$ — this work"}
 COL = {"geometry": S.GEOM, "substitution similarity": S.CONS, "one-pass log-odds": S.SCALAR,
-       "fitted physics (FoldX)": S.LEV}
+       "fitted physics (FoldX)": S.PHYS}
 
 # ---- axis geometry, all derived from the committed numbers (nothing about the scale is hardcoded) ----
 val = {k: abs(float(d.loc[k].partial)) for k in ORDER}
@@ -54,7 +54,7 @@ for rung, y in zip(ORDER, ys):
             fontweight="bold", zorder=6)
     ax.text(-0.011, y + 0.080, NAME[rung], fontsize=6.6, color=S.INK, ha="right", va="bottom", zorder=6)
     ax.text(-0.011, y - 0.080, SUB[rung], fontsize=5.5, ha="right", va="top", zorder=6,
-            color=S.LEV if rung == "fitted physics (FoldX)" else S.MUTED)
+            color=S.PHYS if rung == "fitted physics (FoldX)" else S.MUTED)
 
 ax.set_xlim(-XLAB, XNUM + 0.030)
 ax.set_ylim(-0.60, len(ORDER) - 0.40)
