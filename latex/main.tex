@@ -112,8 +112,8 @@ partner, never in the bound-state confidence, whichever model does the reading.
   log-likelihood, leverage is the mixed second derivative, and we prove leverage is not a function of the bound
   distribution: a flexible learner over all of $P$ recovers only about 37\%, so about 63\% is irreducible in both
   inverse-folding families.
-\item \textbf{A feature-class law.} On natural complexes (SKEMPI) every scalar of the bound distribution
-  (confidence, negentropy, the scalar KL) sits at or below a calibrated placebo floor, while the mixed derivative
+\item \textbf{A feature-class law.} On natural complexes (SKEMPI) every scalar summary (confidence and negentropy
+  of the bound distribution, and even the two-pass scalar KL) sits at or below a calibrated placebo floor, while the mixed derivative
   adds binding information beyond geometry, beyond evolutionary conservation, and beyond the one-pass log-odds,
   across four architectures.
 \item \textbf{The published deficit is largely a burial confound.} Under a pre-registered matched-pair design the
@@ -275,18 +275,18 @@ reduce to geometry (confidence exactly, KL nearly), while the mixed derivative d
 \begin{table}[t]
 \centering
 \caption{The feature-class law on SKEMPI (per interface position, CPI beyond burial, neighbours, and
-$\Delta$SASA, 13{,}401 positions). Every scalar of the bound distribution sits at or below the calibrated placebo
-floor. Only the two-pass mixed derivative clears it.}
+$\Delta$SASA, 13{,}401 positions). Every scalar summary sits at or below the calibrated placebo floor, including
+the two-pass scalar KL. Only the two-pass mixed derivative, a vector contrast, clears it.}
 \label{tab:featureclass}
 \small
 \begin{tabular}{lc}
 \hline
-Feature (all functionals of the same distribution) & CPI beyond geometry \\
+Feature (scalar summaries vs.\ the mixed derivative) & CPI beyond geometry \\
 \hline
 Placebo floor (a deterministic function of geometry) & $+0.0007$ (false-positive floor) \\
 \textbf{Confidence} (the diagonal) & $+0.0002$ $[-0.0002, +0.0006]$ (below floor) \\
 Negentropy (one-pass) & $+0.0009$ $[+0.0003, +0.0015]$ (at floor) \\
-Scalar KL (a contraction of $L$) & $+0.0010$ $[+0.0003, +0.0017]$ (at floor) \\
+Scalar KL (two-pass, a contraction of $L$) & $+0.0010$ $[+0.0003, +0.0017]$ (at floor) \\
 \textbf{Leverage $L$} (the mixed derivative) & $\mathbf{+0.0049}$ $[+0.0034, +0.0065]$ (about $7\times$ floor) \\
 \hline
 \end{tabular}
@@ -301,7 +301,7 @@ crystal backbone to a target interface RMSD and re-scoring (the monomer inheriti
 ablation stays clean), CPI$(L \mid \text{geometry})$ and Spearman$(L, \Delta\Delta G)$ hold through
 sub-\AA{}ngstr\"om error, then collapse past a model-dependent knee (about 1.0~\AA{} for ProteinMPNN, 1.5~\AA{} for
 ESM-IF1, Table~\ref{tab:doselaw}), not a universal cliff. The decisive test is which side real predicted backbones
-fall on, and they fall on the surviving side (Section 6): on OpenFold3 \citep{ahdritz2024openfold} and AF2-multimer
+fall on, and they fall on the surviving side (Section 6): on OpenFold3 and AF2-multimer
 \citep{jumper2021alphafold} backbones for 140 shared complexes, CPI$(L \mid \text{geometry})$ is $+0.039$ $[+0.026,
 +0.050]$ and $+0.032$ $[+0.023, +0.041]$, 69 to 84\% of the matched crystal value. Because the collapse is driven
 by the backbone the derivative is read from, every method built on this mixed derivative inherits the same
@@ -440,7 +440,9 @@ preserved, where RedNet instead retrains a decoder. \textbf{(v)} We validate ant
 two structure predictors, and a physics energy function, with a confidence-tilt specificity control no design
 method has run. A frozen-vs-retrained head-to-head is not runnable (RedNet needs non-public packages and
 access-restricted weights) and would be muddy since the direction is shared, so we report the sharp comparisons: $L$
-vs random and $L$ vs the confidence tilt.
+vs random and $L$ vs the confidence tilt. Related work also predicts binding $\Delta\Delta G$ from this
+bound-versus-unbound contrast (for example StaB-ddG \citep{deng2025stabddg}, which maps folding stability to
+binding), and our object is the decomposition, the controls, and steering, not a new $\Delta\Delta G$ predictor.
 
 These add up to a beyond-X ladder (Figure~\ref{fig:ladder}): the mixed derivative carries binding signal that
 survives, in turn, geometry, substitution similarity, the one-pass log-odds, and a fitted physics energy function,
@@ -448,8 +450,8 @@ while every scalar of $P$ stays at the placebo floor at every rung. With the fra
 two axes of one dissociation: a scalar of anything is blind to binding-specificity, across controls and across
 levels of the stack, and the mixed derivative carries it. The sequence-free KL detector is a learned
 frustratometer, which we credit to the classical frustration literature \citep{ferreiro2007frustration,
-freiberger2019frustration}, and our narrow point is that this one scalar equals $\Delta$SASA, which is why it does
-not beat physics whereas the mixed derivative does. ProBID-Net reports the phenomenon as a recovery deficit, and we
+freiberger2019frustration}, and our narrow point is that this one scalar adds little beyond $\Delta$SASA (Section
+3), which is why it does not beat physics whereas the mixed derivative does. ProBID-Net reports the phenomenon as a recovery deficit, and we
 correct the attribution: it is neither dynamics nor decoding but conditioning, and a burial confound on the crystal
 benchmark. The most telling piece of practice is BindCraft \citep{pacesa2024bindcraft}, whose one-shot pipeline
 hard-codes an interface freeze forbidding inverse folding at the interface, the field's implicit admission of our
@@ -754,7 +756,8 @@ multi-residue hotspot constellation has astronomically small joint probability) 
 control constellations (median difference 0.000, 95\% CI $[-1.67, +2.09]$ spanning zero): it is a generic property
 of low-temperature sampling, not a hotspot tax, and no oversampling recovers it. A \emph{commitment-ordering}
 effect (the autoregressive schedule paints hotspots into a corner) is inert on ProteinMPNN (oracle-order
-difference-in-differences $-0.002$), and on MultiFlow the unmasking-order knob has only a marginal effect
+difference-in-differences $-0.002$), and on MultiFlow (a discrete flow-matching model for protein
+sequence-structure co-design) the unmasking-order knob has only a marginal effect
 (order-span 0.012, far below the 0.065 sample SD across seeds and reference structures).
 
 \paragraph{Caveats specific to the decomposition.} Orthogonal is not independent: confidence cannot express
@@ -765,6 +768,32 @@ temperature, and all headline readouts are rank-based, but a single 2-parameter 
 of $L$ as about 0.42 kcal/mol (OOF RMSE 1.82, next to fitted FoldX's 1.79), a good ranker and a rough absolute
 predictor, kept out of every headline. The decomposition replicates under a second architecture (ESM-IF1) on the
 337 complexes both models cover.
+
+\paragraph{Predicted-backbone leakage.} OpenFold3 and AF2-multimer were trained on PDB subsets that likely include
+the SKEMPI wild-type structures, so the absolute leverage-retention rates on predicted backbones (Section 6) may be
+optimistic. Two features of the design mitigate this. The conditioning-set tax rests on the per-complex agreement
+between two architecturally-independent predictors ($\rho = 0.565$), which a shared training set would inflate
+within each predictor but not obviously in their agreement pattern. And a noised-crystal control at matched RMSD
+shows no deficit, so the signal tracks independent reconstruction rather than memorized coordinates.
+
+\paragraph{Matched-pair retention and the hides-versus-invents logic.} The within-complex 1:1 matching pairs only
+the hotspots that have an intra-complex null at the same relative SASA, secondary-structure class, and neighbour
+count, which is a minority of the 327 SKEMPI hotspots (42 pairs in the loose-null primary, 21 in the strict tier).
+We therefore do not rest the conclusion on the matched subset: the higher-powered regression estimator uses all
+interface hotspots with no 1:1 matching and agrees. The logic of the control is one-directional. Because buried
+positions are where inverse folding is most confident and accurate, an uncontrolled hotspot-versus-rest comparison
+hides a real deficit rather than inventing one, so controlling burial can only reveal a deficit that survives it,
+never manufacture one. The attenuation to statistical indistinguishability therefore means the crystal deficit is
+largely burial, not that matching erased a real effect.
+
+\paragraph{FoldX and backbone-jitter protocols.} For the physics adjudication (Section 4.5) each structure is
+FoldX RepairPDB'd once, the standard relaxation that removes steric clashes, before $\Delta\Delta G_{\text{bind}}$
+is computed, so the reported energies are not dominated by unrelaxed contacts. For the dose law (Section 4.3) the
+crystal backbone is perturbed to a target interface RMSD and re-scored, with the monomer inheriting the same
+perturbation so the partner ablation stays clean. The jitter ladder is a controlled diagnostic, not the
+load-bearing claim: the decisive test is that real predicted backbones fall on the surviving part of the ladder, so
+the collapse past the model-dependent knee reflects reconstruction error a designer actually incurs, not an
+artifact of the perturbation geometry.
 
 \paragraph{Precise scope of Proposition 1.} The non-identifiability is a property of the model family, measured in
 Section 4.1, not a universal law. Formally, $L$ equals a measurable function $\psi(P)$ almost surely if and only if
