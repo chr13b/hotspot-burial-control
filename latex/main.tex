@@ -11,6 +11,7 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{amssymb}
 \graphicspath{{../results/figures/}}
 \setlength{\abovecaptionskip}{10pt}
@@ -524,7 +525,7 @@ the analysis-ready data and code are released to support scrutiny and reproducti
 \section*{LLM usage disclosure}
 
 We designed the study, carried out the analysis, and independently verified all theoretical and empirical results
-(every number against committed code and data, and the decomposition against its closed-form statement).
+(every number against committed code and data).
 Generative-AI tools assisted with literature search and reference checking, experiment and analysis implementation,
 and manuscript editing. All such output was reviewed and validated by the authors, who are solely responsible for
 the content.
@@ -533,20 +534,23 @@ the content.
 \bibliography{references}
 
 \appendix
+\raggedbottom
 
 \section{Extended figures and tables}
 
-This appendix collects the extended figures and tables, grouped by the main-text claim each supports, so it reads
-as a guided extension of the argument rather than a reference dump. Within each group the caption states what the
-panel shows and the referenced section states why it matters. Nothing here is required to follow the main text, but
-each item makes a headline claim easier to check.
+This appendix collects the extended figures and tables in the order the argument uses them, so it reads as a
+guided extension rather than a reference dump. Figures~\ref{fig:decomposition} and~\ref{fig:featureclass} give the
+decomposition and the feature-class law of Section 4: a learner recovers only about 37\% of the leverage from $P$,
+and only the two-pass mixed derivative clears the placebo floor. Table~\ref{tab:doselaw} and
+Figures~\ref{fig:doselaw} and~\ref{fig:coupling} establish robustness, the readout surviving sub-\AA{}ngstr\"om
+backbone error and reaching the partner-ablated pairwise coupling. Table~\ref{tab:steer} and
+Figure~\ref{fig:iptmsteer} give the steering matrix behind Section 4.4, and Figure~\ref{fig:gradient} the regime
+dependence of the scalar. Figures~\ref{fig:deficitburial} and~\ref{fig:conditioningtax} document the burial
+confound and the conditioning-set tax of Sections 5 and 6. Table~\ref{tab:foldx} and Figures~\ref{fig:foldx}
+and~\ref{fig:ladder} give the physics adjudication of Section 4.5. Every caption states what its panel shows and
+the section it supports.
 
-\subsection{The decomposition and the feature-class law}
-Figures~\ref{fig:decomposition} and~\ref{fig:featureclass} visualize the core of Section 4: a flexible learner
-recovers only about 37\% of the leverage from the bound distribution, and among all scalars of that distribution
-only the two-pass mixed derivative clears the calibrated placebo floor.
-
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{fig1_decomposition}
 \caption{The Confidence-Leverage Decomposition. A flexible learner over the entire bound distribution recovers
@@ -555,7 +559,7 @@ in both inverse-folding families.}
 \label{fig:decomposition}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{fig2_featureclass}
 \caption{The feature-class law. Every scalar of the bound distribution (confidence, negentropy, the scalar KL)
@@ -563,12 +567,7 @@ sits at or below the calibrated placebo floor. Only the two-pass mixed derivativ
 \label{fig:featureclass}
 \end{figure}
 
-\subsection{Robustness: the backbone-error dose law and second-order couplings}
-Table~\ref{tab:doselaw} and Figures~\ref{fig:doselaw} and~\ref{fig:coupling} show the readout survives
-sub-\AA{}ngstr\"om backbone error, the regime real predicted backbones occupy, and reaches the partner-ablated
-pairwise coupling with the cycle-predicted sign.
-
-\begin{table}[t]
+\begin{table}[H]
 \centering
 \caption{Backbone-error dose law (crystal-jitter ladder). $\dagger$ marks a 95\% CI excluding zero (above the
 $+0.0007$ placebo floor). $n = 2{,}949$ mutations (ProteinMPNN, matched sample), $2{,}809$ (ESM-IF1, all 285
@@ -591,7 +590,7 @@ Jitter $\sigma$ (\AA) & MPNN: CPI beyond geom & MPNN: $\rho(L,\Delta\Delta G)$ &
 }
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{fig3_doselaw}
 \caption{The backbone-error dose law. The mixed derivative survives sub-\AA{}ngstr\"om reconstruction error and
@@ -599,7 +598,7 @@ collapses past a model-dependent knee. Real predicted backbones fall on the surv
 \label{fig:doselaw}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{fig4_coupling}
 \caption{The second mixed derivative. The partner-ablated pairwise coupling tracks measured binding epistasis with
@@ -607,12 +606,7 @@ the cycle-predicted sign, surviving control for inter-residue distance.}
 \label{fig:coupling}
 \end{figure}
 
-\subsection{Steering across independent readouts}
-Table~\ref{tab:steer} and Figure~\ref{fig:iptmsteer} give the full matrix behind Section 4.4: the $+\alpha \cdot L$
-tilt on a frozen model beats a matched random control under every independent judge and both structure predictors,
-and the ipTM gain is interface-localized.
-
-\begin{table}[t]
+\begin{table}[H]
 \centering
 \caption{Steering benefit across independent readouts (paired $L - \text{random}$, complex-clustered 95\% CI). ipTM
 rows are within-folder paired effects (AF2 and Boltz-2 are differently calibrated, each read in its own scale).
@@ -635,7 +629,7 @@ ESM-IF1 (reverse) & PiFold leverage (judge) & $+0.73$ $[+0.62, +0.84]$ \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{fig_iptm_steer}
 \caption{Steering a frozen ProteinMPNN by the mixed derivative raises AF2-multimer interface ipTM against a
@@ -643,12 +637,7 @@ matched-magnitude random control, and the gain is interface-localized (global pT
 \label{fig:iptmsteer}
 \end{figure}
 
-\subsection{Regime dependence of the scalar}
-Figure~\ref{fig:gradient} shows why confidence looks useful only on de-novo binders: the scalar climbs a
-fold-coupling gradient across interface classes and clears chance only at the de-novo end, while the mixed
-derivative clears chance in every class.
-
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.56\textwidth]{fig5_gradient}
 \caption{Confidence-AUROC climbs a fold-coupling gradient across interface classes and only clears chance on
@@ -657,12 +646,7 @@ derivative is not.}
 \label{fig:gradient}
 \end{figure}
 
-\subsection{The burial confound and the conditioning-set tax}
-Figures~\ref{fig:deficitburial} and~\ref{fig:conditioningtax} support Sections 5 and 6: the crystal-backbone
-recovery deficit is a burial artifact, while a burial-matched deficit reappears on the predicted backbones
-designers actually condition on, where the mixed-derivative readout nonetheless survives.
-
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{fig_deficit_burial}
 \caption{On crystal backbones the hotspot recovery deficit tracks burial. Under the pre-registered matched-pair
@@ -670,7 +654,7 @@ design it attenuates to statistical indistinguishability, so the published defic
 \label{fig:deficitburial}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{fig_conditioning_tax}
 \caption{On predicted backbones a burial-matched deficit reappears, and the two architecturally-independent
@@ -678,12 +662,7 @@ predictors agree per complex, so the residual tax lives in the conditioning set,
 \label{fig:conditioningtax}
 \end{figure}
 
-\subsection{Physics adjudication}
-Table~\ref{tab:foldx} and Figures~\ref{fig:foldx} and~\ref{fig:ladder} give the FoldX evidence of Section 4.5: the
-mixed derivative carries binding rank-signal beyond a fitted physics energy function, and beats the confidence tilt
-on physics, the out-of-family readout that sides with the inverse-folding judges against ipTM.
-
-\begin{table}[t]
+\begin{table}[H]
 \centering
 \caption{FoldX adjudication. Left: detection ($n=2{,}948$ mutants, 284 complexes), Spearman vs experimental
 $\Delta\Delta G$. The two opposite signs both mean ``ranks binding correctly'': experimental $\Delta\Delta G$ and
@@ -707,7 +686,7 @@ naive $-$ random & $+4.79$ $[+3.46, +6.11]$, 1.000 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{fig_foldx}
 \caption{FoldX adjudication (companion to Table~\ref{tab:foldx}). As a detector the fitted physics ranks better
@@ -717,7 +696,7 @@ foldability.}
 \label{fig:foldx}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{fig_ladder}
 \caption{The beyond-X ladder in one matched metric (partial rank-correlation of $L$ with experimental
@@ -734,7 +713,7 @@ noting is that the two largest confounds, burial and training leakage, both run 
 burden is to show the effect despite them, which is why the matched-pair design, not the raw deficit, is the
 experiment.
 
-\begin{table}[t]
+\begin{table}[H]
 \centering
 \caption{Pre-registered false-positive modes and their controls.}
 \label{tab:falsepos}
@@ -796,5 +775,6 @@ second pass is a fixed reparameterization of the first (temperature or mixture),
 to that choice. Non-identifiability alone does not imply predictive gain, since conditioning on any feature weakly
 reduces conditional variance. The gain is the separate, measured claim of Section 4.2, that
 $\mathbb{E}[\text{Var}(\Delta\Delta G \mid P, L)] < \mathbb{E}[\text{Var}(\Delta\Delta G \mid P)]$.
+
 
 \end{document}
