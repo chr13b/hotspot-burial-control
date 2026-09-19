@@ -34,23 +34,23 @@
 \maketitle
 
 \begin{abstract}
-Staged binder design generates a backbone and then inverse-folds a sequence, and the field reads an
-inverse-folding model's \emph{confidence} to judge its interface choices. Recovery-based evaluations report a
-hotspot deficit that is taken as evidence the models cannot place binding residues. We show this metric is
-misaligned with binding competence: confidence and competence are two derivatives of one likelihood, and current
-approaches optimize the wrong one. Confidence is the \emph{diagonal}, a scalar of the bound-conditioned
-distribution $P$, the model's per-position distribution over amino acids given the complex. Binding \emph{leverage}
-is the \emph{mixed second derivative}, the response to ablating the partner, which is exactly the model's
+Staged binder design generates a backbone and then inverse-folds a sequence, where current approaches read the
+model's \emph{confidence} to judge interface choices. Recovery-based evaluations report a hotspot deficit that is
+taken as evidence that inverse-folding models cannot place binding-critical residues. We show this metric is
+misaligned with binding competence: confidence and competence are two derivatives of one likelihood, and confidence
+is the wrong derivative. It is the \emph{diagonal}, a scalar of the bound-conditioned distribution $P$, the
+model's per-position distribution over amino acids given the complex. Binding \emph{leverage} is the \emph{mixed
+second derivative}, the response to ablating the partner, which is exactly the model's
 \textbf{classifier-free-guidance direction}. We prove leverage is not a function of $P$, so every scalar of
-confidence is blind to binding \textbf{by construction}. On SKEMPI natural complexes, confidence ranks hotspots at
-chance, whereas the mixed derivative, a zero-shot readout, tracks experimental binding free energy (Spearman
+confidence is blind to binding \textbf{by construction}. On SKEMPI natural complexes, confidence ranks hotspots
+near chance, whereas the mixed derivative, a zero-shot readout, tracks experimental binding free energy (Spearman
 $-0.30$) and adds binding signal beyond geometry, evolutionary conservation, and the one-pass log-odds. The effect
-holds across four inverse-folding architectures and beyond a fitted physics energy function (FoldX, partial
+holds across four inverse-folding architectures and beyond a fitted physics function (FoldX, partial
 $-0.17$). It is also actionable: an $+\alpha \cdot L$ tilt on a frozen ProteinMPNN raises binding-favorability
 against a matched random control, confirmed by an independent sequence model, two structure predictors, and FoldX.
-Furthermore, the reported recovery deficit is largely a burial confound. The general rule follows: to read an
-untrained quantity off a conditional generative model, ablate the conditioner. Code and analysis-ready data
-reproduce every number and figure.
+Separately, the reported deficit is itself largely a burial confound. The principle generalizes beyond
+proteins: to read an untrained quantity from a conditional generative model, ablate its conditioner and take the
+mixed derivative, not the marginal.
 \end{abstract}
 
 \section{Introduction}
