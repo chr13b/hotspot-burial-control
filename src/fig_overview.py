@@ -128,10 +128,10 @@ ax.text(0.150, 0.867, "$P(\\mathrm{seq}\\,|\\,\\mathrm{structure})$", fontsize=6
 
 CONF = dict(title="Confidence  φ(P)", tcol=S.MUTED, bcol=S.MUTED, fc=S.FLOOR_FILL, ec=S.SCALAR, lw=0.9,
             ls=(0, (2.6, 2.0)),                                    # dashed = the dead end: no path to binding
-            body="any scalar of the bound-state\ndistribution — blind to binding\n"
+            body="any scalar of the bound-state\ndistribution, blind to binding\n"
                  "by construction  ($L \\perp φ$, proven)")
 LEVG = dict(title="Leverage  L", tcol=S.LEV, fc=S.rgba(S.LEV, 0.09), ec=S.LEV, lw=1.3,
-            body="$=$ mixed 2nd derivative\n(ablate the partner) — the model's\nCFG guidance direction",
+            body="$=$ mixed 2nd derivative\n(ablate the partner), the model's\nCFG guidance direction",
             tail="∝  −ΔΔG$_{bind}$   (binding free energy)", tailcol=S.LEV, tailweight="bold")
 
 # ---------------- stage 2 — two uses ----------------
@@ -147,9 +147,9 @@ STEER = dict(title="Steer", fc=S.TINT, ec=S.FLOOR_EDGE, lw=1.0,
 # identity or nothing") these three boxes wear the same structural grey as Detect/Steer and their bold
 # titles carry the identity. They used to wear GEOM and CONS, which made teal mean "structure predictors"
 # here and "geometry" in Figs. ladder / gradient — one hue, two meanings.
-RD = [("Inverse-folding judges", "ESM-IF1 · MIF · PiFold — leverage ↑"),
-      ("Structure predictors", "AF2-multimer · Boltz-2 — ipTM ↑"),
-      ("Physics energy function", "FoldX ΔΔG$_{bind}$ — more favorable ↑")]
+RD = [("Inverse-folding judges", "ESM-IF1 · MIF · PiFold: leverage ↑"),
+      ("Structure predictors", "AF2-multimer · Boltz-2: ipTM ↑"),
+      ("Physics energy function", "FoldX ΔΔG$_{bind}$: more favorable ↑")]
 READ = [dict(title=t, tsize=6.5, bsize=5.6, body=b, fc=S.TINT, ec=S.FLOOR_EDGE, lw=1.0, pad=5.0)
         for t, b in RD]
 # the one box in stage 3 that states a claim about L itself keeps L's hue
@@ -168,7 +168,7 @@ fan(COL[1][0] + COL[1][1], mid(c2[1]), COL[2], c3[:3])                         #
 # ---------------- thesis strip ----------------
 SH = (2 * 6.0 + 7.3 + 5.0 + 5.5 * 1.38 + 5.5) * PY
 rbox(0.0, STRIP_TOP - SH, 1.0, SH, S.rgba(S.LEV, 0.07), S.LEV, lw=1.0, r=0.014)
-ax.text(0.5, STRIP_TOP - 6.0 * PY, "Confidence is not competence — and it recurs at every level.",
+ax.text(0.5, STRIP_TOP - 6.0 * PY, "Confidence is not competence, and it recurs at every level.",
         fontsize=7.3, color=S.LEV, ha="center", va="top", fontweight="bold", zorder=5)
 ax.text(0.5, STRIP_TOP - (6.0 + 7.3 + 5.0) * PY,
         "an inverse-folding model's confidence and a structure predictor's ipTM are both blind to binding;\n"
